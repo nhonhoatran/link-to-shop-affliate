@@ -10,7 +10,7 @@
     "dev": "pnpm --filter @under30ss/shared build && pnpm -r --parallel --filter \"./apps/*\" --filter @under30ss/shared dev",
     "build": "pnpm -r build",
     "lint": "eslint .",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm -r typecheck && tsc -p tsconfig.json",
     "test": "pnpm -r test",
     "e2e": "playwright test",
     "seed:samples": "pnpm --filter @under30ss/api seed:samples",
