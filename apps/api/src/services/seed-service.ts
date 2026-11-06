@@ -18,6 +18,8 @@ import { upsertOutfitBySlug } from './outfit-service';
 export interface SeedOptions {
   /** Directory the `file` paths in the seed file are relative to. */
   seedDir: string;
+  /** Images must stay inside this directory (defaults to `seedDir`); lets the seed reuse assets kept beside it. */
+  imageRoot?: string;
   /** Local only: keep `published` status even when links or anchors are missing. */
   publishWithPlaceholder: boolean;
 }
@@ -28,10 +30,11 @@ export interface SeedResult {
   downgradedToDraft: boolean;
 }
 
-const readSeedImage = async (seedDir: string, file: string): Promise<Buffer> => {
-  const absolute = resolve(seedDir, file);
-  const rel = relative(seedDir, absolute);
-  if (rel.startsWith('..') || resolve(rel) === rel) throw new Error(`Seed image escapes the seed directory: ${file}`);
+const readSeedImage = async (options: SeedOptions, file: string): Promise<Buffer> => {
+  const root = options.imageRoot ?? options.seedDir;
+  const absolute = resolve(options.seedDir, file);
+  const rel = relative(root, absolute);
+  if (rel.startsWith('..') || resolve(rel) === rel) throw new Error(`Seed image escapes the image root ${root}: ${file}`);
   try {
     return await readFile(absolute);
   } catch {
@@ -46,7 +49,7 @@ const uploadSeedImage = async (
   kind: MediaKind,
   image: SeedImage,
 ): Promise<ImageRef> => {
-  const bytes = await readSeedImage(options.seedDir, image.file);
+  const bytes = await readSeedImage(options, image.file);
   const digest = createHash('sha256').update(bytes).digest('hex').slice(0, 24);
   return storeImage(ctx, kind, bytes, `${PUBLIC_KEY_PREFIX}${kind}/seed/${digest}.webp`);
 };

@@ -103,4 +103,15 @@ describe('seed service', () => {
     escaping.outfits[0]!.modelImage.file = '../outside.png';
     await expect(seedOutfits(testApp.ctx, escaping, { seedDir, publishWithPlaceholder: false })).rejects.toThrow(/escapes/);
   });
+
+  it('reads images outside the seed directory while they stay inside imageRoot', async () => {
+    const seed = buildSeed();
+    const outfit = seed.outfits[0]!;
+    for (const image of [outfit.modelImage, ...outfit.items.map((item) => item.image)]) image.file = `../${image.file}`;
+    const options = { seedDir: join(seedDir, 'images'), imageRoot: seedDir, publishWithPlaceholder: false };
+    await expect(seedOutfits(testApp.ctx, seed, options)).resolves.toHaveLength(1);
+
+    outfit.modelImage.file = '../../outside.png';
+    await expect(seedOutfits(testApp.ctx, seed, options)).rejects.toThrow(/escapes/);
+  });
 });

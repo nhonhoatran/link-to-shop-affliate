@@ -9,18 +9,20 @@ import { outfitPaths, createRevalidator } from '../services/revalidate-web-servi
 import { seedOutfits } from '../services/seed-service';
 import { createS3Storage } from '../storage/s3-client';
 
-const DEFAULT_SEED_FILE = resolve(__dirname, '../../../../seed/sample-outfits.json');
+const REPO_ROOT = resolve(__dirname, '../../../..');
+const DEFAULT_SEED_FILE = resolve(REPO_ROOT, 'seed/sample-outfits.json');
 
-const readFileArg = (argv: string[]): string => {
-  const index = argv.indexOf('--file');
+const readPathArg = (argv: string[], flag: string, fallback: string): string => {
+  const index = argv.indexOf(flag);
   const value = index === -1 ? undefined : argv[index + 1];
-  return value ? resolve(process.cwd(), value) : DEFAULT_SEED_FILE;
+  return value ? resolve(process.cwd(), value) : fallback;
 };
 
 const main = async (): Promise<void> => {
   loadDotenv();
   const argv = process.argv.slice(2);
-  const seedPath = readFileArg(argv);
+  const seedPath = readPathArg(argv, '--file', DEFAULT_SEED_FILE);
+  const imageRoot = readPathArg(argv, '--image-root', REPO_ROOT);
   const parsed = seedFileSchema.safeParse(JSON.parse(await readFile(seedPath, 'utf8')));
   if (!parsed.success) {
     const details = Object.entries(zodIssuesToFields(parsed.error.issues)).map(([path, message]) => `  ${path}: ${message}`);
@@ -33,6 +35,7 @@ const main = async (): Promise<void> => {
   try {
     const results = await seedOutfits(ctx, parsed.data, {
       seedDir: dirname(seedPath),
+      imageRoot,
       publishWithPlaceholder: argv.includes('--publish-with-placeholder'),
     });
     for (const result of results) {
