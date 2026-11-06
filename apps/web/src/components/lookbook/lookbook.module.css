@@ -72,6 +72,7 @@
 .itemSubtitle {
   font-size: var(--lookbook-subtitle-size);
   font-weight: var(--font-weight-regular);
+  font-style: italic;
   line-height: var(--lookbook-line-height);
   color: var(--color-ink);
 }
@@ -84,6 +85,8 @@
 
 .model {
   position: relative;
+  /* Hotspots are positioned in % of this box, so it must be exactly the image's height, not the stretched row. */
+  align-self: center;
   min-width: 0;
   margin: 0;
 }
@@ -91,21 +94,33 @@
 .hotspot {
   position: absolute;
   z-index: 2;
-  width: var(--space-5);
-  height: var(--space-5);
+  width: var(--lookbook-hotspot-size);
+  height: var(--lookbook-hotspot-size);
   transform: translate(-50%, -50%);
-  border: var(--lookbook-connector-width) solid var(--color-line);
   border-radius: 50%;
-  box-shadow: 0 0 0 var(--lookbook-connector-width) var(--color-page);
+  background: transparent;
   transition: opacity var(--duration-base) var(--easing-standard);
 }
 
+/* Invisible at rest (the reference shows no circles); a ring appears only for the active item. */
 .hotspot::after {
   content: '';
   position: absolute;
-  inset: calc(var(--lookbook-connector-width) * -1);
+  inset: calc(50% - var(--lookbook-hotspot-ring-size) / 2);
+  border: var(--lookbook-connector-width) solid var(--color-line);
   border-radius: 50%;
+  background: var(--lookbook-hotspot-ring-bg);
+  opacity: 0;
+  transform: scale(0.5);
   pointer-events: none;
+  transition:
+    opacity var(--duration-base) var(--easing-standard),
+    transform var(--duration-base) var(--easing-standard);
+}
+
+.hotspot[data-active]::after {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .connectors {
@@ -116,6 +131,8 @@
   height: 100%;
   overflow: visible;
   pointer-events: none;
+  /* Light halo keeps threads and arrowheads readable over dark garments, as in the reference. */
+  filter: drop-shadow(0 0 var(--lookbook-connector-halo) var(--color-page));
 }
 
 .connector {
@@ -147,23 +164,20 @@
   filter: drop-shadow(0 var(--space-1) var(--space-2) var(--color-muted));
 }
 
-.hotspot[data-active]::after {
-  animation: lookbook-pulse calc(var(--duration-base) * 4) var(--easing-standard) infinite;
-}
-
-@keyframes lookbook-pulse {
-  from {
-    box-shadow: 0 0 0 0 var(--color-line);
-  }
-  to {
-    box-shadow: 0 0 0 var(--space-3) transparent;
-  }
-}
-
 /* Breakpoint mirrors --lookbook-hide-description-below (640px); media queries cannot read custom properties. */
 @media (max-width: 639.98px) {
   .itemDescription {
     display: none;
+  }
+
+  /* Threads would tangle over the small model: show pins instead and let the item list carry the link. */
+  .connectors {
+    display: none;
+  }
+
+  .hotspot::after {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -175,7 +189,7 @@
     transition: none;
   }
 
-  .hotspot[data-active]::after {
-    animation: none;
+  .hotspot::after {
+    transition: none;
   }
 }

@@ -12,21 +12,31 @@ const right: ConnectorInput = {
 };
 
 describe('computeConnectorPath', () => {
-  it('starts at the inner (right) edge of a left item image and ends at the hotspot', () => {
-    expect(computeConnectorPath(left, 0.5).d).toBe('M 100 150 Q 200 -50 300 50');
+  it('leaves the inner (right) edge of a left item horizontally and ends at the anchor', () => {
+    expect(computeConnectorPath(left, 0.5).d).toBe('M 100 150 C 200 150 200 100 300 50');
   });
 
-  it('starts at the inner (left) edge of a right item image', () => {
-    expect(computeConnectorPath(right, 0.5).d).toBe('M 500 150 Q 400 50 300 400');
+  it('leaves the inner (left) edge of a right item horizontally', () => {
+    expect(computeConnectorPath(right, 0.5).d).toBe('M 500 150 C 400 150 400 275 300 400');
   });
 
-  it('bows above the higher of the two endpoints when the hotspot is lower than the image', () => {
+  it('curves down when the anchor is lower than the item', () => {
     const { d } = computeConnectorPath({ ...left, end: { x: 300, y: 500 } }, 0.5);
-    expect(d).toBe('M 100 150 Q 200 50 300 500');
+    expect(d).toBe('M 100 150 C 200 150 200 325 300 500');
   });
 
-  it('is a straight-ish line when the ratio is 0', () => {
-    expect(computeConnectorPath(left, 0).d).toBe('M 100 150 Q 200 50 300 50');
+  it('curves up when the anchor is higher than the item', () => {
+    const { d } = computeConnectorPath(left, 0.25);
+    expect(d).toBe('M 100 150 C 150 150 250 75 300 50');
+  });
+
+  it('is a straight line when the ratio is 0', () => {
+    expect(computeConnectorPath(left, 0).d).toBe('M 100 150 C 100 150 300 50 300 50');
+  });
+
+  it('keeps the first handle on the start y so the thread leaves horizontally', () => {
+    const nums = computeConnectorPath(right, 0.4).d.match(/-?\d+(\.\d+)?/g)!.map(Number);
+    expect(nums[3]).toBe(nums[1]);
   });
 
   it('keeps the id of its input', () => {
@@ -38,7 +48,7 @@ describe('computeConnectorPaths', () => {
   it('maps every input and falls back to ratio 0 for a non-finite ratio', () => {
     const paths = computeConnectorPaths([left, right], Number.NaN);
     expect(paths.map((p) => p.id)).toEqual(['a', 'b']);
-    expect(paths[0]?.d).toBe('M 100 150 Q 200 50 300 50');
+    expect(paths[0]?.d).toBe('M 100 150 C 100 150 300 50 300 50');
   });
 
   it('returns an empty list for no input', () => {
