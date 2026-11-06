@@ -9,8 +9,10 @@
 	}
 
 	# Health is for the compose healthcheck, which talks to the api container directly.
-	@health path /api/health /api/health/*
-	respond @health 404
+	# A handle block (not a bare respond): Caddy runs handle before respond, so /api/* would win otherwise.
+	handle /api/health* {
+		respond 404
+	}
 
 	# Uploads: reject bodies above the limit at the edge. UPLOAD_BODY_MAX_MB is UPLOAD_MAX_MB_CEILING + 1 MiB of
 	# multipart overhead, computed by the caddy service command in docker-compose.yml.
