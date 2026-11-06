@@ -1,0 +1,18 @@
+{
+  "slug": "dramatic",
+  "title": "Dramatic Liberty streetwear",
+  "seoDescription": "Phối đồ streetwear với áo thun Dramatic Liberty, quần short jean rách, sneaker trắng xám và phụ kiện.",
+  "featured": true,
+  "source": "assets-source/lookbook-samples/outfit-dramatic-reference.png",
+  "model": [285, 235, 700, 1545],
+  "items": [
+    {"slug": "ao-thun-in-chu", "name": "ÁO THUN IN CHỮ", "subtitle": "GRAPHIC T-SHIRT", "description": "Chất liệu cotton mềm mại, form rộng, họa tiết chữ tạo điểm nhấn trẻ trung, phù hợp phong cách streetwear, vintage.", "side": "left", "order": 0, "box": [0, 55, 290, 385], "tip": [395, 495]},
+    {"slug": "quan-short-jean-rach", "name": "QUẦN SHORT JEAN RÁCH", "subtitle": "DENIM SHORTS", "description": "Chất liệu denim dày dặn, form rộng, màu wash nâu, chi tiết rách tạo phong cách bụi bặm, streetwear.", "side": "left", "order": 1, "box": [10, 620, 286, 1010], "erase": [[274, 870, 290, 910]], "tip": [435, 995]},
+    {"slug": "giay-sneaker-trang-xam", "name": "GIÀY SNEAKER TRẮNG XÁM", "subtitle": "SNEAKERS", "description": "Kiểu dáng thể thao, dễ phối đồ, phù hợp phong cách streetwear, năng động, thoải mái.", "side": "left", "order": 2, "box": [10, 1250, 306, 1420], "tip": [445, 1465]},
+    {"slug": "tui-deo-cheo", "name": "TÚI ĐEO CHÉO", "subtitle": "CROSSBODY BAG", "description": "Thiết kế tối giản, tiện dụng, phù hợp đi học, đi chơi, mang lại phong cách trẻ trung, hiện đại.", "side": "right", "order": 0, "box": [700, 85, 900, 315], "tip": [625, 835]},
+    {"slug": "day-chuyen-bac", "name": "DÂY CHUYỀN BẠC", "subtitle": "NECKLACE", "description": "Phụ kiện tạo điểm nhấn nhẹ nhàng, dễ phối đồ, mang lại vẻ hiện đại, nam tính.", "side": "right", "order": 1, "box": [765, 485, 885, 650], "tip": [490, 530]},
+    {"slug": "moc-khoa-phu-kien", "name": "MÓC KHÓA PHỤ KIỆN", "subtitle": "KEYCHAIN", "description": "Phụ kiện tạo điểm nhấn cá tính, dễ phối đồ, mang lại phong cách streetwear.", "side": "right", "order": 2, "box": [750, 785, 880, 946], "tip": [450, 900]},
+    {"slug": "that-lung-da-nau", "name": "THẮT LƯNG DA NÂU", "subtitle": "LEATHER BELT", "description": "Phụ kiện giúp định hình form dáng, tạo điểm nhấn thời trang.", "side": "right", "order": 3, "box": [735, 1110, 910, 1170], "tip": [495, 802]},
+    {"slug": "khan-bandana-do", "name": "KHĂN BANDANA ĐỎ", "subtitle": "BANDANA", "description": "Phụ kiện mang phong cách streetwear, tạo điểm nhấn nổi bật cho tổng thể.", "side": "right", "order": 4, "box": [735, 1310, 900, 1455], "tip": [370, 885]}
+  ]
+}

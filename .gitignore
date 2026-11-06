@@ -1,0 +1,22 @@
+node_modules/
+dist/
+.next/
+coverage/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+playwright-report/
+test-results/
+.DS_Store
+
+# Image cutting intermediates (regenerable by scripts/assets)
+assets-source/cut/**/raw/
+
+# Local AI-assistant tooling (per-developer, not part of the app)
+.agent/
+.agents/
+.claude/
+.cursor/
+.opencode/
+GEMINI.md

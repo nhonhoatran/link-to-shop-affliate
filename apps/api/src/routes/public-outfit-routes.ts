@@ -1,0 +1,31 @@
+import { Router } from 'express';
+import { notFound } from '../lib/app-error';
+import type { AppContext } from '../lib/app-context';
+import { getFeaturedOutfit, getPublishedOutfitBySlug, listPublishedSlugs } from '../services/public-outfit-service';
+import { getPublicSettings } from '../services/settings-service';
+
+export const createPublicRoutes = ({ env }: AppContext): Router => {
+  const router = Router();
+
+  router.get('/outfits/featured', async (_req, res) => {
+    const outfit = await getFeaturedOutfit(env);
+    if (!outfit) throw notFound('Chưa có outfit nổi bật');
+    res.json(outfit);
+  });
+
+  router.get('/outfits/slugs', async (_req, res) => {
+    res.json(await listPublishedSlugs());
+  });
+
+  router.get('/outfits/:slug', async (req, res) => {
+    const outfit = await getPublishedOutfitBySlug(req.params.slug, env);
+    if (!outfit) throw notFound('Không tìm thấy outfit');
+    res.json(outfit);
+  });
+
+  router.get('/settings', async (_req, res) => {
+    res.json(await getPublicSettings(env));
+  });
+
+  return router;
+};

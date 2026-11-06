@@ -1,0 +1,43 @@
+# SITE_ADDRESS: ":80" for plain HTTP (default); a bare domain such as "shop.example.com" enables automatic HTTPS.
+{$SITE_ADDRESS::80} {
+	encode zstd gzip
+
+	# Oversized uploads get the same JSON error shape the API uses (ApiErrorBody), not Caddy's empty 413.
+	handle_errors 413 {
+		header Content-Type "application/json; charset=utf-8"
+		respond `{"error":{"code":"PAYLOAD_TOO_LARGE","message":"Ảnh vượt quá dung lượng cho phép"}}` 413
+	}
+
+	# Health is for the compose healthcheck, which talks to the api container directly.
+	@health path /api/health /api/health/*
+	respond @health 404
+
+	# Uploads: reject bodies above the limit at the edge. UPLOAD_BODY_MAX_MB is UPLOAD_MAX_MB_CEILING + 1 MiB of
+	# multipart overhead, computed by the caddy service command in docker-compose.yml.
+	handle /api/admin/media* {
+		request_body {
+			max_size {$UPLOAD_BODY_MAX_MB:21}MiB
+		}
+		reverse_proxy api:4000
+	}
+
+	handle /api/* {
+		reverse_proxy api:4000
+	}
+
+	# Public objects live under the bucket's public/ prefix (anonymous read is set by rustfs-init).
+	handle_path /media/* {
+		# Read-only for the world; writes go through the API only.
+		@notRead not method GET HEAD
+		respond @notRead 405
+
+		rewrite * /{$S3_BUCKET}{uri}
+		reverse_proxy rustfs:9000 {
+			header_up Host {upstream_hostport}
+		}
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+}

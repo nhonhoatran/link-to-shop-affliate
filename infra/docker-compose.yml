@@ -1,0 +1,165 @@
+# Run from the repo root: docker compose --env-file .env -f infra/docker-compose.yml up -d
+name: under30ss
+
+services:
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "127.0.0.1:27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  rustfs-permissions:
+    image: alpine:3
+    command: ["chown", "-R", "10001:10001", "/data"]
+    volumes:
+      - rustfs-data:/data
+    restart: "no"
+
+  rustfs:
+    image: rustfs/rustfs:1.0.4
+    restart: unless-stopped
+    depends_on:
+      rustfs-permissions:
+        condition: service_completed_successfully
+    environment:
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY:?set S3_ACCESS_KEY in .env}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY:?set S3_SECRET_KEY in .env}
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+      RUSTFS_OBS_LOGGER_LEVEL: error
+    command: ["/data"]
+    volumes:
+      - rustfs-data:/data
+    ports:
+      - "127.0.0.1:9000:9000"
+    security_opt:
+      - no-new-privileges:true
+
+  rustfs-init:
+    image: amazon/aws-cli:2.39.5
+    depends_on:
+      - rustfs
+    restart: "no"
+    entrypoint: ["/bin/sh", "/init/init-bucket.sh"]
+    environment:
+      S3_ENDPOINT: http://rustfs:9000
+      S3_BUCKET: ${S3_BUCKET:?set S3_BUCKET in .env}
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY}
+    volumes:
+      - ./rustfs-init:/init:ro
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rustfs-init:
+        condition: service_completed_successfully
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+      MONGODB_URI: mongodb://mongo:27017/${MONGO_DB:-under30ss}
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET in .env}
+      SESSION_MAX_AGE_HOURS: ${SESSION_MAX_AGE_HOURS:-168}
+      # This compose file serves plain HTTP, so the default is false. Any HTTPS deployment must set it to true
+      # (the production compose added in P7 does).
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
+      S3_ENDPOINT: http://rustfs:9000
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_FORCE_PATH_STYLE: "true"
+      MEDIA_PUBLIC_BASE_URL: ${MEDIA_PUBLIC_BASE_URL:?set MEDIA_PUBLIC_BASE_URL in .env}
+      WEB_REVALIDATE_URL: http://web:3000/api/revalidate
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET:?set REVALIDATE_SECRET in .env}
+      UPLOAD_MAX_MB: ${UPLOAD_MAX_MB:-10}
+      UPLOAD_MAX_MB_CEILING: ${UPLOAD_MAX_MB_CEILING:-20}
+      WEBP_QUALITY: ${WEBP_QUALITY:-82}
+      IMAGE_MAX_EDGE_MODEL: ${IMAGE_MAX_EDGE_MODEL:-1600}
+      IMAGE_MAX_EDGE_ITEM: ${IMAGE_MAX_EDGE_ITEM:-800}
+      ADMIN_PAGE_SIZE_DEFAULT: ${ADMIN_PAGE_SIZE_DEFAULT:-20}
+      ADMIN_PAGE_SIZE_MAX: ${ADMIN_PAGE_SIZE_MAX:-100}
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:?set ALLOWED_ORIGIN in .env}
+      LOGIN_RATE_LIMIT_WINDOW_MINUTES: ${LOGIN_RATE_LIMIT_WINDOW_MINUTES:-15}
+      LOGIN_RATE_LIMIT_MAX_FAILURES: ${LOGIN_RATE_LIMIT_MAX_FAILURES:-5}
+      LOGIN_RATE_LIMIT_MAX_FAILURES_PER_EMAIL: ${LOGIN_RATE_LIMIT_MAX_FAILURES_PER_EMAIL:-50}
+      LOGIN_RATE_LIMIT_MAX_ATTEMPTS_PER_IP: ${LOGIN_RATE_LIMIT_MAX_ATTEMPTS_PER_IP:-20}
+      ARGON2_MAX_CONCURRENCY: ${ARGON2_MAX_CONCURRENCY:-2}
+      ARGON2_MAX_QUEUE: ${ARGON2_MAX_QUEUE:-20}
+      HEALTH_CHECK_TIMEOUT_MS: ${HEALTH_CHECK_TIMEOUT_MS:-2000}
+      DEFAULT_SITE_NAME: ${DEFAULT_SITE_NAME:-Under30ss}
+      DEFAULT_SEO_TITLE: ${DEFAULT_SEO_TITLE:-Under30ss - Shop the look}
+      DEFAULT_SEO_DESCRIPTION: ${DEFAULT_SEO_DESCRIPTION:-}
+    healthcheck:
+      # Slim image has no curl/wget; /api/health pings MongoDB and answers 503 when it is down.
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/api/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('net').connect(3000, '127.0.0.1').on('connect', () => process.exit(0)).on('error', () => process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    environment:
+      NODE_ENV: production
+      API_INTERNAL_URL: http://api:4000
+      SITE_URL: ${SITE_URL:?set SITE_URL in .env}
+      MEDIA_PUBLIC_BASE_URL: ${MEDIA_PUBLIC_BASE_URL}
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET}
+      PUBLIC_REVALIDATE_SECONDS: ${PUBLIC_REVALIDATE_SECONDS:-300}
+      ADMIN_TIME_ZONE: ${ADMIN_TIME_ZONE:-Asia/Ho_Chi_Minh}
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      rustfs:
+        condition: service_started
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    # Caddyfile placeholders cannot do arithmetic, so the body limit (ceiling + 1 MiB multipart overhead) is computed here.
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["UPLOAD_BODY_MAX_MB=$$((UPLOAD_MAX_MB_CEILING + 1)) exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"]
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+      S3_BUCKET: ${S3_BUCKET}
+      UPLOAD_MAX_MB_CEILING: ${UPLOAD_MAX_MB_CEILING:-20}
+    ports:
+      - "${CADDY_HTTP_PORT:-8080}:80"
+      - "${CADDY_HTTPS_PORT:-8443}:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  mongo-data:
+  rustfs-data:
+  caddy-data:
+  caddy-config:

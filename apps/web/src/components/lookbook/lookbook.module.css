@@ -1,0 +1,181 @@
+.root {
+  position: relative;
+  display: grid;
+  grid-template-columns:
+    minmax(0, var(--lookbook-col-left))
+    minmax(0, var(--lookbook-col-model))
+    minmax(0, var(--lookbook-col-right));
+  column-gap: var(--lookbook-gap);
+  align-items: stretch;
+  width: 100%;
+  max-width: var(--lookbook-max-width);
+  margin-inline: auto;
+  padding: var(--lookbook-row-gap) var(--lookbook-gap);
+}
+
+/* Kept in the DOM for SEO and screen readers; the reference canvas shows no title. */
+.title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--lookbook-row-gap);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  min-width: 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--color-ink);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  transition: opacity var(--duration-base) var(--easing-standard);
+}
+
+.cardImage {
+  display: block;
+  margin-bottom: var(--space-2);
+  transform-origin: center;
+  transition:
+    transform var(--duration-base) var(--easing-standard),
+    filter var(--duration-base) var(--easing-standard);
+}
+
+.itemName {
+  margin: 0;
+  font-size: var(--lookbook-title-size);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--lookbook-line-height);
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.itemSubtitle {
+  font-size: var(--lookbook-subtitle-size);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--lookbook-line-height);
+  color: var(--color-ink);
+}
+
+.itemDescription {
+  font-size: var(--lookbook-description-size);
+  line-height: var(--lookbook-line-height);
+  color: var(--color-muted);
+}
+
+.model {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+}
+
+.hotspot {
+  position: absolute;
+  z-index: 2;
+  width: var(--space-5);
+  height: var(--space-5);
+  transform: translate(-50%, -50%);
+  border: var(--lookbook-connector-width) solid var(--color-line);
+  border-radius: 50%;
+  box-shadow: 0 0 0 var(--lookbook-connector-width) var(--color-page);
+  transition: opacity var(--duration-base) var(--easing-standard);
+}
+
+.hotspot::after {
+  content: '';
+  position: absolute;
+  inset: calc(var(--lookbook-connector-width) * -1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.connectors {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.connector {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: var(--lookbook-connector-width);
+  transition:
+    stroke-width var(--duration-fast) var(--easing-standard),
+    opacity var(--duration-base) var(--easing-standard);
+}
+
+.arrow {
+  fill: var(--color-line);
+}
+
+.connector[data-active] {
+  stroke-width: calc(var(--lookbook-connector-width) * 2);
+}
+
+/* Dim everything except the active item. data-active-id / data-active are set by lookbook-interactions. */
+.root[data-active-id] .card:not([data-active]),
+.root[data-active-id] .hotspot:not([data-active]),
+.root[data-active-id] .connector:not([data-active]) {
+  opacity: var(--lookbook-dim-opacity);
+}
+
+.card[data-active] .cardImage {
+  transform: scale(var(--lookbook-hover-scale));
+  filter: drop-shadow(0 var(--space-1) var(--space-2) var(--color-muted));
+}
+
+.hotspot[data-active]::after {
+  animation: lookbook-pulse calc(var(--duration-base) * 4) var(--easing-standard) infinite;
+}
+
+@keyframes lookbook-pulse {
+  from {
+    box-shadow: 0 0 0 0 var(--color-line);
+  }
+  to {
+    box-shadow: 0 0 0 var(--space-3) transparent;
+  }
+}
+
+/* Breakpoint mirrors --lookbook-hide-description-below (640px); media queries cannot read custom properties. */
+@media (max-width: 639.98px) {
+  .itemDescription {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .cardImage,
+  .hotspot,
+  .connector {
+    transition: none;
+  }
+
+  .hotspot[data-active]::after {
+    animation: none;
+  }
+}

@@ -1,0 +1,123 @@
+import { z } from 'zod';
+import type { AdminUserDto, CreateAdminInput, LoginInput } from './auth-schemas';
+import { outfitStatusSchema } from './outfit-schemas';
+import type { ImageWithUrl, Outfit, OutfitInput, OutfitItem, OutfitStatus, OutfitUpdateInput } from './outfit-schemas';
+import type { PublicOutfitDto } from './public-outfit-dto';
+import type { AdminSettingsDto, PublicSettingsDto, SettingsInput } from './settings-schemas';
+
+export const API_PATHS = {
+  health: '/api/health',
+  auth: {
+    login: '/api/auth/login',
+    logout: '/api/auth/logout',
+    me: '/api/auth/me',
+  },
+  public: {
+    featuredOutfit: '/api/public/outfits/featured',
+    outfitSlugs: '/api/public/outfits/slugs',
+    outfitBySlug: '/api/public/outfits/:slug',
+    settings: '/api/public/settings',
+  },
+  admin: {
+    outfits: '/api/admin/outfits',
+    outfitById: '/api/admin/outfits/:id',
+    outfitFeatured: '/api/admin/outfits/:id/featured',
+    settings: '/api/admin/settings',
+    admins: '/api/admin/admins',
+    adminById: '/api/admin/admins/:id',
+    media: '/api/admin/media',
+  },
+} as const;
+
+export const apiUrl = {
+  publicOutfit: (slug: string) => `/api/public/outfits/${encodeURIComponent(slug)}`,
+  adminOutfit: (id: string) => `/api/admin/outfits/${encodeURIComponent(id)}`,
+  adminOutfitFeatured: (id: string) => `/api/admin/outfits/${encodeURIComponent(id)}/featured`,
+  adminAdmin: (id: string) => `/api/admin/admins/${encodeURIComponent(id)}`,
+};
+
+export const ERROR_CODES = [
+  'VALIDATION_ERROR',
+  'UNAUTHORIZED',
+  'FORBIDDEN',
+  'NOT_FOUND',
+  'CONFLICT',
+  'RATE_LIMITED',
+  'PAYLOAD_TOO_LARGE',
+  'UNSUPPORTED_MEDIA_TYPE',
+  'INTERNAL_ERROR',
+] as const;
+export type ErrorCode = (typeof ERROR_CODES)[number];
+
+export interface ApiErrorBody {
+  error: { code: string; message: string; fields?: Record<string, string> };
+}
+
+export interface HealthResponse {
+  status: 'ok';
+}
+
+export type LoginRequest = LoginInput;
+export type LoginResponse = AdminUserDto;
+export type MeResponse = AdminUserDto;
+
+export type FeaturedOutfitResponse = PublicOutfitDto;
+export type PublicOutfitResponse = PublicOutfitDto;
+export interface OutfitSlugsResponse {
+  items: { slug: string; updatedAt: string }[];
+}
+export type PublicSettingsResponse = PublicSettingsDto;
+
+export const adminOutfitListQuerySchema = z.object({
+  q: z.string().trim().max(100).optional(),
+  status: outfitStatusSchema.optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  // Default and maximum are enforced by the API from ADMIN_PAGE_SIZE_* env.
+  size: z.coerce.number().int().min(1).optional(),
+});
+export type AdminOutfitListQuery = z.input<typeof adminOutfitListQuerySchema>;
+
+export interface AdminOutfitListItemDto {
+  id: string;
+  slug: string;
+  title: string;
+  status: OutfitStatus;
+  featured: boolean;
+  updatedAt: string;
+  modelImageUrl: string;
+}
+
+export interface Paginated<T> {
+  items: T[];
+  total: number;
+  page: number;
+  size: number;
+}
+export type AdminOutfitListResponse = Paginated<AdminOutfitListItemDto>;
+
+export type AdminOutfitDto = Omit<Outfit, 'modelImage' | 'items'> & {
+  modelImage: ImageWithUrl;
+  items: (Omit<OutfitItem, 'image'> & { image: ImageWithUrl })[];
+};
+
+export type CreateOutfitRequest = OutfitInput;
+export type UpdateOutfitRequest = OutfitUpdateInput;
+export type OutfitResponse = AdminOutfitDto;
+
+// Setting featured=true clears the flag on every other outfit (at most one featured).
+export const setFeaturedRequestSchema = z.object({ featured: z.boolean() });
+export type SetFeaturedRequest = z.infer<typeof setFeaturedRequestSchema>;
+
+export type AdminSettingsResponse = AdminSettingsDto;
+export type UpdateSettingsRequest = SettingsInput;
+
+export interface AdminListResponse {
+  items: AdminUserDto[];
+}
+export type CreateAdminRequest = CreateAdminInput;
+export type CreateAdminResponse = AdminUserDto;
+
+export const mediaKindSchema = z.enum(['model', 'item']);
+export type MediaKind = z.infer<typeof mediaKindSchema>;
+export const MEDIA_UPLOAD_FIELD = 'file';
+export type MediaUploadResponse = ImageWithUrl;

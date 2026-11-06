@@ -1,0 +1,339 @@
+{
+  "version": 1,
+  "outfits": [
+    {
+      "slug": "dramatic",
+      "title": "Dramatic Liberty streetwear",
+      "seoDescription": "Phối đồ streetwear với áo thun Dramatic Liberty, quần short jean rách, sneaker trắng xám và phụ kiện.",
+      "modelImage": {
+        "file": "../assets-source/cut/dramatic/model.png",
+        "width": 415,
+        "height": 1310
+      },
+      "status": "draft",
+      "featured": true,
+      "items": [
+        {
+          "id": "ao-thun-in-chu",
+          "name": "ÁO THUN IN CHỮ",
+          "subtitle": "GRAPHIC T-SHIRT",
+          "description": "Chất liệu cotton mềm mại, form rộng, họa tiết chữ tạo điểm nhấn trẻ trung, phù hợp phong cách streetwear, vintage.",
+          "image": {
+            "file": "../assets-source/cut/dramatic/ao-thun-in-chu.png",
+            "width": 289,
+            "height": 314
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 26.5,
+            "y": 19.8
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "quan-short-jean-rach",
+          "name": "QUẦN SHORT JEAN RÁCH",
+          "subtitle": "DENIM SHORTS",
+          "description": "Chất liệu denim dày dặn, form rộng, màu wash nâu, chi tiết rách tạo phong cách bụi bặm, streetwear.",
+          "image": {
+            "file": "../assets-source/cut/dramatic/quan-short-jean-rach.png",
+            "width": 274,
+            "height": 390
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 36.1,
+            "y": 58.0
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "giay-sneaker-trang-xam",
+          "name": "GIÀY SNEAKER TRẮNG XÁM",
+          "subtitle": "SNEAKERS",
+          "description": "Kiểu dáng thể thao, dễ phối đồ, phù hợp phong cách streetwear, năng động, thoải mái.",
+          "image": {
+            "file": "../assets-source/cut/dramatic/giay-sneaker-trang-xam.png",
+            "width": 292,
+            "height": 170
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 38.6,
+            "y": 93.9
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "tui-deo-cheo",
+          "name": "TÚI ĐEO CHÉO",
+          "subtitle": "CROSSBODY BAG",
+          "description": "Thiết kế tối giản, tiện dụng, phù hợp đi học, đi chơi, mang lại phong cách trẻ trung, hiện đại.",
+          "image": {
+            "file": "../assets-source/cut/dramatic/tui-deo-cheo.png",
+            "width": 200,
+            "height": 229
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 81.9,
+            "y": 45.8
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "day-chuyen-bac",
+          "name": "DÂY CHUYỀN BẠC",
+          "subtitle": "NECKLACE",
+          "description": "Phụ kiện tạo điểm nhấn nhẹ nhàng, dễ phối đồ, mang lại vẻ hiện đại, nam tính.",
+          "image": {
+            "file": "../assets-source/cut/dramatic/day-chuyen-bac.png",
+            "width": 117,
+            "height": 164
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 49.4,
+            "y": 22.5
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "moc-khoa-phu-kien",
+          "name": "MÓC KHÓA PHỤ KIỆN",
+          "subtitle": "KEYCHAIN",
+          "description": "Phụ kiện tạo điểm nhấn cá tính, dễ phối đồ, mang lại phong cách streetwear.",
+          "image": {
+            "file": "../assets-source/cut/dramatic/moc-khoa-phu-kien.png",
+            "width": 130,
+            "height": 161
+          },
+          "side": "right",
+          "order": 2,
+          "anchor": {
+            "x": 39.8,
+            "y": 50.8
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "that-lung-da-nau",
+          "name": "THẮT LƯNG DA NÂU",
+          "subtitle": "LEATHER BELT",
+          "description": "Phụ kiện giúp định hình form dáng, tạo điểm nhấn thời trang.",
+          "image": {
+            "file": "../assets-source/cut/dramatic/that-lung-da-nau.png",
+            "width": 175,
+            "height": 60
+          },
+          "side": "right",
+          "order": 3,
+          "anchor": {
+            "x": 50.6,
+            "y": 43.3
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "khan-bandana-do",
+          "name": "KHĂN BANDANA ĐỎ",
+          "subtitle": "BANDANA",
+          "description": "Phụ kiện mang phong cách streetwear, tạo điểm nhấn nổi bật cho tổng thể.",
+          "image": {
+            "file": "../assets-source/cut/dramatic/khan-bandana-do.png",
+            "width": 162,
+            "height": 145
+          },
+          "side": "right",
+          "order": 4,
+          "anchor": {
+            "x": 20.5,
+            "y": 49.6
+          },
+          "affiliateUrl": ""
+        }
+      ]
+    },
+    {
+      "slug": "mesh-84",
+      "title": "Mesh 84 sporty streetwear",
+      "seoDescription": "Phối đồ streetwear Y2K với áo mesh thể thao số 84, quần short jean rộng, sneaker đen và phụ kiện.",
+      "modelImage": {
+        "file": "../assets-source/cut/mesh-84/model.png",
+        "width": 436,
+        "height": 1338
+      },
+      "status": "draft",
+      "featured": false,
+      "items": [
+        {
+          "id": "ao-mesh-the-thao",
+          "name": "ÁO MESH THỂ THAO",
+          "subtitle": "MESH JERSEY",
+          "description": "Chất liệu mesh thoáng mát, form rộng, mang phong cách thể thao, streetwear Y2K.",
+          "image": {
+            "file": "../assets-source/cut/mesh-84/ao-mesh-the-thao.png",
+            "width": 330,
+            "height": 285
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 17.2,
+            "y": 23.9
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "ao-thun-trang",
+          "name": "ÁO THUN TRẮNG",
+          "subtitle": "BASIC T-SHIRT",
+          "description": "Chất liệu cotton mềm mại, dễ mặc, phù hợp phối nhiều phong cách.",
+          "image": {
+            "file": "../assets-source/cut/mesh-84/ao-thun-trang.png",
+            "width": 240,
+            "height": 225
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 53.9,
+            "y": 36.6
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "quan-short-jean-rong",
+          "name": "QUẦN SHORT JEAN RỘNG",
+          "subtitle": "CARGO DENIM SHORTS",
+          "description": "Chất liệu denim dày dặn, form rộng, túi hộp cá tính, mang phong cách streetwear hiện đại.",
+          "image": {
+            "file": "../assets-source/cut/mesh-84/quan-short-jean-rong.png",
+            "width": 253,
+            "height": 300
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 24.1,
+            "y": 59.8
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "giay-sneaker-den",
+          "name": "GIÀY SNEAKER ĐEN",
+          "subtitle": "CHUNKY SNEAKERS",
+          "description": "Kiểu dáng hầm hố, đế dày, phù hợp phong cách streetwear, tạo điểm nhấn mạnh mẽ.",
+          "image": {
+            "file": "../assets-source/cut/mesh-84/giay-sneaker-den.png",
+            "width": 278,
+            "height": 160
+          },
+          "side": "left",
+          "order": 3,
+          "anchor": {
+            "x": 40.1,
+            "y": 93.4
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "kinh-mat-den",
+          "name": "KÍNH MÁT ĐEN",
+          "subtitle": "SUNGLASSES",
+          "description": "Phụ kiện tạo điểm nhấn, mang lại phong cách cool ngầu, hiện đại.",
+          "image": {
+            "file": "../assets-source/cut/mesh-84/kinh-mat-den.png",
+            "width": 225,
+            "height": 75
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 44.7,
+            "y": 3.0
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "day-chuyen-bac",
+          "name": "DÂY CHUYỀN BẠC",
+          "subtitle": "NECKLACE",
+          "description": "Phụ kiện đơn giản nhưng tạo điểm nhấn cá tính, phù hợp phong cách streetwear.",
+          "image": {
+            "file": "../assets-source/cut/mesh-84/day-chuyen-bac.png",
+            "width": 130,
+            "height": 220
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 52.8,
+            "y": 19.4
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "that-lung-da",
+          "name": "THẮT LƯNG DA",
+          "subtitle": "LEATHER BELT",
+          "description": "Phụ kiện giúp định hình form dáng, tạo điểm nhấn thời trang.",
+          "image": {
+            "file": "../assets-source/cut/mesh-84/that-lung-da.png",
+            "width": 176,
+            "height": 70
+          },
+          "side": "right",
+          "order": 2,
+          "anchor": {
+            "x": 65.4,
+            "y": 40.4
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "moc-khoa-phu-kien",
+          "name": "MÓC KHÓA PHỤ KIỆN",
+          "subtitle": "KEYCHAIN",
+          "description": "Phụ kiện tạo điểm nhấn cá tính, mang phong cách streetwear.",
+          "image": {
+            "file": "../assets-source/cut/mesh-84/moc-khoa-phu-kien.png",
+            "width": 95,
+            "height": 245
+          },
+          "side": "right",
+          "order": 3,
+          "anchor": {
+            "x": 67.2,
+            "y": 51.6
+          },
+          "affiliateUrl": ""
+        },
+        {
+          "id": "tat-trang-dai",
+          "name": "TẤT TRẮNG DÀI",
+          "subtitle": "CREW SOCKS",
+          "description": "Phụ kiện cơ bản, dễ phối đồ, phù hợp phong cách streetwear.",
+          "image": {
+            "file": "../assets-source/cut/mesh-84/tat-trang-dai.png",
+            "width": 164,
+            "height": 160
+          },
+          "side": "right",
+          "order": 4,
+          "anchor": {
+            "x": 65.4,
+            "y": 85.2
+          },
+          "affiliateUrl": ""
+        }
+      ]
+    }
+  ]
+}

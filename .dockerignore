@@ -1,0 +1,17 @@
+**/node_modules
+**/dist
+**/.next
+**/coverage
+**/.env
+**/.env.*
+!**/.env.example
+.claude
+.agent
+.agents
+.cursor
+.opencode
+plans
+assets-source
+e2e
+playwright-report
+test-results

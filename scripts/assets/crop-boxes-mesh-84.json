@@ -1,0 +1,19 @@
+{
+  "slug": "mesh-84",
+  "title": "Mesh 84 sporty streetwear",
+  "seoDescription": "Phối đồ streetwear Y2K với áo mesh thể thao số 84, quần short jean rộng, sneaker đen và phụ kiện.",
+  "featured": false,
+  "source": "assets-source/lookbook-samples/outfit-mesh-84-reference.png",
+  "model": [272, 222, 708, 1560],
+  "items": [
+    {"slug": "ao-mesh-the-thao", "name": "ÁO MESH THỂ THAO", "subtitle": "MESH JERSEY", "description": "Chất liệu mesh thoáng mát, form rộng, mang phong cách thể thao, streetwear Y2K.", "side": "left", "order": 0, "box": [15, 50, 345, 335], "tip": [347, 542]},
+    {"slug": "ao-thun-trang", "name": "ÁO THUN TRẮNG", "subtitle": "BASIC T-SHIRT", "description": "Chất liệu cotton mềm mại, dễ mặc, phù hợp phối nhiều phong cách.", "side": "left", "order": 1, "box": [35, 490, 275, 715], "tip": [507, 712]},
+    {"slug": "quan-short-jean-rong", "name": "QUẦN SHORT JEAN RỘNG", "subtitle": "CARGO DENIM SHORTS", "description": "Chất liệu denim dày dặn, form rộng, túi hộp cá tính, mang phong cách streetwear hiện đại.", "side": "left", "order": 2, "box": [25, 860, 278, 1160], "erase": [[250, 930, 280, 985]], "tip": [377, 1022]},
+    {"slug": "giay-sneaker-den", "name": "GIÀY SNEAKER ĐEN", "subtitle": "CHUNKY SNEAKERS", "description": "Kiểu dáng hầm hố, đế dày, phù hợp phong cách streetwear, tạo điểm nhấn mạnh mẽ.", "side": "left", "order": 3, "box": [15, 1345, 295, 1505], "tip": [447, 1472]},
+    {"slug": "kinh-mat-den", "name": "KÍNH MÁT ĐEN", "subtitle": "SUNGLASSES", "description": "Phụ kiện tạo điểm nhấn, mang lại phong cách cool ngầu, hiện đại.", "side": "right", "order": 0, "box": [700, 85, 930, 160], "tip": [467, 262]},
+    {"slug": "day-chuyen-bac", "name": "DÂY CHUYỀN BẠC", "subtitle": "NECKLACE", "description": "Phụ kiện đơn giản nhưng tạo điểm nhấn cá tính, phù hợp phong cách streetwear.", "side": "right", "order": 1, "box": [755, 305, 885, 525], "tip": [502, 482], "keepWhite": true},
+    {"slug": "that-lung-da", "name": "THẮT LƯNG DA", "subtitle": "LEATHER BELT", "description": "Phụ kiện giúp định hình form dáng, tạo điểm nhấn thời trang.", "side": "right", "order": 2, "box": [740, 720, 920, 790], "tip": [557, 762]},
+    {"slug": "moc-khoa-phu-kien", "name": "MÓC KHÓA PHỤ KIỆN", "subtitle": "KEYCHAIN", "description": "Phụ kiện tạo điểm nhấn cá tính, mang phong cách streetwear.", "side": "right", "order": 3, "box": [765, 915, 880, 1160], "tip": [565, 912], "keepWhite": true},
+    {"slug": "tat-trang-dai", "name": "TẤT TRẮNG DÀI", "subtitle": "CREW SOCKS", "description": "Phụ kiện cơ bản, dễ phối đồ, phù hợp phong cách streetwear.", "side": "right", "order": 4, "box": [735, 1305, 900, 1465], "tip": [557, 1362]}
+  ]
+}
