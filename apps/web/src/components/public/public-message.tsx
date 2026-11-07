@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { PublicPage } from './public-page';
 import styles from './public-message.module.css';
 
 export interface PublicMessageProps {
@@ -10,16 +9,14 @@ export interface PublicMessageProps {
 
 export function PublicMessage({ title, message, link }: PublicMessageProps) {
   return (
-    <PublicPage>
-      <div className={styles.box}>
-        <h1 className={styles.title}>{title}</h1>
-        <p className={styles.message}>{message}</p>
-        {link ? (
-          <Link className={styles.link} href={link.href}>
-            {link.label}
-          </Link>
-        ) : null}
-      </div>
-    </PublicPage>
+    <div className={styles.box}>
+      <h1 className={styles.title}>{title}</h1>
+      <p className={styles.message}>{message}</p>
+      {link ? (
+        <Link className={styles.link} href={link.href}>
+          {link.label}
+        </Link>
+      ) : null}
+    </div>
   );
 }

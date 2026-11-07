@@ -1,0 +1,29 @@
+/*
+ * Connector draw-in. The dash is set only inside the keyframes so the resting stroke
+ * stays a plain solid line, identical to the pre-animation rendering.
+ */
+.connectors:not([data-ready]) {
+  visibility: hidden;
+}
+
+.connectors[data-ready] .connectorPath {
+  animation: draw var(--duration-draw) var(--easing-out) backwards;
+}
+
+@keyframes draw {
+  from {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .connectors[data-ready] .connectorPath {
+    animation: none;
+  }
+}

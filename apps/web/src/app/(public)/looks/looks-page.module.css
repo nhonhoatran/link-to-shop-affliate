@@ -1,0 +1,7 @@
+.title {
+  margin: 0 0 var(--space-5);
+  font-size: var(--page-title-size);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--client-ink);
+}

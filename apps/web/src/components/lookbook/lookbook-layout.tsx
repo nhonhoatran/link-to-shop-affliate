@@ -13,12 +13,14 @@ export function LookbookLayout({ outfit, headingLevel = 'h1' }: LookbookLayoutPr
   const Title = headingLevel;
   const itemHeading = headingLevel === 'h1' ? 'h2' : 'h3';
   const sorted = [...outfit.items].sort(compareOutfitItems);
+  const left = sorted.filter((i) => i.side === 'left');
+  const right = sorted.filter((i) => i.side === 'right');
   return (
     <section className={styles.root} data-lookbook>
       <Title className={styles.title}>{outfit.title}</Title>
-      <LookbookItemColumn side="left" items={sorted.filter((i) => i.side === 'left')} itemHeading={itemHeading} />
+      <LookbookItemColumn side="left" items={left} itemHeading={itemHeading} />
       <LookbookModelFigure outfit={{ ...outfit, items: sorted }} />
-      <LookbookItemColumn side="right" items={sorted.filter((i) => i.side === 'right')} itemHeading={itemHeading} />
+      <LookbookItemColumn side="right" items={right} itemHeading={itemHeading} indexOffset={left.length} />
       <LookbookInteractions />
     </section>
   );

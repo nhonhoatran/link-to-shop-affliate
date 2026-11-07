@@ -1,0 +1,9 @@
+/* No padding and no overflow:hidden: the lookbook keeps its measured width and its connector halos can overflow. */
+.card {
+  max-width: var(--lookbook-max-width);
+  margin-inline: auto;
+  padding: 0;
+  border-radius: var(--client-radius-lg);
+  background: var(--client-surface);
+  box-shadow: var(--client-shadow-soft);
+}

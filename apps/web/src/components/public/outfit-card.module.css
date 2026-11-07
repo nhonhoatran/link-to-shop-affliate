@@ -1,0 +1,78 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cell {
+  min-width: 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: var(--client-radius-lg);
+  background: var(--client-surface);
+  box-shadow: var(--client-shadow-soft);
+  color: var(--client-ink);
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.imageFrame {
+  display: block;
+  aspect-ratio: var(--client-card-image-ratio);
+  overflow: hidden;
+  background: var(--client-surface);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform var(--duration-base) var(--easing-standard);
+}
+
+.title {
+  margin: 0;
+  padding: var(--space-3) var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+@media (hover: hover) {
+  .card:hover .image {
+    transform: scale(var(--client-card-hover-scale));
+  }
+}
+
+/* Matches --bp-md. */
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+}
+
+/* Matches --bp-lg. */
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image {
+    transition: none;
+  }
+
+  .card:hover .image {
+    transform: none;
+  }
+}

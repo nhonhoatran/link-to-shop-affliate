@@ -1,3 +1,12 @@
 .page {
+  max-width: var(--client-container-max);
+  margin-inline: auto;
   padding: var(--space-6) var(--space-4);
+}
+
+/* Matches --bp-lg. At 1024px, 1024 - 2 * 32 = 960 = --lookbook-max-width, so the lookbook keeps its width. */
+@media (min-width: 1024px) {
+  .page {
+    padding-inline: var(--space-6);
+  }
 }

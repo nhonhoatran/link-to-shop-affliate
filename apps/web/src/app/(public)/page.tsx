@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { LookbookLayout } from '@/components/lookbook';
+import { LookbookCard } from '@/components/public/lookbook-card';
 import { PublicPage } from '@/components/public/public-page';
 import { PublicMessage } from '@/components/public/public-message';
+import { RelatedOutfitsSection } from '@/components/public/related-outfits-section';
 import { EMPTY_HOME_COPY } from '@/components/public/public-copy';
 import { getWebEnv } from '@/lib/web-env';
 import { buildOutfitMetadata, buildSiteMetadata } from '@/lib/seo/build-outfit-metadata';
@@ -19,7 +21,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const [outfit, settings] = await Promise.all([getFeaturedOutfit(), getPublicSettings()]);
-  if (!outfit) return <PublicMessage title={EMPTY_HOME_COPY.title} message={EMPTY_HOME_COPY.message} />;
+  const related = <RelatedOutfitsSection count={settings.relatedOutfitsCount} excludeSlug={outfit?.slug} />;
+  if (!outfit) {
+    return (
+      <PublicPage>
+        <PublicMessage title={EMPTY_HOME_COPY.title} message={EMPTY_HOME_COPY.message} />
+        {related}
+      </PublicPage>
+    );
+  }
   return (
     <PublicPage>
       <OutfitJsonLdScript
@@ -27,7 +37,10 @@ export default async function HomePage() {
         siteUrl={getWebEnv().SITE_URL}
         description={outfit.seoDescription?.trim() || settings.seoDescription}
       />
-      <LookbookLayout outfit={outfit} headingLevel="h1" />
+      <LookbookCard>
+        <LookbookLayout outfit={outfit} headingLevel="h1" />
+      </LookbookCard>
+      {related}
     </PublicPage>
   );
 }

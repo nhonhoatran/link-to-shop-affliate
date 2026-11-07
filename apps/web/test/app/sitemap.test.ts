@@ -30,6 +30,8 @@ describe('sitemap', () => {
       ],
     });
     expect(await sitemap()).toEqual([
+      { url: 'https://shop.example.test/' },
+      { url: 'https://shop.example.test/looks' },
       { url: 'https://shop.example.test/look/summer-look', lastModified: '2026-11-01T00:00:00.000Z' },
       { url: 'https://shop.example.test/look/%C3%A1o%20d%C3%A0i', lastModified: '2026-11-02T00:00:00.000Z' },
     ]);
@@ -38,13 +40,16 @@ describe('sitemap', () => {
   it('follows SITE_URL when it changes (no hard-coded host)', async () => {
     vi.stubEnv('SITE_URL', 'https://other.example.test');
     getOutfitSlugs.mockResolvedValue({ items: [{ slug: 'a', updatedAt: '2026-11-01T00:00:00.000Z' }] });
-    const [entry] = await sitemap();
-    expect(entry?.url).toBe('https://other.example.test/look/a');
+    const entries = await sitemap();
+    expect(entries[2]?.url).toBe('https://other.example.test/look/a');
   });
 
-  it('returns an empty sitemap when there are no published outfits', async () => {
+  it('lists only the home and looks pages when there are no published outfits', async () => {
     vi.stubEnv('SITE_URL', 'https://shop.example.test');
     getOutfitSlugs.mockResolvedValue({ items: [] });
-    expect(await sitemap()).toEqual([]);
+    expect((await sitemap()).map((entry) => entry.url)).toEqual([
+      'https://shop.example.test/',
+      'https://shop.example.test/looks',
+    ]);
   });
 });

@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { samplePublicOutfit } from '@under30ss/shared/fixtures';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import LookPage, { generateMetadata } from '@/app/look/[slug]/page';
+import LookPage, { generateMetadata } from '@/app/(public)/look/[slug]/page';
 
 const { getOutfitBySlug, getPublicSettings, notFound } = vi.hoisted(() => ({
   getOutfitBySlug: vi.fn(),
@@ -12,9 +12,21 @@ const { getOutfitBySlug, getPublicSettings, notFound } = vi.hoisted(() => ({
 }));
 
 vi.mock('next/navigation', () => ({ notFound }));
+vi.mock('@/components/public/related-outfits-section', () => ({
+  RelatedOutfitsSection: ({ count, excludeSlug }: { count: number; excludeSlug?: string }) => (
+    <div data-testid="related" data-count={count} data-exclude={excludeSlug} />
+  ),
+}));
 vi.mock('@/lib/seo/public-data-loaders', () => ({ getOutfitBySlug, getPublicSettings }));
 
-const settings = { siteName: 'Shop', seoTitle: 'Shop title', seoDescription: 'Shop description', ogImageUrl: null };
+const settings = {
+  siteName: 'Shop',
+  seoTitle: 'Shop title',
+  seoDescription: 'Shop description',
+  ogImageUrl: null,
+  looksPageSize: 12,
+  relatedOutfitsCount: 8,
+};
 const params = (slug: string) => ({ params: Promise.resolve({ slug }) });
 
 beforeAll(() => {
@@ -55,5 +67,20 @@ describe('/look/[slug]', () => {
     expect(scripts).toHaveLength(1);
     const jsonLd = JSON.parse(scripts[0]!.textContent ?? '');
     expect(JSON.stringify(jsonLd)).toContain(samplePublicOutfit.title);
+  });
+
+  it('renders a breadcrumb ending in the title and passes the current slug to the related section', async () => {
+    getOutfitBySlug.mockResolvedValue(samplePublicOutfit);
+    const { container } = render(await LookPage(params(samplePublicOutfit.slug)));
+
+    const crumb = container.querySelector('nav[aria-label="Đường dẫn trang"]');
+    expect(crumb).not.toBeNull();
+    expect(crumb?.querySelectorAll('a')).toHaveLength(2);
+    expect(crumb?.querySelector('[aria-current="page"]')).toHaveTextContent(samplePublicOutfit.title);
+    expect(container.querySelectorAll('main')).toHaveLength(0);
+
+    const related = container.querySelector('[data-testid="related"]');
+    expect(related).toHaveAttribute('data-count', String(settings.relatedOutfitsCount));
+    expect(related).toHaveAttribute('data-exclude', samplePublicOutfit.slug);
   });
 });

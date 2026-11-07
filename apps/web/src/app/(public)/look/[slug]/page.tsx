@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { LookbookLayout } from '@/components/lookbook';
+import { LookBreadcrumb } from '@/components/public/look-breadcrumb';
+import { LookbookCard } from '@/components/public/lookbook-card';
 import { PublicPage } from '@/components/public/public-page';
+import { RelatedOutfitsSection } from '@/components/public/related-outfits-section';
 import { getWebEnv } from '@/lib/web-env';
 import { buildOutfitMetadata } from '@/lib/seo/build-outfit-metadata';
 import { OutfitJsonLdScript } from '@/lib/seo/outfit-json-ld-script';
@@ -31,7 +34,11 @@ export default async function LookPage({ params }: LookPageProps) {
         siteUrl={getWebEnv().SITE_URL}
         description={outfit.seoDescription?.trim() || settings.seoDescription}
       />
-      <LookbookLayout outfit={outfit} headingLevel="h1" />
+      <LookBreadcrumb title={outfit.title} />
+      <LookbookCard>
+        <LookbookLayout outfit={outfit} headingLevel="h1" />
+      </LookbookCard>
+      <RelatedOutfitsSection count={settings.relatedOutfitsCount} excludeSlug={outfit.slug} />
     </PublicPage>
   );
 }

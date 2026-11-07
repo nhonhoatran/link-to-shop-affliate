@@ -3,11 +3,12 @@ import type { PublicOutfitDto } from '@under30ss/shared';
 import { LookbookHotspot } from './lookbook-hotspot';
 import { MODEL_IMAGE_SIZES } from './lookbook-image-sizes';
 import styles from './lookbook.module.css';
+import motion from '@/styles/motion-primitives.module.css';
 
 export function LookbookModelFigure({ outfit }: { outfit: PublicOutfitDto }) {
   const { modelImage } = outfit;
   return (
-    <figure className={styles.model}>
+    <figure className={`${styles.model} ${motion.fadeIn}`}>
       <Image
         src={modelImage.url}
         alt={outfit.title}

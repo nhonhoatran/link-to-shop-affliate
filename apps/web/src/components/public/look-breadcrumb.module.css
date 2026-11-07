@@ -1,0 +1,42 @@
+.nav {
+  max-width: var(--lookbook-max-width);
+  margin: 0 auto var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--client-ink-muted);
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.item + .item::before {
+  content: '/';
+  padding-inline: var(--space-2);
+}
+
+.item[aria-current='page'] {
+  color: var(--client-ink);
+  font-weight: var(--font-weight-medium);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--client-ink-muted);
+  text-underline-offset: var(--space-1);
+}
+
+.link:hover {
+  color: var(--client-ink);
+}

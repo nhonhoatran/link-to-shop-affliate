@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { measureConnectors, type ConnectorMeasurement } from './measure-connectors';
 import { observeLookbookChanges } from './observe-lookbook-changes';
+import { useLookbookReady } from './use-lookbook-ready';
 import styles from './lookbook.module.css';
+import motion from './lookbook-motion.module.css';
 
 const ROOT_SELECTOR = '[data-lookbook]';
 const LINK_SELECTOR = 'a[data-item-id]';
@@ -13,6 +15,15 @@ const itemIdOf = (node: EventTarget | null): string | null =>
 
 const supportsHover = (): boolean =>
   typeof window.matchMedia !== 'function' || window.matchMedia('(hover: hover)').matches;
+
+const prefersReducedMotion = (): boolean =>
+  typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const readMs = (style: CSSStyleDeclaration, name: string): number => {
+  const raw = style.getPropertyValue(name).trim();
+  const value = Number.parseFloat(raw) || 0;
+  return raw.endsWith('ms') ? value : value * 1000;
+};
 
 const isKeyboardFocus = (el: EventTarget | null): boolean => {
   if (!(el instanceof Element)) return false;
@@ -30,9 +41,12 @@ export function LookbookInteractions() {
   const [measurement, setMeasurement] = useState<ConnectorMeasurement>({ paths: [], arrowSize: 0 });
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [focusId, setFocusId] = useState<string | null>(null);
+  const [arrowsOn, setArrowsOn] = useState(false);
   const activeId = hoverId ?? focusId;
+  const measureRef = useRef<() => void>(() => undefined);
 
   const getRoot = useCallback(() => svgRef.current?.closest<HTMLElement>(ROOT_SELECTOR) ?? null, []);
+  const ready = useLookbookReady(getRoot);
 
   useEffect(() => {
     const root = getRoot();
@@ -41,6 +55,7 @@ export function LookbookInteractions() {
       const next = measureConnectors(root);
       setMeasurement((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
     };
+    measureRef.current = measure;
     measure();
     const stopObserving = observeLookbookChanges(root, svgRef.current, measure);
 
@@ -59,6 +74,20 @@ export function LookbookInteractions() {
       root.removeEventListener('load', measure, true);
     };
   }, [getRoot]);
+
+  // Items finished moving, so re-measure once before the threads are drawn.
+  // Arrows wait for the draw; animationend can be missed (hidden tab), so a timer backs it up.
+  useEffect(() => {
+    if (!ready) return;
+    measureRef.current();
+    if (prefersReducedMotion()) {
+      setArrowsOn(true);
+      return;
+    }
+    const style = getComputedStyle(svgRef.current ?? document.documentElement);
+    const timer = setTimeout(() => setArrowsOn(true), readMs(style, '--duration-draw') + readMs(style, '--duration-base'));
+    return () => clearTimeout(timer);
+  }, [ready]);
 
   useEffect(() => {
     const root = getRoot();
@@ -107,7 +136,14 @@ export function LookbookInteractions() {
 
   const { paths, arrowSize } = measurement;
   return (
-    <svg ref={svgRef} className={styles.connectors} aria-hidden="true" focusable="false">
+    <svg
+      ref={svgRef}
+      className={`${styles.connectors} ${motion.connectors}`}
+      data-ready={ready ? '' : undefined}
+      onAnimationEnd={() => setArrowsOn(true)}
+      aria-hidden="true"
+      focusable="false"
+    >
       <defs>
         <marker
           id={markerId}
@@ -125,10 +161,11 @@ export function LookbookInteractions() {
         <path
           key={p.id}
           d={p.d}
-          className={styles.connector}
+          pathLength={1}
+          className={`${styles.connector} ${motion.connectorPath}`}
           data-item-id={p.id}
           data-active={p.id === activeId ? '' : undefined}
-          markerEnd={`url(#${markerId})`}
+          markerEnd={arrowsOn ? `url(#${markerId})` : undefined}
         />
       ))}
     </svg>

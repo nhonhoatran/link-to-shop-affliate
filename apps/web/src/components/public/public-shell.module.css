@@ -1,0 +1,35 @@
+.shell {
+  --color-focus: var(--client-focus);
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--client-bg);
+  color: var(--client-ink);
+}
+
+.main {
+  flex: 1 0 auto;
+}
+
+.main:focus {
+  outline: none;
+}
+
+.skipLink {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 20;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--client-radius-pill);
+  background: var(--client-ink);
+  color: var(--client-on-ink);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skipLink:focus {
+  transform: none;
+}

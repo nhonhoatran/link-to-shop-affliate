@@ -1,0 +1,66 @@
+.footer {
+  margin-top: var(--space-7);
+  background: var(--client-surface-soft);
+  color: var(--client-ink);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-4);
+  max-width: var(--client-container-max);
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-4) var(--space-4);
+}
+
+.about {
+  flex: 1 1 calc(var(--space-8) * 4);
+  max-width: calc(var(--space-8) * 8);
+}
+
+.name {
+  margin: 0 0 var(--space-2);
+  font-weight: var(--font-weight-bold);
+}
+
+.description {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--client-ink-muted);
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--client-ink);
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}
+
+.copyright {
+  max-width: var(--client-container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-4) var(--space-5);
+  font-size: var(--text-xs);
+  color: var(--client-ink-muted);
+}
+
+/* Matches --bp-lg: the page gutter widens at 1024px, same as PublicPage. */
+@media (min-width: 1024px) {
+  .inner,
+  .copyright {
+    padding-inline: var(--space-6);
+  }
+}
