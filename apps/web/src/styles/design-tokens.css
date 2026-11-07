@@ -1,7 +1,7 @@
 /*
  * Design tokens, measured from assets-source/lookbook-samples/*-reference.png (941 x 1672).
  * Reference px -> ratio of the 941px canvas: title 20px (2.1%, set to 1.9% as Be Vietnam Pro is wider than the reference font), description 17px (1.8%),
- * model ~395px wide (42%), item image ~270-340px (30%), connector stroke ~1.5px.
+ * columns tuned by screenshot comparison to 31/44/25 (left items / model / right items), connector stroke ~1.5px.
  * Values here are defaults; change them here only, never inline in components.
  */
 :root {
@@ -53,8 +53,9 @@
   --lookbook-curve-ratio: 0.45;
   --lookbook-arrow-size: 10px;
   --lookbook-connector-halo: 1px;
-  --lookbook-hotspot-size: 24px;
-  --lookbook-hotspot-ring-size: 12px;
+  --lookbook-hotspot-size: var(--space-5);
+  --lookbook-hotspot-ring-size: var(--space-3);
+  --lookbook-hotspot-ring-rest-scale: 0.5;
   --lookbook-hotspot-ring-bg: var(--color-page);
 
   /* Interaction */
@@ -65,12 +66,12 @@
   --easing-standard: cubic-bezier(0.2, 0, 0, 1);
 
   /*
-   * Descriptions are hidden under 640px viewport width. CSS cannot use custom
-   * properties inside @media, so components must hardcode:
+   * Compact layout under 640px viewport width: descriptions hidden, threads replaced by pins.
+   * CSS cannot use custom properties inside @media, so components must hardcode:
    *   @media (max-width: 639.98px) { ... }
    * Keep this comment in sync with the value if it ever changes.
    */
-  --lookbook-hide-description-below: 640px;
+  --lookbook-compact-below: 640px;
 
   /* Admin base set */
   --admin-bg: #f5f5f4;

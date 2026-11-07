@@ -111,7 +111,7 @@
   border-radius: 50%;
   background: var(--lookbook-hotspot-ring-bg);
   opacity: 0;
-  transform: scale(0.5);
+  transform: scale(var(--lookbook-hotspot-ring-rest-scale));
   pointer-events: none;
   transition:
     opacity var(--duration-base) var(--easing-standard),
@@ -164,7 +164,7 @@
   filter: drop-shadow(0 var(--space-1) var(--space-2) var(--color-muted));
 }
 
-/* Breakpoint mirrors --lookbook-hide-description-below (640px); media queries cannot read custom properties. */
+/* Breakpoint mirrors --lookbook-compact-below (640px); media queries cannot read custom properties. */
 @media (max-width: 639.98px) {
   .itemDescription {
     display: none;
@@ -178,6 +178,10 @@
   .hotspot::after {
     opacity: 1;
     transform: scale(1);
+  }
+
+  .hotspot[data-active]::after {
+    background: var(--color-line);
   }
 }
 
