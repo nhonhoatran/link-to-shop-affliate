@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
-import { relative, resolve } from 'node:path';
+import { readFile, realpath } from 'node:fs/promises';
+import { isAbsolute, relative, resolve, sep } from 'node:path';
 import {
   outfitInputSchema,
   type ImageRef,
@@ -30,16 +30,24 @@ export interface SeedResult {
   downgradedToDraft: boolean;
 }
 
+const isInside = (root: string, target: string): boolean => {
+  const rel = relative(root, target);
+  return rel !== '..' && !rel.startsWith(`..${sep}`) && !isAbsolute(rel);
+};
+
 const readSeedImage = async (options: SeedOptions, file: string): Promise<Buffer> => {
   const root = options.imageRoot ?? options.seedDir;
   const absolute = resolve(options.seedDir, file);
-  const rel = relative(root, absolute);
-  if (rel.startsWith('..') || resolve(rel) === rel) throw new Error(`Seed image escapes the image root ${root}: ${file}`);
+  // Compare real paths so a symlink inside the root cannot point outside it.
+  let real: string;
   try {
-    return await readFile(absolute);
+    real = await realpath(absolute);
   } catch {
+    if (!isInside(root, absolute)) throw new Error(`Seed image escapes the image root ${root}: ${file}`);
     throw new Error(`Seed image not found: ${file} (resolved to ${absolute})`);
   }
+  if (!isInside(await realpath(root), real)) throw new Error(`Seed image escapes the image root ${root}: ${file}`);
+  return readFile(real);
 };
 
 // Content-addressed keys make re-running the seed idempotent and avoid orphan objects.

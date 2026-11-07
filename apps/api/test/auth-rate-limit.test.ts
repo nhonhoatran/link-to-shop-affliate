@@ -66,4 +66,48 @@ describe('login rate limits', () => {
     const owner = await attempt(testApp.app, { email: TEST_EMAIL, password: TEST_PASSWORD }, '192.0.2.50');
     expect(owner.status).toBe(200);
   });
+
+  it('shares one strict bucket between case and whitespace variants of the same email', async () => {
+    process.env.LOGIN_RATE_LIMIT_MAX_FAILURES = '2';
+    testApp = await startTestApp({ NODE_ENV: 'production', SESSION_COOKIE_SECURE: 'false' });
+    await createAdmin(TEST_EMAIL, TEST_PASSWORD);
+
+    const variants = ['admin@example.com', ' Admin@Example.com ', 'ADMIN@EXAMPLE.COM'];
+    const statuses: number[] = [];
+    for (const email of variants) {
+      statuses.push((await attempt(testApp.app, { email, password: 'wrong-password' }, '198.51.100.8')).status);
+    }
+    expect(statuses).toEqual([401, 401, 429]);
+  });
+
+  it('shares one per-email bucket across IPs for case and whitespace variants', async () => {
+    process.env.LOGIN_RATE_LIMIT_MAX_FAILURES_PER_EMAIL = '2';
+    testApp = await startTestApp({ NODE_ENV: 'production', SESSION_COOKIE_SECURE: 'false' });
+    await createAdmin(TEST_EMAIL, TEST_PASSWORD);
+
+    const variants = ['admin@example.com', '  ADMIN@example.com', 'Admin@Example.com  '];
+    const statuses: number[] = [];
+    for (const [index, email] of variants.entries()) {
+      statuses.push((await attempt(testApp.app, { email, password: 'wrong-password' }, `203.0.113.${index + 1}`)).status);
+    }
+    expect(statuses).toEqual([401, 401, 429]);
+  });
+
+  it('keeps requests without a usable email out of the email-keyed buckets', async () => {
+    process.env.LOGIN_RATE_LIMIT_MAX_FAILURES = '1';
+    process.env.LOGIN_RATE_LIMIT_MAX_FAILURES_PER_EMAIL = '1';
+    testApp = await startTestApp({ NODE_ENV: 'production', SESSION_COOKIE_SECURE: 'false' });
+
+    const statuses: number[] = [];
+    for (let index = 0; index < 4; index += 1) {
+      const body = index % 2 === 0 ? {} : { email: 12 };
+      const response = await supertest(testApp.app)
+        .post('/api/auth/login')
+        .set('Origin', TEST_ORIGIN)
+        .set('X-Forwarded-For', `203.0.113.${index + 1}`)
+        .send(body);
+      statuses.push(response.status);
+    }
+    expect(statuses).toEqual([400, 400, 400, 400]);
+  });
 });

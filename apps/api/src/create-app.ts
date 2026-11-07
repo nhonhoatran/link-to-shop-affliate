@@ -40,7 +40,7 @@ export const createApp = (ctx: AppContext): Express => {
 
   const api = Router();
   api.use('/health', createHealthRoutes());
-  api.use('/auth', createAuthRoutes());
+  api.use('/auth', createAuthRoutes(ctx.env));
   api.use('/public', createPublicRoutes(ctx));
   api.use('/admin', admin);
 

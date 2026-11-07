@@ -23,6 +23,9 @@ export const getLoginRateLimit = (): LoginRateLimitConfig => ({
   maxAttemptsPerIp: readPositiveInt('LOGIN_RATE_LIMIT_MAX_ATTEMPTS_PER_IP', 20),
 });
 
+/** Lifetime of the signed cookie that exempts a known browser from the per-email login limiter. */
+export const getDeviceCookieMaxAgeDays = (): number => readPositiveInt('LOGIN_DEVICE_COOKIE_MAX_AGE_DAYS', 90);
+
 export const getHealthTimeoutMs = (): number => readPositiveInt('HEALTH_CHECK_TIMEOUT_MS', 2000);
 
 export const getArgon2MaxConcurrency = (): number => readPositiveInt('ARGON2_MAX_CONCURRENCY', 2);

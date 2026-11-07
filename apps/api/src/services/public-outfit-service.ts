@@ -9,7 +9,9 @@ export const getPublishedOutfitBySlug = async (slug: string, env: Env): Promise<
 };
 
 export const getFeaturedOutfit = async (env: Env): Promise<PublicOutfitDto | null> => {
-  const record = await OutfitModel.findOne({ featured: true, status: 'published' }).lean<OutfitRecord>();
+  const record = await OutfitModel.findOne({ featured: true, status: 'published' })
+    .sort({ updatedAt: -1 })
+    .lean<OutfitRecord>();
   return record ? toPublicOutfitDto(toOutfit(record), createMediaUrlResolver(env)) : null;
 };
 

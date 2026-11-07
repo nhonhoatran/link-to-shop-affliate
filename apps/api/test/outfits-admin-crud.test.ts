@@ -1,4 +1,3 @@
-import supertest from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { OutfitModel } from '../src/models/outfit-model';
 import { buildOutfitPayload } from './helpers/outfit-payloads';
@@ -26,7 +25,6 @@ const create = (body: object) => agent.post('/api/admin/outfits').set('Origin', 
 const update = (id: string, body: object) => agent.put(`/api/admin/outfits/${id}`).set('Origin', TEST_ORIGIN).send(body);
 const setFeatured = (id: string, featured: boolean) =>
   agent.post(`/api/admin/outfits/${id}/featured`).set('Origin', TEST_ORIGIN).send({ featured });
-const publicApi = () => supertest(testApp.app);
 
 describe('admin outfit CRUD', () => {
   it('creates, reads, updates and deletes an outfit with media urls', async () => {

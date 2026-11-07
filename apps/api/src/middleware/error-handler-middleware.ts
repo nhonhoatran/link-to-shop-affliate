@@ -5,6 +5,9 @@ import { ZodError } from 'zod';
 import { AppError } from '../lib/app-error';
 import { zodIssuesToFields } from '../lib/zod-fields';
 
+// Keep in sync with the 413 body in infra/caddy/Caddyfile (edge limit uses the same sentence).
+export const FILE_TOO_LARGE_MESSAGE = 'Tệp vượt quá dung lượng cho phép';
+
 interface ErrorResponse {
   status: number;
   body: ApiErrorBody;
@@ -22,7 +25,7 @@ export const toErrorResponse = (error: unknown): ErrorResponse => {
   if (error instanceof AppError) return respond(error.status, error.code, error.message, error.fields);
   if (error instanceof ZodError) return respond(400, 'VALIDATION_ERROR', 'Dữ liệu không hợp lệ', zodIssuesToFields(error.issues));
   if (error instanceof MulterError) {
-    if (error.code === 'LIMIT_FILE_SIZE') return respond(413, 'PAYLOAD_TOO_LARGE', 'Tệp vượt quá dung lượng cho phép');
+    if (error.code === 'LIMIT_FILE_SIZE') return respond(413, 'PAYLOAD_TOO_LARGE', FILE_TOO_LARGE_MESSAGE);
     return respond(400, 'VALIDATION_ERROR', 'Tệp tải lên không hợp lệ', { file: error.message });
   }
   const candidate = error as { code?: number; type?: string; keyPattern?: Record<string, unknown> };

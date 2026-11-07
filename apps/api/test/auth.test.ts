@@ -61,7 +61,7 @@ describe('auth', () => {
   it('rejects a session cookie captured before logout', async () => {
     const agent = supertest.agent(testApp.app);
     const response = await login(agent, { email: TEST_EMAIL, password: TEST_PASSWORD });
-    const oldCookie = String(response.headers['set-cookie']).split(';')[0]!;
+    const oldCookie = (response.headers['set-cookie'] as unknown as string[]).find((line) => line.startsWith('u30.sid='))!.split(';')[0]!;
     expect((await supertest(testApp.app).get('/api/auth/me').set('Cookie', oldCookie)).status).toBe(200);
 
     await agent.post('/api/auth/logout').set('Origin', TEST_ORIGIN);

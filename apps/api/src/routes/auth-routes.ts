@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { loginInputSchema, type LoginInput } from '@under30ss/shared';
+import type { Env } from '../config/env-config';
+import { setDeviceCookie } from '../lib/device-cookie';
 import { unauthorized } from '../lib/app-error';
 import { getLoginRateLimit } from '../lib/runtime-defaults';
 import { createLoginRateLimit } from '../middleware/login-rate-limit-middleware';
@@ -10,10 +12,10 @@ import { authenticate, getAdminById } from '../services/admin-user-service';
 
 const LOGIN_FAILED_MESSAGE = 'Email hoặc mật khẩu không đúng';
 
-export const createAuthRoutes = (): Router => {
+export const createAuthRoutes = (env: Env): Router => {
   const router = Router();
 
-  router.post('/login', ...createLoginRateLimit(getLoginRateLimit()), validateBody(loginInputSchema), async (req, res) => {
+  router.post('/login', ...createLoginRateLimit(getLoginRateLimit(), env), validateBody(loginInputSchema), async (req, res) => {
     const { email, password } = req.body as LoginInput;
     const admin = await authenticate(email, password);
     if (!admin) throw unauthorized(LOGIN_FAILED_MESSAGE);
@@ -21,6 +23,7 @@ export const createAuthRoutes = (): Router => {
     await new Promise<void>((resolve, reject) => req.session.regenerate((err) => (err ? reject(err) : resolve())));
     req.session.adminId = admin.id;
     await new Promise<void>((resolve, reject) => req.session.save((err) => (err ? reject(err) : resolve())));
+    setDeviceCookie(res, env, email);
     res.json(admin);
   });
 

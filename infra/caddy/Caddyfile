@@ -3,9 +3,10 @@
 	encode zstd gzip
 
 	# Oversized uploads get the same JSON error shape the API uses (ApiErrorBody), not Caddy's empty 413.
+	# The message must match FILE_TOO_LARGE_MESSAGE in apps/api/src/middleware/error-handler-middleware.ts.
 	handle_errors 413 {
 		header Content-Type "application/json; charset=utf-8"
-		respond `{"error":{"code":"PAYLOAD_TOO_LARGE","message":"Ảnh vượt quá dung lượng cho phép"}}` 413
+		respond `{"error":{"code":"PAYLOAD_TOO_LARGE","message":"Tệp vượt quá dung lượng cho phép"}}` 413
 	}
 
 	# Health is for the compose healthcheck, which talks to the api container directly.
@@ -31,9 +32,13 @@
 	handle_path /media/* {
 		# Read-only for the world; writes go through the API only.
 		@notRead not method GET HEAD
+		header @notRead Allow "GET, HEAD"
 		respond @notRead 405
 
-		rewrite * /{$S3_BUCKET}{uri}
+		header X-Content-Type-Options nosniff
+
+		# {path} plus a trailing "?" drops the query string: it must not reach rustfs (response-content-type overrides etc.).
+		rewrite * /{$S3_BUCKET}{path}?
 		reverse_proxy rustfs:9000 {
 			header_up Host {upstream_hostport}
 		}

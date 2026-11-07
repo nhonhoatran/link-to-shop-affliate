@@ -31,8 +31,7 @@ export const verifyPassword = (hash: string, password: string): Promise<boolean>
 
 let dummyHash: Promise<string> | undefined;
 
-/** Burns the same CPU as a real check so unknown emails are not distinguishable by timing. */
-export const verifyAgainstDummy = async (password: string): Promise<void> => {
+const getDummyHash = (): Promise<string> => {
   if (!dummyHash) {
     const pending = hashPassword('timing-equalizer');
     // Do not cache a rejection (e.g. queue full): the next call must be able to retry.
@@ -41,5 +40,15 @@ export const verifyAgainstDummy = async (password: string): Promise<void> => {
     });
     dummyHash = pending;
   }
-  await verifyPassword(await dummyHash, password);
+  return dummyHash;
+};
+
+/** Called at startup so the first unknown-email login does not pay for the extra hash. */
+export const warmUpDummyHash = async (): Promise<void> => {
+  await getDummyHash();
+};
+
+/** Burns the same CPU as a real check so unknown emails are not distinguishable by timing. */
+export const verifyAgainstDummy = async (password: string): Promise<void> => {
+  await verifyPassword(await getDummyHash(), password);
 };

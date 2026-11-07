@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { seedFileSchema, type SeedFile } from '@under30ss/shared';
@@ -113,5 +113,30 @@ describe('seed service', () => {
 
     outfit.modelImage.file = '../../outside.png';
     await expect(seedOutfits(testApp.ctx, seed, options)).rejects.toThrow(/escapes/);
+  });
+
+  it('accepts file names that merely start with two dots', async () => {
+    await writeFile(join(seedDir, 'images/..dotted.png'), await makePng(100, 100));
+    const seed = buildSeed({ link: 'https://shop.example.com/x' });
+    seed.outfits[0]!.modelImage.file = 'images/..dotted.png';
+    await expect(seedOutfits(testApp.ctx, seed, { seedDir, publishWithPlaceholder: false })).resolves.toHaveLength(1);
+  });
+
+  it('rejects a symlink inside the image root that points outside it', async () => {
+    const outside = await mkdtemp(join(tmpdir(), 'u30-outside-'));
+    try {
+      await writeFile(join(outside, 'secret.png'), await makePng(100, 100));
+      try {
+        await symlink(join(outside, 'secret.png'), join(seedDir, 'images/link.png'));
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'EPERM') return; // Windows without symlink privilege
+        throw error;
+      }
+      const seed = buildSeed({ link: 'https://shop.example.com/x' });
+      seed.outfits[0]!.modelImage.file = 'images/link.png';
+      await expect(seedOutfits(testApp.ctx, seed, { seedDir, publishWithPlaceholder: false })).rejects.toThrow(/escapes/);
+    } finally {
+      await rm(outside, { recursive: true, force: true });
+    }
   });
 });
