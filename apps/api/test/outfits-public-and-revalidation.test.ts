@@ -60,11 +60,11 @@ describe('revalidation', () => {
     const created = await create(buildOutfitPayload({ slug: 'old-slug' }));
     expect(testApp.revalidateHits.at(-1)).toEqual({
       secret: 'revalidate-secret-1234',
-      paths: ['/', '/look/old-slug', '/sitemap.xml'],
+      paths: ['/', '/looks', '/look/old-slug', '/sitemap.xml'],
     });
 
     await update(created.body.id, buildOutfitPayload({ slug: 'new-slug' }));
-    expect(testApp.revalidateHits.at(-1)?.paths).toEqual(['/', '/look/new-slug', '/look/old-slug', '/sitemap.xml']);
+    expect(testApp.revalidateHits.at(-1)?.paths).toEqual(['/', '/looks', '/look/new-slug', '/look/old-slug', '/sitemap.xml']);
   });
 
   it('does not fail the write when the web app rejects the revalidation', async () => {

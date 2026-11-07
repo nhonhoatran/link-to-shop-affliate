@@ -33,6 +33,9 @@ export const getArgon2MaxConcurrency = (): number => readPositiveInt('ARGON2_MAX
 /** Hash/verify calls allowed to wait for a free slot; beyond that the API answers 503. */
 export const getArgon2MaxQueue = (): number => readPositiveInt('ARGON2_MAX_QUEUE', 20);
 
+/** Recently updated outfits shown on the admin overview. */
+export const getAdminStatsRecentCount = (): number => readPositiveInt('ADMIN_STATS_RECENT_COUNT', 5);
+
 export const getDefaultSettings = (): { siteName: string; seoTitle: string; seoDescription: string } => ({
   siteName: process.env.DEFAULT_SITE_NAME ?? 'Under30ss',
   seoTitle: process.env.DEFAULT_SEO_TITLE ?? 'Under30ss - Shop the look',

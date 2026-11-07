@@ -8,6 +8,8 @@ const settings: PublicSettingsDto = {
   seoTitle: 'Site X home',
   seoDescription: 'Default description',
   ogImageUrl: '/media/public/og.webp',
+  looksPageSize: 12,
+  relatedOutfitsCount: 8,
 };
 
 describe('buildOutfitMetadata', () => {

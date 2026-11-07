@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { notFound, redirect } from 'next/navigation';
-import { API_PATHS, type AdminSettingsResponse, type MeResponse } from '@under30ss/shared';
+import { API_PATHS, type AdminSettingsResponse, type AdminStatsResponse, type MeResponse } from '@under30ss/shared';
 import { LOGIN_PATH } from '@/lib/admin-paths';
 import { ApiError, apiGet, forwardCookieHeader } from '@/lib/api-client-server';
 
@@ -24,3 +24,5 @@ export const getCurrentAdmin = cache((): Promise<MeResponse> => adminGet<MeRespo
 export const getAdminSettings = cache(
   (): Promise<AdminSettingsResponse> => adminGet<AdminSettingsResponse>(API_PATHS.admin.settings),
 );
+
+export const getAdminStats = cache((): Promise<AdminStatsResponse> => adminGet<AdminStatsResponse>(API_PATHS.admin.stats));

@@ -53,6 +53,15 @@ describe('parseEnv', () => {
     expect(() => parseEnv({ ...validEnv, UPLOAD_MAX_MB: '30', UPLOAD_MAX_MB_CEILING: '20' })).toThrow(/UPLOAD_MAX_MB/);
   });
 
+  it('applies public listing defaults and rejects values above PUBLIC_PAGE_SIZE_MAX', () => {
+    const env = parseEnv(validEnv);
+    expect([env.PUBLIC_LOOKS_PAGE_SIZE, env.PUBLIC_RELATED_OUTFITS_COUNT, env.PUBLIC_PAGE_SIZE_MAX]).toEqual([12, 8, 48]);
+    expect(() => parseEnv({ ...validEnv, PUBLIC_LOOKS_PAGE_SIZE: '50', PUBLIC_PAGE_SIZE_MAX: '48' })).toThrow(/PUBLIC_LOOKS_PAGE_SIZE/);
+    expect(() => parseEnv({ ...validEnv, PUBLIC_LOOKS_PAGE_SIZE: '4', PUBLIC_RELATED_OUTFITS_COUNT: '9', PUBLIC_PAGE_SIZE_MAX: '8' })).toThrow(
+      /PUBLIC_RELATED_OUTFITS_COUNT/,
+    );
+  });
+
   it('rejects a default page size larger than the maximum', () => {
     expect(() => parseEnv({ ...validEnv, ADMIN_PAGE_SIZE_DEFAULT: '50', ADMIN_PAGE_SIZE_MAX: '10' })).toThrow(
       /ADMIN_PAGE_SIZE_DEFAULT/,

@@ -43,6 +43,8 @@ describe('settings', () => {
       seoTitle: 'My Shop - looks',
       seoDescription: 'Desc',
       ogImageUrl: 'http://cdn.test/media/public/model/2026/11/og.webp',
+      looksPageSize: testApp.env.PUBLIC_LOOKS_PAGE_SIZE,
+      relatedOutfitsCount: testApp.env.PUBLIC_RELATED_OUTFITS_COUNT,
     });
 
     const cleared = await agent

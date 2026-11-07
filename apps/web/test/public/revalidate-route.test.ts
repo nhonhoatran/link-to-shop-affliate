@@ -1,7 +1,7 @@
-import { REVALIDATE_SECRET_HEADER } from '@under30ss/shared';
+import { PUBLIC_SETTINGS_CACHE_TAG, REVALIDATE_SECRET_HEADER } from '@under30ss/shared';
 
-const { revalidatePath } = vi.hoisted(() => ({ revalidatePath: vi.fn() }));
-vi.mock('next/cache', () => ({ revalidatePath }));
+const { revalidatePath, revalidateTag } = vi.hoisted(() => ({ revalidatePath: vi.fn(), revalidateTag: vi.fn() }));
+vi.mock('next/cache', () => ({ revalidatePath, revalidateTag }));
 
 const SECRET = 'test-secret-0123456789';
 
@@ -23,6 +23,7 @@ describe('POST /api/revalidate', () => {
   beforeEach(() => {
     vi.resetModules();
     revalidatePath.mockReset();
+    revalidateTag.mockReset();
     vi.stubEnv('API_INTERNAL_URL', 'http://api.test:4000');
     vi.stubEnv('SITE_URL', 'https://shop.example.test');
     vi.stubEnv('MEDIA_PUBLIC_BASE_URL', '/media');
@@ -45,12 +46,14 @@ describe('POST /api/revalidate', () => {
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ revalidated: ['/'] });
     expect(revalidatePath.mock.calls).toEqual([['/', 'layout']]);
+    expect(revalidateTag.mock.calls).toEqual([[PUBLIC_SETTINGS_CACHE_TAG, { expire: 0 }]]);
   });
 
   it("rejects scope 'all' with the wrong secret and does not revalidate", async () => {
     const res = await call({ secret: 'wrong-secret-0123456789', body: { scope: 'all' } });
     expect(res.status).toBe(401);
     expect(revalidatePath).not.toHaveBeenCalled();
+    expect(revalidateTag).not.toHaveBeenCalled();
   });
 
   it('answers 500 and does not revalidate when the web environment is invalid', async () => {

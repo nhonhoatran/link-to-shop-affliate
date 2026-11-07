@@ -8,49 +8,73 @@ import { createMediaUrlResolver } from './outfit-mapper';
 
 type SettingsRecord = SettingsDoc;
 
+export interface ListingSettings {
+  looksPageSize: number;
+  relatedOutfitsCount: number;
+}
+
 const loadSettings = (): Promise<SettingsRecord | null> => SettingsModel.findOne({ singleton: 'site' }).lean<SettingsRecord>();
+
+const OPTIONAL_KEYS = ['uploadMaxMb', 'looksPageSize', 'relatedOutfitsCount'] as const;
+
+const assertWithinCeiling = (value: number | undefined, ceiling: number, field: string, label: string, unit: string): void => {
+  if (value !== undefined && value > ceiling) {
+    throw badRequest(`${label} không được vượt quá ${ceiling} ${unit}`, { [field]: `Tối đa ${ceiling} ${unit}` });
+  }
+};
 
 export const getAdminSettings = async (env: Env): Promise<AdminSettingsDto> => {
   const stored = await loadSettings();
   if (!stored) return getDefaultSettings();
   const resolveUrl = createMediaUrlResolver(env);
-  const { siteName, seoTitle, seoDescription, ogImage, uploadMaxMb, updatedAt } = stored;
+  const { siteName, seoTitle, seoDescription, ogImage, uploadMaxMb, looksPageSize, relatedOutfitsCount, updatedAt } = stored;
   return {
     siteName,
     seoTitle,
     seoDescription,
     ...(ogImage ? { ogImage: { key: ogImage.key, width: ogImage.width, height: ogImage.height, url: resolveUrl(ogImage.key) } } : {}),
     ...(uploadMaxMb ? { uploadMaxMb } : {}),
+    ...(looksPageSize ? { looksPageSize } : {}),
+    ...(relatedOutfitsCount ? { relatedOutfitsCount } : {}),
     updatedAt: updatedAt.toISOString(),
   };
 };
 
+export const resolveListingSettings = (stored: SettingsRecord | null, env: Env): ListingSettings => ({
+  looksPageSize: Math.min(stored?.looksPageSize ?? env.PUBLIC_LOOKS_PAGE_SIZE, env.PUBLIC_PAGE_SIZE_MAX),
+  relatedOutfitsCount: Math.min(stored?.relatedOutfitsCount ?? env.PUBLIC_RELATED_OUTFITS_COUNT, env.PUBLIC_PAGE_SIZE_MAX),
+});
+
+// Clamped on read so lowering PUBLIC_PAGE_SIZE_MAX later also tightens values saved earlier.
+export const getListingSettings = async (env: Env): Promise<ListingSettings> => resolveListingSettings(await loadSettings(), env);
+
 export const getPublicSettings = async (env: Env): Promise<PublicSettingsDto> => {
   const stored = await loadSettings();
-  if (!stored) return { ...getDefaultSettings(), ogImageUrl: null };
+  const listing = resolveListingSettings(stored, env);
+  if (!stored) return { ...getDefaultSettings(), ogImageUrl: null, ...listing };
   const { siteName, seoTitle, seoDescription, ogImage } = stored;
-  return { siteName, seoTitle, seoDescription, ogImageUrl: ogImage ? createMediaUrlResolver(env)(ogImage.key) : null };
+  return { siteName, seoTitle, seoDescription, ogImageUrl: ogImage ? createMediaUrlResolver(env)(ogImage.key) : null, ...listing };
 };
 
 export const updateSettings = async (input: SettingsInput, env: Env): Promise<AdminSettingsDto> => {
   if (input.ogImage && !isPublicKey(input.ogImage.key)) {
     throw badRequest('Ảnh không hợp lệ', { 'ogImage.key': PUBLIC_KEY_ERROR });
   }
-  if (input.uploadMaxMb !== undefined && input.uploadMaxMb > env.UPLOAD_MAX_MB_CEILING) {
-    throw badRequest(`Dung lượng ảnh tối đa không được vượt quá ${env.UPLOAD_MAX_MB_CEILING} MB`, {
-      uploadMaxMb: `Tối đa ${env.UPLOAD_MAX_MB_CEILING} MB`,
-    });
-  }
-  const { ogImage, uploadMaxMb, ...required } = input;
+  assertWithinCeiling(input.uploadMaxMb, env.UPLOAD_MAX_MB_CEILING, 'uploadMaxMb', 'Dung lượng ảnh tối đa', 'MB');
+  assertWithinCeiling(input.looksPageSize, env.PUBLIC_PAGE_SIZE_MAX, 'looksPageSize', 'Số outfit mỗi trang', 'outfit');
+  assertWithinCeiling(input.relatedOutfitsCount, env.PUBLIC_PAGE_SIZE_MAX, 'relatedOutfitsCount', 'Số outfit gợi ý', 'outfit');
+  const { ogImage, ...required } = input;
+  const set: Record<string, unknown> = { ...(ogImage ? { ogImage } : {}) };
   const unset: Record<string, 1> = {};
+  for (const [key, value] of Object.entries(required)) {
+    if (value === undefined) unset[key] = 1;
+    else set[key] = value;
+  }
   if (!ogImage) unset.ogImage = 1;
-  if (uploadMaxMb === undefined) unset.uploadMaxMb = 1;
+  for (const key of OPTIONAL_KEYS) if (!(key in set)) unset[key] = 1;
   await SettingsModel.findOneAndUpdate(
     { singleton: 'site' },
-    {
-      $set: { ...required, ...(ogImage ? { ogImage } : {}), ...(uploadMaxMb === undefined ? {} : { uploadMaxMb }) },
-      ...(Object.keys(unset).length > 0 ? { $unset: unset } : {}),
-    },
+    { $set: set, ...(Object.keys(unset).length > 0 ? { $unset: unset } : {}) },
     { upsert: true, runValidators: true },
   );
   return getAdminSettings(env);

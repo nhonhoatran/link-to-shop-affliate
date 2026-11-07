@@ -5,6 +5,12 @@ import { z } from 'zod';
 export const REVALIDATE_PATH = '/api/revalidate';
 export const REVALIDATE_SECRET_HEADER = 'x-revalidate-secret';
 
+export const LOOKS_PAGE_PATH = '/looks';
+
+// Fetch cache tag of the public settings; expired on `scope: 'all'` because path revalidation
+// does not reach a settings response shared by every page.
+export const PUBLIC_SETTINGS_CACHE_TAG = 'public-settings';
+
 // `scope: 'all'` revalidates every page (e.g. site-wide settings changed),
 // so callers never have to enumerate all slugs.
 export const revalidateRequestSchema = z.union([

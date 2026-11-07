@@ -18,7 +18,7 @@ vi.mock('@/lib/api-client-server', async () => {
   return { ApiError: RealApiError, apiGet, forwardCookieHeader };
 });
 
-import { adminGet } from '@/app/admin/_lib/admin-api';
+import { adminGet, getAdminStats } from '@/app/admin/_lib/admin-api';
 
 const apiError = (status: number) => new ApiError(status, { code: 'X', message: 'x' });
 
@@ -56,5 +56,14 @@ describe('adminGet', () => {
     await expect(adminGet('/api/admin/outfits')).rejects.toBe(failure);
     expect(redirect).not.toHaveBeenCalled();
     expect(notFound).not.toHaveBeenCalled();
+  });
+});
+
+describe('getAdminStats', () => {
+  it('reads the stats endpoint with the session cookie', async () => {
+    const stats = { counts: { total: 1 }, featured: null, recent: [] };
+    apiGet.mockResolvedValue(stats);
+    await expect(getAdminStats()).resolves.toEqual(stats);
+    expect(apiGet).toHaveBeenCalledWith('/api/admin/stats', { cookie: 'sid=abc' });
   });
 });

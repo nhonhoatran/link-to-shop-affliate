@@ -1,6 +1,7 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import {
+  PUBLIC_SETTINGS_CACHE_TAG,
   REVALIDATE_SECRET_HEADER,
   revalidateRequestSchema,
   type RevalidateResponse,
@@ -43,6 +44,7 @@ export async function POST(request: Request): Promise<Response> {
   if ('scope' in parsed.data) {
     // Site-wide change (e.g. settings): the root layout covers every page beneath it.
     revalidatePath('/', 'layout');
+    revalidateTag(PUBLIC_SETTINGS_CACHE_TAG, { expire: 0 });
     const result: RevalidateResponse = { revalidated: ['/'] };
     return Response.json(result);
   }

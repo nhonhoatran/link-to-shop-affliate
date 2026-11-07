@@ -7,6 +7,8 @@ export interface ApiGetOptions {
   cookie?: string;
   /** Seconds before the cached response is considered stale; false = cache until revalidated. */
   revalidate?: number | false;
+  /** Fetch cache tags, expirable on demand with revalidateTag. */
+  tags?: string[];
   signal?: AbortSignal;
 }
 
@@ -16,8 +18,8 @@ export const forwardCookieHeader = async (): Promise<string | undefined> => {
 };
 
 export const apiGet = async <T>(path: string, options: ApiGetOptions = {}): Promise<T> => {
-  const { cookie, revalidate, signal } = options;
-  const init: RequestInit & { next?: { revalidate?: number | false } } = {
+  const { cookie, revalidate, tags, signal } = options;
+  const init: RequestInit & { next?: { revalidate?: number | false; tags?: string[] } } = {
     method: 'GET',
     headers: { accept: 'application/json', ...(cookie ? { cookie } : {}) },
     ...(signal ? { signal } : {}),
@@ -25,7 +27,7 @@ export const apiGet = async <T>(path: string, options: ApiGetOptions = {}): Prom
   if (cookie) {
     init.cache = 'no-store';
   } else if (revalidate !== undefined) {
-    init.next = { revalidate };
+    init.next = { revalidate, ...(tags ? { tags } : {}) };
   }
 
   let response: Response;

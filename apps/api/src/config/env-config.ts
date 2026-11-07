@@ -34,6 +34,10 @@ export const envSchema = z.object({
   ADMIN_PAGE_SIZE_DEFAULT: positiveInt.default(20),
   ADMIN_PAGE_SIZE_MAX: positiveInt.default(100),
 
+  PUBLIC_LOOKS_PAGE_SIZE: positiveInt.default(12),
+  PUBLIC_RELATED_OUTFITS_COUNT: positiveInt.default(8),
+  PUBLIC_PAGE_SIZE_MAX: positiveInt.default(48),
+
   ALLOWED_ORIGIN: z.string().min(1),
 });
 
@@ -53,6 +57,11 @@ export const parseEnv = (source: NodeJS.ProcessEnv = process.env): Env => {
   }
   if (result.data.ADMIN_PAGE_SIZE_DEFAULT > result.data.ADMIN_PAGE_SIZE_MAX) {
     throw new EnvConfigError(['ADMIN_PAGE_SIZE_DEFAULT: must not exceed ADMIN_PAGE_SIZE_MAX']);
+  }
+  for (const name of ['PUBLIC_LOOKS_PAGE_SIZE', 'PUBLIC_RELATED_OUTFITS_COUNT'] as const) {
+    if (result.data[name] > result.data.PUBLIC_PAGE_SIZE_MAX) {
+      throw new EnvConfigError([`${name}: must not exceed PUBLIC_PAGE_SIZE_MAX`]);
+    }
   }
   if (result.data.UPLOAD_MAX_MB > result.data.UPLOAD_MAX_MB_CEILING) {
     throw new EnvConfigError(['UPLOAD_MAX_MB: must not exceed UPLOAD_MAX_MB_CEILING']);

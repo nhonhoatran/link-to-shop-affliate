@@ -69,5 +69,7 @@ const outfitSchema = new Schema<OutfitDoc>(
 // At most one featured outfit; callers must clear the previous one first.
 outfitSchema.index({ featured: 1 }, { unique: true, partialFilterExpression: { featured: true } });
 outfitSchema.index({ updatedAt: -1 });
+// Public list: filter on status, newest first, `_id` as the stable tie-breaker.
+outfitSchema.index({ status: 1, updatedAt: -1, _id: -1 });
 
 export const OutfitModel = model<OutfitDoc>('Outfit', outfitSchema);

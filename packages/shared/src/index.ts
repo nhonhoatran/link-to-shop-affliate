@@ -4,5 +4,7 @@ export * from './settings-schemas';
 export * from './auth-schemas';
 export * from './seed-file-schema';
 export * from './api-contract';
+export * from './public-outfit-list-contract';
+export * from './admin-stats-contract';
 export * from './revalidate-contract';
 export * from './slugify-vietnamese';

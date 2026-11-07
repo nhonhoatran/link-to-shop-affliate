@@ -1,4 +1,4 @@
-import { REVALIDATE_SECRET_HEADER, revalidateRequestSchema } from '@under30ss/shared';
+import { LOOKS_PAGE_PATH, REVALIDATE_SECRET_HEADER, revalidateRequestSchema } from '@under30ss/shared';
 import type { Env } from '../config/env-config';
 import type { Revalidate } from '../lib/app-context';
 
@@ -8,6 +8,7 @@ const MAX_PATHS = 50;
 
 export const outfitPaths = (...slugs: (string | undefined)[]): string[] => [
   '/',
+  LOOKS_PAGE_PATH,
   ...slugs.filter((slug): slug is string => Boolean(slug)).map((slug) => `/look/${slug}`),
   '/sitemap.xml',
 ];

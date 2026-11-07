@@ -8,6 +8,9 @@ export const settingsInputSchema = z.object({
   ogImage: imageRefSchema.optional(),
   // Falls back to the UPLOAD_MAX_MB env value when absent.
   uploadMaxMb: z.number().int().positive().optional(),
+  // Ceilings come from PUBLIC_PAGE_SIZE_MAX and are checked by the API, like uploadMaxMb.
+  looksPageSize: z.number().int().positive().optional(),
+  relatedOutfitsCount: z.number().int().positive().optional(),
 });
 
 export const adminSettingsSchema = settingsInputSchema
@@ -19,6 +22,8 @@ export const publicSettingsSchema = z.object({
   seoTitle: z.string(),
   seoDescription: z.string(),
   ogImageUrl: z.string().nullable(),
+  looksPageSize: z.number().int().positive(),
+  relatedOutfitsCount: z.number().int().positive(),
 });
 
 export type SettingsInput = z.infer<typeof settingsInputSchema>;

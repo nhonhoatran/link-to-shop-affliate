@@ -10,6 +10,7 @@ import { createSessionMiddleware } from './middleware/session-middleware';
 import { createAdminMediaRoutes } from './routes/admin-media-routes';
 import { createAdminOutfitRoutes } from './routes/admin-outfit-routes';
 import { createAdminSettingsRoutes } from './routes/admin-settings-routes';
+import { createAdminStatsRoutes } from './routes/admin-stats-routes';
 import { createAdminUserRoutes } from './routes/admin-user-routes';
 import { createAuthRoutes } from './routes/auth-routes';
 import { createHealthRoutes } from './routes/health-routes';
@@ -34,6 +35,7 @@ export const createApp = (ctx: AppContext): Express => {
   const admin = Router();
   admin.use(requireAdmin);
   admin.use('/outfits', createAdminOutfitRoutes(ctx));
+  admin.use('/stats', createAdminStatsRoutes(ctx));
   admin.use('/settings', createAdminSettingsRoutes(ctx));
   admin.use('/admins', createAdminUserRoutes());
   admin.use('/media', createAdminMediaRoutes(ctx));

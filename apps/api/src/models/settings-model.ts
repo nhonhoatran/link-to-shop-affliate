@@ -8,6 +8,8 @@ export interface SettingsDoc {
   seoDescription: string;
   ogImage?: ImageRef;
   uploadMaxMb?: number;
+  looksPageSize?: number;
+  relatedOutfitsCount?: number;
   updatedAt: Date;
 }
 
@@ -22,6 +24,8 @@ const settingsSchema = new Schema<SettingsDoc>(
       { _id: false },
     ),
     uploadMaxMb: Number,
+    looksPageSize: Number,
+    relatedOutfitsCount: Number,
   },
   { timestamps: { createdAt: false, updatedAt: true } },
 );

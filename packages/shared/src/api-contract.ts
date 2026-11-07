@@ -13,6 +13,7 @@ export const API_PATHS = {
     me: '/api/auth/me',
   },
   public: {
+    outfits: '/api/public/outfits',
     featuredOutfit: '/api/public/outfits/featured',
     outfitSlugs: '/api/public/outfits/slugs',
     outfitBySlug: '/api/public/outfits/:slug',
@@ -22,6 +23,7 @@ export const API_PATHS = {
     outfits: '/api/admin/outfits',
     outfitById: '/api/admin/outfits/:id',
     outfitFeatured: '/api/admin/outfits/:id/featured',
+    stats: '/api/admin/stats',
     settings: '/api/admin/settings',
     admins: '/api/admin/admins',
     adminById: '/api/admin/admins/:id',
@@ -68,10 +70,13 @@ export interface OutfitSlugsResponse {
 }
 export type PublicSettingsResponse = PublicSettingsDto;
 
+// Technical bound only: keeps `skip` finite so a huge `?page=` cannot overflow the database query.
+export const MAX_LIST_PAGE = 100_000;
+
 export const adminOutfitListQuerySchema = z.object({
   q: z.string().trim().max(100).optional(),
   status: outfitStatusSchema.optional(),
-  page: z.coerce.number().int().min(1).default(1),
+  page: z.coerce.number().int().min(1).max(MAX_LIST_PAGE).default(1),
   // Default and maximum are enforced by the API from ADMIN_PAGE_SIZE_* env.
   size: z.coerce.number().int().min(1).optional(),
 });

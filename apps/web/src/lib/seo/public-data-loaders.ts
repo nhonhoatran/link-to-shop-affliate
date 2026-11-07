@@ -2,8 +2,11 @@ import { cache } from 'react';
 import {
   API_PATHS,
   apiUrl,
+  PUBLIC_SETTINGS_CACHE_TAG,
   type FeaturedOutfitResponse,
   type OutfitSlugsResponse,
+  type PublicOutfitCardDto,
+  type PublicOutfitListResponse,
   type PublicOutfitResponse,
   type PublicSettingsResponse,
 } from '@under30ss/shared';
@@ -26,7 +29,9 @@ const nullOnNotFound = async <T>(request: Promise<T>): Promise<T | null> => {
   }
 };
 
-export const getPublicSettings = cache(() => apiGet<PublicSettingsResponse>(API_PATHS.public.settings, safetyRevalidate()));
+export const getPublicSettings = cache(() =>
+  apiGet<PublicSettingsResponse>(API_PATHS.public.settings, { ...safetyRevalidate(), tags: [PUBLIC_SETTINGS_CACHE_TAG] }),
+);
 
 export const getOutfitBySlug = cache((slug: string) =>
   nullOnNotFound(apiGet<PublicOutfitResponse>(apiUrl.publicOutfit(slug), safetyRevalidate())),
@@ -37,3 +42,15 @@ export const getFeaturedOutfit = cache(() =>
 );
 
 export const getOutfitSlugs = () => apiGet<OutfitSlugsResponse>(API_PATHS.public.outfitSlugs);
+
+/** `size` omitted: the API applies the page size configured in settings. */
+export const getPublicOutfitPage = cache((page: number, size?: number) => {
+  const query = new URLSearchParams({ page: String(page), ...(size === undefined ? {} : { size: String(size) }) });
+  return apiGet<PublicOutfitListResponse>(`${API_PATHS.public.outfits}?${query}`, safetyRevalidate());
+});
+
+/** Newest outfits except the current one; asks for one extra so the exclusion never leaves the list short. */
+export const getRelatedOutfits = async (excludeSlug: string, count: number): Promise<PublicOutfitCardDto[]> => {
+  const { items } = await getPublicOutfitPage(1, count + 1);
+  return items.filter((outfit) => outfit.slug !== excludeSlug).slice(0, count);
+};

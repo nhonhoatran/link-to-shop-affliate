@@ -179,5 +179,6 @@ describe('admin outfit CRUD', () => {
     const dotSearch = await agent.get('/api/admin/outfits?q=.');
     expect(dotSearch.body.items.map((item: { slug: string }) => item.slug)).toEqual(['summer-dress']);
     expect((await agent.get('/api/admin/outfits?page=0')).status).toBe(400);
+    expect((await agent.get('/api/admin/outfits?page=1e300')).status).toBe(400);
   });
 });
