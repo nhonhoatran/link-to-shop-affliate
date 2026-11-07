@@ -29,7 +29,7 @@ Build trong Docker dùng context là gốc repo: `apps/api/Dockerfile` và `apps
 
 ## Chạy local để phát triển (`pnpm dev`)
 
-Cách dùng hằng ngày khi sửa code: api và web chạy trên máy (tự nạp lại khi sửa), chỉ Mongo và RustFS chạy trong Docker. Đã kiểm chứng 2026-11-07: e2e 17/17 pass trên `http://localhost:3000`.
+Cách dùng hằng ngày khi sửa code: api và web chạy trên máy (tự nạp lại khi sửa), chỉ Mongo và RustFS chạy trong Docker. Đã kiểm chứng 2026-11-07 trên `http://localhost:3000`: `pnpm e2e` 65 passed (gồm visual 4). Số test hiện tại xem [Kiểm thử](./code-standards.md#kiểm-thử).
 
 ```bash
 cp .env.example .env                      # đầu vào docker compose
@@ -323,6 +323,10 @@ Cột "Bắt buộc" theo code: **Có** nghĩa là schema hoặc compose báo l�
 | `IMAGE_MAX_EDGE_ITEM` | 800 | Không | Cạnh lớn nhất của ảnh món (px) |
 | `ADMIN_PAGE_SIZE_DEFAULT` | 20 | Không | Phải không vượt `ADMIN_PAGE_SIZE_MAX` |
 | `ADMIN_PAGE_SIZE_MAX` | 100 | Không | |
+| `PUBLIC_LOOKS_PAGE_SIZE` | 12 | Không | Số outfit mỗi trang `/looks`. Admin có thể đặt khác trong settings. Không vượt `PUBLIC_PAGE_SIZE_MAX` |
+| `PUBLIC_RELATED_OUTFITS_COUNT` | 8 | Không | Số outfit ở mục "Outfit khác" trên trang look. Admin có thể đặt khác trong settings. Không vượt `PUBLIC_PAGE_SIZE_MAX` |
+| `PUBLIC_PAGE_SIZE_MAX` | 48 | Không | Trần cho `size` của `GET /api/public/outfits` và hai giá trị trên |
+| `ADMIN_STATS_RECENT_COUNT` | 5 | Không | Số outfit sửa gần đây ở trang Tổng quan admin |
 | `LOGIN_RATE_LIMIT_WINDOW_MINUTES` | 15 | Không | Cửa sổ của cả ba limiter đăng nhập |
 | `LOGIN_RATE_LIMIT_MAX_FAILURES` | 5 | Không | Lần sai theo cặp IP + email |
 | `LOGIN_RATE_LIMIT_MAX_FAILURES_PER_EMAIL` | 50 | Không | Lần sai theo email, mọi IP. Nên đặt cao hơn ngưỡng trên |

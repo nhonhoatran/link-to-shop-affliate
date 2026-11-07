@@ -1,15 +1,18 @@
 # Kiến trúc hệ thống Under30ss (v1)
 
-Under30ss là trang lookbook "Shop the look": một ảnh người mẫu, các món đồ nối bằng đường chỉ tới từng món, bấm vào món để mở link affiliate. Dữ liệu outfit nằm trong MongoDB, ảnh nằm trong bucket S3 (RustFS). Next.js render trang public phía server để phục vụ SEO; Express API riêng phục vụ dữ liệu và trang quản trị `/admin`.
+Under30ss là trang lookbook "Shop the look": một ảnh người mẫu, các món đồ nối bằng đường chỉ tới từng món, bấm vào món để mở link affiliate. Dữ liệu outfit nằm trong MongoDB, ảnh nằm trong bucket S3 (RustFS). Next.js render trang public phía server để phục vụ SEO (`/`, `/looks`, `/look/[slug]`); Express API riêng phục vụ dữ liệu và khu quản trị `/admin`.
 
 Tài liệu liên quan: [Quy chuẩn code](./code-standards.md) · [Triển khai](./deployment-guide.md) · [Lịch sử thay đổi](./project-changelog.md) · [Roadmap](./development-roadmap.md)
 
 ## Contents
 - [Dịch vụ và cổng](#dịch-vụ-và-cổng)
 - [Định tuyến Caddy](#định-tuyến-caddy)
+- [Route web và giao diện](#route-web-và-giao-diện)
+- [API đọc cho giao diện](#api-đọc-cho-giao-diện)
 - [Mô hình dữ liệu](#mô-hình-dữ-liệu)
 - [Bất biến featured](#bất-biến-featured)
 - [Luồng revalidate API → web](#luồng-revalidate-api--web)
+- [Tuỳ chọn giao diện admin (cookie)](#tuỳ-chọn-giao-diện-admin-cookie)
 - [Pipeline ảnh và media](#pipeline-ảnh-và-media)
 - [Xác thực và giới hạn đăng nhập](#xác-thực-và-giới-hạn-đăng-nhập)
 - [Lỗi, health check, cấu hình](#lỗi-health-check-cấu-hình)
@@ -21,7 +24,7 @@ Stack chạy bằng `infra/docker-compose.yml` (dev, mặc định) và `infra/d
 | Service | Image / build | Vai trò | Cổng trong mạng compose | Publish ra host |
 |---------|---------------|---------|--------------------------|-----------------|
 | `caddy` | `caddy:2.11.9` | Reverse proxy, định tuyến, body limit, HTTPS tự động (prod) | 80, 443 | dev: `CADDY_HTTP_PORT` (mặc định 8080) → 80; `CADDY_HTTPS_PORT` (mặc định 8443) → 443. prod: 80 và 443 |
-| `web` | `apps/web/Dockerfile` (Next.js 16, output standalone) | Trang public (`/`, `/look/[slug]`), trang admin, `/api/revalidate` | 3000 | Không |
+| `web` | `apps/web/Dockerfile` (Next.js 16, output standalone) | Trang public (`/`, `/looks`, `/look/[slug]`), trang admin, `/api/revalidate` | 3000 | Không |
 | `api` | `apps/api/Dockerfile` (Express 5, Node 24) | REST API `/api/*`, upload ảnh, session, rate limit | 4000 | Không |
 | `mongo` | `mongo:8` | Dữ liệu outfit, admin, settings, session | 27017 | dev: `127.0.0.1:27017`. prod: không publish, bật auth |
 | `rustfs` | `rustfs/rustfs:1.0.4` | Object storage tương thích S3 | 9000 (API S3), 9001 (console, không publish) | dev: `127.0.0.1:9000`. prod: không publish |
@@ -65,6 +68,59 @@ Các cơ chế đã kiểm chứng khi chạy stack thật:
 - Lỗi 413 luôn có `Content-Type: application/json; charset=utf-8` và body `{"error":{"code":"PAYLOAD_TOO_LARGE",...}}`. Thông điệp khớp hằng số `FILE_TOO_LARGE_MESSAGE` trong `apps/api/src/middleware/error-handler-middleware.ts`.
 - Giới hạn body của Caddy được tính trong lệnh `command` của service `caddy` (`UPLOAD_BODY_MAX_MB=$$((UPLOAD_MAX_MB_CEILING + 1))`), vì placeholder của Caddyfile không tính số học được.
 - Caddy ghi đè `X-Forwarded-For`, nên IP client mà API thấy không thể bị giả qua header.
+- Caddyfile chỉ khai báo `header_up Host` cho upstream web. Không có dòng nào đặt `X-Forwarded-Proto` tường minh (xem [cờ secure của cookie admin](#tuỳ-chọn-giao-diện-admin-cookie)).
+
+## Route web và giao diện
+
+Web dùng Next.js 16 App Router với hai route group, mỗi nhóm có layout riêng. Mã nguồn nằm trong `apps/web/src/app/`.
+
+### Nhóm public: `app/(public)/`
+
+| Đường dẫn | File | Vai trò |
+|-----------|------|---------|
+| `/` | `(public)/page.tsx` | Outfit nổi bật (`featured`) kèm mục "Outfit khác". Khai báo `dynamic = 'force-dynamic'`. Chưa có outfit nổi bật thì hiện thông báo trống kèm mục "Outfit khác" |
+| `/looks?page=n` | `(public)/looks/page.tsx` | Danh sách outfit đã publish, phân trang phía server. `page` không hợp lệ được đưa về trang 1. `page` lớn hơn tổng số trang trả 404. Không có outfit nào thì hiện thông báo trống |
+| `/look/[slug]` | `(public)/look/[slug]/page.tsx` | Một lookbook, breadcrumb về `/looks`, mục "Outfit khác" (loại outfit đang xem) |
+| 404 | `(public)/not-found.tsx` | Dùng layout public có sẵn |
+| (layout) | `(public)/layout.tsx` | Bọc `PublicShell`: header (ẩn khi cuộn xuống, hiện khi cuộn lên hoặc khi có focus) và footer |
+| (chuyển trang) | `(public)/template.tsx` | Fade-in khi chuyển trang, bằng CSS (`fadeIn` trong `styles/motion-primitives.module.css`) |
+
+`app/not-found.tsx` ở gốc xử lý URL không khớp route nào. Nó tự bọc `PublicShell`, vì không có layout nhóm `(public)` bao quanh.
+
+Số outfit mỗi trang và số outfit "Outfit khác" lấy từ settings (`looksPageSize`, `relatedOutfitsCount`), xem [Settings](#settings).
+
+### Nhóm admin: `app/admin/`
+
+| Đường dẫn | File | Vai trò |
+|-----------|------|---------|
+| `/admin` | `admin/(protected)/page.tsx` | Tổng quan: số liệu, outfit nổi bật, outfit sửa gần đây. Có `q`, `status` hoặc `page` trên URL thì redirect 307 sang `/admin/outfits?...` |
+| `/admin/outfits` | `admin/(protected)/outfits/page.tsx` | Danh sách outfit: lọc và phân trang phía server (`q`, `status`, `page`) |
+| `/admin/outfits/new`, `/admin/outfits/[id]` | `outfits/new/page.tsx`, `outfits/[id]/page.tsx` | Tạo và sửa outfit |
+| `/admin/settings` | `settings/page.tsx` | Cài đặt site, SEO, upload, số outfit mỗi trang |
+| `/admin/users` | `users/page.tsx` | Danh sách, tạo và xoá admin |
+| `/admin/login` | `admin/login/page.tsx` | Đăng nhập, nằm ngoài `(protected)` |
+| 404 trong admin | `(protected)/not-found.tsx` | "Không tìm thấy trang", nút về `/admin/outfits` |
+
+Các file trong `admin/`:
+
+- `layout.tsx` (gốc admin): đọc cookie `admin-theme` và gắn `data-theme` lên phần tử gốc ngay trong HTML trả về, nên không nháy khi tải.
+- `(protected)/layout.tsx`: kiểm tra đăng nhập, đọc cookie `admin-sidebar`, bọc `AdminToastProvider`, dựng khung gồm sidebar, topbar và `main#admin-main`. Dưới 1024px sidebar luôn là rail; dưới 768px là topbar kèm drawer.
+- `loading.tsx` nằm ở `outfits/`, `outfits/[id]/`, `settings/` và `users/`. Không có `loading.tsx` ở `(protected)/`. Tổng quan dùng `Suspense` ngay trong `page.tsx`, vì loading boundary bọc quanh trang có redirect sẽ biến 307 thành 200 kèm meta refresh (lý do được ghi trong comment của `page.tsx`).
+- `_lib/`: `admin-api.ts` (gọi API phía server, bọc `cache`), `admin-preferences.ts` (đọc cookie), `admin-preference-actions.ts` (Server Action ghi cookie).
+- Mọi đường dẫn admin lấy từ `apps/web/src/lib/admin-paths.ts` (`ADMIN_PATHS`), không gõ tay.
+
+## API đọc cho giao diện
+
+Hai endpoint mới trong refactor giao diện. Hợp đồng nằm trong `packages/shared/src/api-contract.ts` và các file `*-contract.ts` cùng thư mục. Route nằm ở `apps/api/src/routes/`.
+
+| Phương thức, đường dẫn | Quyền | Nội dung |
+|------------------------|-------|----------|
+| `GET /api/public/outfits?page&size` | Công khai | Trang outfit đã publish, mới nhất trước (`updatedAt` giảm dần, rồi `_id`). Mỗi phần tử gồm `slug`, `title`, `modelImage` (có `url`), `updatedAt`. Không lộ draft và link affiliate. `size` bỏ trống thì dùng `looksPageSize` của settings. `size` luôn kẹp về `PUBLIC_PAGE_SIZE_MAX`. `page` có trần kỹ thuật `MAX_LIST_PAGE` (100000). Tham số sai kiểu trả 400 |
+| `GET /api/admin/stats` | Admin (sau `requireAdmin`) | `counts` gồm `total`, `published`, `draft`, `publishedMissingAffiliate`, `draftMissingAffiliate`; `featured` là outfit nổi bật đã publish hoặc `null`; `recent` gồm số outfit sửa gần đây theo `ADMIN_STATS_RECENT_COUNT` |
+
+Ghi chú:
+- "Thiếu link affiliate" đếm outfit có ít nhất một món với `affiliateUrl` rỗng. Không có bộ lọc riêng trong danh sách admin (quyết định trong plan).
+- Danh sách public dùng index `{ status: 1, updatedAt: -1, _id: -1 }` (xem [Outfit](#outfit)).
 
 ## Mô hình dữ liệu
 
@@ -78,10 +134,20 @@ Các model Mongoose nằm trong `apps/api/src/models/`. Kiểu dữ liệu chia 
 | `title` | string | 1–120 ký tự |
 | `seoDescription` | string? | Tối đa 300 ký tự |
 | `modelImage` | ImageRef | `{ key, width, height }`, key bắt đầu bằng `public/` |
-| `status` | `draft` \| `published` | Có index |
+| `status` | `draft` \| `published` | Có index đơn |
 | `featured` | boolean | Tối đa một outfit `true` (xem [Bất biến featured](#bất-biến-featured)) |
-| `items` | mảng, tối đa 30 | Mỗi món: `id`, `name` (1–80), `subtitle`?, `description`? (≤240), `image`, `side` (`left` \| `right`), `order`, `anchor`?, `affiliateUrl` |
+| `items` | mảng, tối đa 30 | Mỗi món: `id`, `name` (1–80), `subtitle`?, `description`? (≤240), `image`, `side` (`left` \| `right`), `order`, `anchor`?, `affiliateUrl` (mặc định chuỗi rỗng) |
 | `createdAt`, `updatedAt` | Date | Tự động (timestamps) |
+
+Index của collection (`apps/api/src/models/outfit-model.ts`):
+
+| Index | Mục đích |
+|-------|----------|
+| `{ featured: 1 }` unique, `partialFilterExpression: { featured: true }` | Một outfit nổi bật |
+| `{ updatedAt: -1 }` | Sắp xếp theo thời gian sửa |
+| `{ status: 1, updatedAt: -1, _id: -1 }` | Truy vấn danh sách public (`GET /api/public/outfits`) |
+
+Index `{ status, updatedAt, _id }` được thêm trong refactor giao diện. API tạo index khi khởi động qua `ensureOutfitIndexes()` (`createIndexes`). Collection đã có dữ liệu thì chỉ cần khởi động lại API.
 
 - `anchor` là `{ x, y }` với mỗi giá trị từ 0 đến 100 (tỉ lệ phần trăm trên ảnh người mẫu).
 - `affiliateUrl` là chuỗi rỗng hoặc URL `https://`.
@@ -95,10 +161,11 @@ Collection của model `AdminUser`. Trường: `email` (duy nhất, lowercase, t
 
 ### Settings
 
-Collection của model `Settings`, đúng một bản ghi với `singleton: 'site'`. Trường: `siteName`, `seoTitle`, `seoDescription`, `ogImage?` (`{ key, width, height }`, key phải thuộc `public/`), `uploadMaxMb?`, `updatedAt`.
+Collection của model `Settings`, đúng một bản ghi với `singleton: 'site'`. Trường: `siteName`, `seoTitle`, `seoDescription`, `ogImage?` (`{ key, width, height }`, key phải thuộc `public/`), `uploadMaxMb?`, `looksPageSize?`, `relatedOutfitsCount?`, `updatedAt`.
 
 - Khi chưa có bản ghi, API dùng giá trị từ env `DEFAULT_SITE_NAME`, `DEFAULT_SEO_TITLE`, `DEFAULT_SEO_DESCRIPTION`.
 - `uploadMaxMb` nếu có được kẹp về `UPLOAD_MAX_MB_CEILING` khi đọc. Hạ trần sau này cũng siết giới hạn đã lưu trước đó.
+- `looksPageSize` và `relatedOutfitsCount` không đặt thì dùng `PUBLIC_LOOKS_PAGE_SIZE` và `PUBLIC_RELATED_OUTFITS_COUNT`. Khi đọc được kẹp về `PUBLIC_PAGE_SIZE_MAX`. Khi ghi, giá trị vượt trần bị từ chối theo trường (`apps/api/src/services/settings-service.ts`).
 
 ### Session
 
@@ -142,15 +209,38 @@ Chi tiết:
 
 | Sự kiện (API) | Body gửi tới web | Web làm gì |
 |---------------|------------------|------------|
-| Tạo, sửa, xoá, đặt nổi bật outfit | `{ paths: ['/', '/look/<slug>', '/sitemap.xml'] }`. Khi đổi slug thêm `/look/<slug cũ>` | `revalidatePath` từng đường dẫn |
-| Lưu settings | `{ scope: 'all' }` | `revalidatePath('/', 'layout')`, phủ mọi trang |
+| Tạo, sửa, xoá, đặt nổi bật outfit | `{ paths: ['/', '/looks', '/look/<slug>', '/sitemap.xml'] }`. Khi đổi slug thêm `/look/<slug cũ>` | `revalidatePath` từng đường dẫn |
+| Lưu settings | `{ scope: 'all' }` | `revalidatePath('/', 'layout')` và `revalidateTag('public-settings', { expire: 0 })` (`apps/web/src/app/api/revalidate/route.ts`) |
 | Seed mẫu | Đường dẫn của các slug vừa seed | Như trên |
 
+- Đường dẫn `/looks` do `outfitPaths` (`apps/api/src/services/revalidate-web-service.ts`) thêm vào mọi lần đổi outfit, dùng hằng `LOOKS_PAGE_PATH` trong `packages/shared`.
+- Tag `public-settings` (`PUBLIC_SETTINGS_CACHE_TAG`) được gắn vào fetch settings trong `apps/web/src/lib/seo/public-data-loaders.ts`.
 - Header bắt buộc: `x-revalidate-secret` (hằng `REVALIDATE_SECRET_HEADER` trong `packages/shared`). Web so sánh bằng SHA-256 + `timingSafeEqual`; sai thì trả 401.
 - Body được validate bằng `revalidateRequestSchema`: tối đa 50 đường dẫn, không trùng, mỗi đường dẫn bắt đầu bằng `/`, hoặc `{ scope: "all" }`.
 - API chờ gọi revalidate với timeout 3 giây. Nếu web lỗi hoặc chậm, API chỉ ghi log cảnh báo `[revalidate]`, request admin vẫn thành công.
-- Lưới an toàn: trang public gọi `fetch` với `revalidate: PUBLIC_REVALIDATE_SECONDS` (mặc định 300). Nếu một lần revalidate bị mất, trang tối đa cũ thêm chừng đó giây.
+- Lưới an toàn: các loader public dùng `revalidate: PUBLIC_REVALIDATE_SECONDS` (mặc định 300). Nếu một lần revalidate bị mất, trang tối đa cũ thêm chừng đó giây.
 - Đường `/api/revalidate` nằm trên web nhưng Caddy không chuyển `/api/*` của web ra ngoài (các `/api/*` đều tới API), nên chỉ mạng nội bộ compose gọi được.
+
+Giới hạn về `/looks` và settings:
+- Danh sách `/looks` (`getPublicOutfitPage`) không gắn tag. Thay đổi `looksPageSize` có thể để trang `/looks` cũ tới khi cache danh sách hết hạn (`PUBLIC_REVALIDATE_SECONDS`). Tester quan sát điều này trước khi có tag `public-settings` (`plans/reports/tester-261107-0528-ui-refactor-e2e.md`). Chưa đo lại sau khi có tag.
+- Mục "Outfit khác" trên `/look/<slug>` có thể cũ tới `PUBLIC_REVALIDATE_SECONDS` khi outfit khác đổi. Đây là chấp nhận có chủ đích (quyết định 8 trong plan).
+
+## Tuỳ chọn giao diện admin (cookie)
+
+Hai cookie lưu tuỳ chọn hiển thị của admin. Không chứa dữ liệu nhạy cảm.
+
+| Cookie | Giá trị hợp lệ | Mặc định (khi thiếu hoặc sai) | Ý nghĩa |
+|--------|----------------|-------------------------------|---------|
+| `admin-theme` | `light`, `dark`, `system` | `system` | Giao diện sáng, tối, hoặc theo hệ điều hành |
+| `admin-sidebar` | `expanded`, `rail` | `expanded` | Sidebar đầy đủ hoặc thu gọn thành rail icon. Dưới 1024px bị ép thành rail, không đọc giá trị này |
+
+Cách ghi và đọc (`apps/web/src/app/admin/_lib/`):
+
+- Ghi qua Server Action `setAdminTheme` và `setSidebarState` (`admin-preference-actions.ts`), nhận `FormData`. Vì là form submit nên chạy được khi tắt JS. Giá trị ngoài danh sách bị bỏ qua, cookie giữ nguyên.
+- Đọc qua `readAdminTheme` và `readSidebarState`, có `safeParse`. Giá trị lạ trả về mặc định.
+- Thuộc tính: `httpOnly`, `sameSite: lax`, `path: /admin`, `maxAge` một năm (`PREFERENCE_MAX_AGE_SECONDS`).
+- Cờ `secure` chỉ bật khi request có header `x-forwarded-proto: https`. Không suy từ `NODE_ENV`, vì compose chạy build production qua HTTP. Chưa kiểm chứng: Caddy có tự gửi header này tới web hay không. Xem [Roadmap, việc chưa kiểm chứng](./development-roadmap.md#việc-chưa-kiểm-chứng).
+- Theme được gắn lên HTML trả về từ server (`data-theme`), nên trang tải đúng theme ngay lần đầu.
 
 ## Pipeline ảnh và media
 
@@ -256,12 +346,24 @@ Lỗi 500 được ghi log và trả thông điệp chung, không lộ stack.
 - Web đọc env qua `apps/web/src/lib/web-env.ts`, parse lười khi gọi. `ADMIN_TIME_ZONE` phải là IANA time zone hợp lệ.
 - Bảng đầy đủ biến và giá trị mặc định: [Triển khai, mục biến môi trường](./deployment-guide.md#tham-chiếu-biến-môi-trường).
 
-### Trang public
+Biến liên quan tới giao diện public và admin:
 
-- `/`: outfit nổi bật (`featured`). Nếu chưa có, trang hiển thị thông báo trống.
+| Biến | Mặc định | Đọc ở đâu | Ghi chú |
+|------|----------|-----------|---------|
+| `PUBLIC_LOOKS_PAGE_SIZE` | 12 | `env-config.ts` (schema) | Số outfit mỗi trang `/looks` khi settings chưa đặt |
+| `PUBLIC_RELATED_OUTFITS_COUNT` | 8 | `env-config.ts` (schema) | Số outfit ở mục "Outfit khác" khi settings chưa đặt |
+| `PUBLIC_PAGE_SIZE_MAX` | 48 | `env-config.ts` (schema) | Trần cho `size` và hai giá trị trên. Schema từ chối khi hai giá trị mặc định vượt trần |
+| `ADMIN_STATS_RECENT_COUNT` | 5 | `runtime-defaults.ts` (`process.env` trực tiếp) | Số outfit sửa gần đây trên Tổng quan. Không đi qua schema, nên không được kiểm tra lúc khởi động |
+| `PUBLIC_REVALIDATE_SECONDS` | 300 | `web-env.ts` | Thời gian tối đa dữ liệu public cũ khi revalidate bị mất |
+
+Các biến này có trong `.env.example`, `apps/api/.env.example` và `infra/docker-compose.yml`.
+
+### Trang public và admin
+
+- Trang public `/`, `/looks`, `/look/[slug]`: xem [Nhóm public](#nhóm-public-apppublic) ở trên.
 - `/look/[slug]`: outfit đã publish theo slug. Không có hoặc là draft thì 404.
 - `/sitemap.xml`, `/robots.txt`: `robots` chặn `/admin` và `/api`.
-- `/admin/*`: giao diện quản trị. Trang `/admin/login` là trang đăng nhập. Các trang còn lại thuộc nhóm `(protected)`: outfit (danh sách, tạo, sửa), settings, users.
+- `/admin/*`: giao diện quản trị. Xem [Nhóm admin](#nhóm-admin-app-admin) ở trên.
 
 ## Liên quan
 

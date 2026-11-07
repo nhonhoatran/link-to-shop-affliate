@@ -9,6 +9,7 @@ Liên quan: [Kiến trúc hệ thống](./system-architecture.md) · [Triển kh
 - [Đặt tên file](#đặt-tên-file)
 - [Kích thước file](#kích-thước-file)
 - [Phân lớp và cách tổ chức code](#phân-lớp-và-cách-tổ-chức-code)
+- [Giao diện (web)](#giao-diện-web)
 - [Hợp đồng dùng chung](#hợp-đồng-dùng-chung-packagesshared)
 - [Cấu hình, không fix cứng giá trị nghiệp vụ](#cấu-hình-không-fix-cứng-giá-trị-nghiệp-vụ)
 - [Danh sách lọc, tìm kiếm, phân trang](#danh-sách-lọc-tìm-kiếm-phân-trang)
@@ -30,12 +31,12 @@ pnpm workspace (`pnpm-workspace.yaml`: `apps/*`, `packages/*`). Các lệnh ở 
 │   │   ├── src/
 │   │   │   ├── config/       # env-config.ts: schema env (Zod)
 │   │   │   ├── db/           # kết nối Mongo, build index
-│   │   │   ├── lib/          # tiện ích dùng chung của API (semaphore, device cookie, ...)
+│   │   │   ├── lib/          # tiện ích dùng chung của API (semaphore, device cookie, runtime-defaults, ...)
 │   │   │   ├── middleware/   # session, origin, JSON-only, rate limit, lỗi
 │   │   │   ├── models/       # schema Mongoose: outfit, admin-user, settings
-│   │   │   ├── routes/       # khai báo route, gọi service
+│   │   │   ├── routes/       # khai báo route, gọi service (public, admin stats, ...)
 │   │   │   ├── scripts/      # create-admin, seed-samples (chạy bằng tsx hoặc node dist/)
-│   │   │   ├── services/     # nghiệp vụ: outfit, media, settings, revalidate, ...
+│   │   │   ├── services/     # nghiệp vụ: outfit, public list, admin stats, media, settings, revalidate, ...
 │   │   │   ├── storage/      # client S3
 │   │   │   ├── create-app.ts # ghép middleware và route (createApp)
 │   │   │   └── server.ts     # điểm vào: nạp env, kết nối Mongo, listen
@@ -44,11 +45,11 @@ pnpm workspace (`pnpm-workspace.yaml`: `apps/*`, `packages/*`). Các lệnh ở 
 │   │   └── .env.example
 │   └── web/                  # @under30ss/web: Next.js 16 (App Router)
 │       ├── src/
-│       │   ├── app/          # route: /, /look/[slug], /admin/..., /api/revalidate, robots, sitemap
-│       │   ├── components/   # admin/, lookbook/, public/
-│       │   ├── hooks/admin/  # hook của editor admin
-│       │   ├── lib/          # client API (browser/server), SEO, web-env, media-url
-│       │   └── styles/       # design-tokens.css (token CSS)
+│       │   ├── app/          # route group (public)/ (/, /looks, /look/[slug]); admin/ (admin/(protected)/ là khu quản trị); api/revalidate; robots, sitemap
+│       │   ├── components/   # admin/ (shell/, overview/, ...), lookbook/, public/, motion/, ui/
+│       │   ├── hooks/        # use-modal-dialog.ts, hook của editor admin (hooks/admin/)
+│       │   ├── lib/          # client API (browser/server), SEO, web-env, media-url, admin-paths.ts
+│       │   └── styles/       # design-tokens.css, client-theme-tokens.css, admin-theme-tokens.css, motion-primitives.module.css
 │       ├── test/             # vitest + jsdom + Testing Library
 │       ├── Dockerfile
 │       └── .env.example
@@ -79,20 +80,22 @@ Thư mục `.claude/`, `.agent/`, `.agents/`, `.cursor/`, `.opencode/` là công
 
 - Tên file dùng **kebab-case** và mô tả đúng nội dung. Ví dụ `login-rate-limit-middleware.ts`, `device-cookie.ts`, `outfit-editor-toolbar.tsx`, `compute-connector-paths.ts`.
 - Test: `*.test.ts` hoặc `*.test.tsx`, đặt trong `src/` (cạnh code) hoặc trong `test/` của workspace.
-- Playwright: `*.spec.ts` cho test, `*.teardown.ts` cho dọn dẹp (`e2e/`).
-- Ngoại lệ bắt buộc của Next.js: tên file/thư mục quy ước của App Router (`page.tsx`, `layout.tsx`, `route.ts`, `robots.ts`, `sitemap.ts`, `not-found.tsx`), thư mục động `[slug]`, nhóm `(protected)`.
-- Module CSS: `*.module.css`. Token CSS dùng chung: `design-tokens.css`.
+- Playwright: `*.spec.ts` cho test, `*.teardown.ts` cho dọn dẹp (`e2e/`). Tiền tố tên spec quyết định project: `admin-outfit-flow*` (project `admin-flow`), `public-*` (project `public`), `admin-shell-*` (project `admin-shell`), `visual-*` (project `visual`). Xem `playwright.config.ts`.
+- Ngoại lệ bắt buộc của Next.js: tên file/thư mục quy ước của App Router (`page.tsx`, `layout.tsx`, `template.tsx`, `route.ts`, `robots.ts`, `sitemap.ts`, `not-found.tsx`, `loading.tsx`), thư mục động `[slug]`, nhóm `(public)` và `(protected)`.
+- Module CSS: `*.module.css`. Token CSS dùng chung: `design-tokens.css` (kích thước, motion, breakpoint), `client-theme-tokens.css` (màu public), `admin-theme-tokens.css` (màu admin).
 - Script: kebab-case (`clean-model-lines.py`, `backup-mongo-and-bucket.sh`).
 - Tên hàm và biến: camelCase. Kiểu và schema: PascalCase. Hằng: UPPER_SNAKE_CASE (`PUBLIC_KEY_PREFIX`, `ERROR_CODES`).
-- Mã lỗi API và giá trị enum: UPPER_SNAKE_CASE (`PAYLOAD_TOO_LARGE`) hoặc chữ thường theo schema (`draft`, `published`).
-- Tên biến môi trường: UPPER_SNAKE_CASE. Tiền tố theo nhóm: `LOGIN_RATE_LIMIT_*`, `S3_*`, `ADMIN_*`, `ARGON2_*`.
+- Mã lỗi API và giá trị enum: UPPER_SNAKE_CASE (`PAYLOAD_TOO_LARGE`) hoặc chữ thường theo schema (`draft`, `published`, `light`, `dark`, `system`).
+- Tên biến môi trường: UPPER_SNAKE_CASE. Tiền tố theo nhóm: `LOGIN_RATE_LIMIT_*`, `S3_*`, `ADMIN_*`, `PUBLIC_*`, `ARGON2_*`.
 
 ## Kích thước file
 
 - Mỗi file code dưới **200 dòng**. Vượt ngưỡng thì tách module (hàm tiện ích sang file riêng, nghiệp vụ sang service, component con).
 - Ưu tiên composition hơn kế thừa cho component.
-- Hiện trạng đo ngày 2026-11-07 bằng `wc -l`: file lớn nhất là `apps/web/src/components/lookbook/lookbook.module.css` (195 dòng). File TypeScript lớn nhất khoảng 183 dòng (`apps/api/test/outfits-admin-crud.test.ts`).
-- Lịch sử: các file test vượt 200 dòng đã được tách trong P7 (xem [Lịch sử thay đổi](./project-changelog.md)).
+- Hiện trạng đo ngày 2026-11-07 bằng `wc -l`:
+  - Lớn nhất trong `apps/web/src`, `apps/api/src`, `packages/shared/src`, `e2e`: `apps/web/src/components/lookbook/lookbook.module.css` (199 dòng), `apps/web/src/components/admin/shell/admin-sidebar.module.css` (190 dòng), `apps/web/src/components/lookbook/lookbook-interactions.tsx` (173 dòng).
+  - File test lớn nhất: `apps/web/test/admin/outfit-editor-actions.test.tsx` (199 dòng), `apps/api/test/outfits-admin-crud.test.ts` (184 dòng).
+- Lịch sử: các file test vượt 200 dòng đã được tách trong P7 của v1 (xem [Lịch sử thay đổi](./project-changelog.md)).
 
 ## Phân lớp và cách tổ chức code
 
@@ -101,21 +104,89 @@ Thư mục `.claude/`, `.agent/`, `.agents/`, `.cursor/`, `.opencode/` là công
 Luồng xử lý một request: `middleware` → `routes` → `services` → `models`.
 
 - **Route** chỉ parse input (qua `validateBody` hoặc schema query), gọi service, rồi trả JSON. Route không gọi Mongoose trực tiếp.
-- **Service** chứa nghiệp vụ và là nơi duy nhất truy cập model. Ví dụ `outfit-service.ts`, `settings-service.ts`, `admin-user-service.ts`.
+- **Service** chứa nghiệp vụ và là nơi duy nhất truy cập model. Ví dụ `outfit-service.ts`, `public-outfit-service.ts`, `admin-stats-service.ts`, `settings-service.ts`, `admin-user-service.ts`.
 - **Phụ thuộc bên ngoài được tiêm qua `AppContext`** (`lib/app-context.ts`): `env`, `storage` (interface `ObjectStorage`), `revalidate`. Test thay thế các phụ thuộc này thay vì mock module.
 - **Lỗi nghiệp vụ** ném `AppError` (kèm mã và HTTP status) hoặc các helper `badRequest`, `notFound`, `conflict`, `unauthorized`. `error-handler-middleware.ts` đổi thành JSON chuẩn.
 - Điểm vào `server.ts` làm các việc khởi động (nạp env, kết nối Mongo, build index, warm-up hash). Lỗi ở bước nào thì thoát tiến trình với mã khác 0.
 
 ### Web (`apps/web`)
 
-- Trang public là Server Component. Dữ liệu lấy qua `lib/seo/public-data-loaders.ts` (đã bọc `cache`) và `lib/api-client-server.ts`.
-- Admin gọi API qua `lib/api-client-browser.ts` (đường dẫn tương đối, cùng origin). Lỗi API đi qua `api-client-error.ts`.
+- Trang public là Server Component. Dữ liệu lấy qua `lib/seo/public-data-loaders.ts` (đã bọc `cache`, gắn tag khi cần) và `lib/api-client-server.ts`.
+- Admin gọi API qua `lib/api-client-browser.ts` (đường dẫn tương đối, cùng origin). Lỗi API đi qua `api-client-error.ts`. Trang admin đọc dữ liệu phía server qua `app/admin/_lib/admin-api.ts`.
 - Biến môi trường web đọc qua `lib/web-env.ts`, parse lười. Không đọc `process.env` rải rác.
 - Không dùng `next/image` tối ưu hoá (`unoptimized: true`, xem `apps/web/next.config.ts`). Lý do ghi trong file config.
+- URL admin lấy từ `ADMIN_PATHS` (`apps/web/src/lib/admin-paths.ts`). Không gõ chuỗi `/admin/...` trong component.
+- Cookie chỉ ghi qua Server Action (`app/admin/_lib/admin-preference-actions.ts`). Action nhận `FormData`, kiểm bằng zod enum, giá trị lạ bị bỏ qua.
 
 ### Lookbook
 
-Component lookbook nằm trong `components/lookbook/`. Đường cong connector tính trong `compute-connector-paths.ts` (cubic Bézier). Các giá trị hiển thị (kích thước, tỉ lệ cột, độ cong) nằm trong token ở `styles/design-tokens.css`, không hard-code trong component.
+Component lookbook nằm trong `components/lookbook/`. Đường cong connector tính trong `compute-connector-paths.ts` (cubic Bézier). Các giá trị hiển thị (kích thước, tỉ lệ cột, độ cong, thời lượng animation) nằm trong token ở `styles/design-tokens.css`, không hard-code trong component.
+
+## Giao diện (web)
+
+Phần này áp dụng cho mọi thay đổi CSS và component giao diện. Nguồn: refactor giao diện 2026-11-07.
+
+### Token màu và kích thước
+
+| File | Phạm vi | Ghi chú |
+|------|---------|---------|
+| `styles/design-tokens.css` | Dùng chung | Thang chữ, khoảng cách, bán kính, motion (`--duration-*`, `--easing-*`, `--stagger-step`, `--motion-distance`, `--toast-duration`), breakpoint `--bp-md` (768), `--bp-lg` (1024), `--bp-xl` (1440), chiều cao điều khiển admin `--admin-control-height` (44px) |
+| `styles/client-theme-tokens.css` | Public | `--client-*`, khai báo trên `:root`. Không có khối dark |
+| `styles/admin-theme-tokens.css` | Admin | `--admin-*`. Sáng ở `:root`, tối ở khối `[data-theme='dark']` và `[data-theme='system']` (kèm `@media (prefers-color-scheme: dark)`) |
+
+Quy tắc:
+
+- **Dark mode admin dùng khối `[data-theme]`, không dùng `light-dark()`.** Next (lightningcss) hạ cấp `light-dark()` thành biến toggle resolve ở `:root`, nên descendant `[data-theme='dark']` không đổi màu. Lý do ghi trong đầu `admin-theme-tokens.css`.
+- **Hai khối dark phải giống hệt nhau.** Khối `[data-theme='dark']` và khối `[data-theme='system']` trong media query phải có cùng giá trị. Sửa một khối thì sửa cả hai.
+- Màu trong component dùng token, không hard-code hex. Ngoại lệ đã ghi nhận: `THEME_COLOR` trong `app/layout.tsx` là hằng cứng (xem [Roadmap](./development-roadmap.md)).
+- Token `--bp-*` không dùng được trong media query. Media query viết giá trị px cố định kèm chú thích `/* 768px = --bp-md */` (hoặc `--bp-lg`, `--bp-xl`). Các media query ở shell, editor, list, overview, tabs và lookbook đã có chú thích. `outfit-card.module.css` và `site-header.module.css` chưa có (xem [Roadmap](./development-roadmap.md)).
+
+### Animation lúc tải trang: chỉ CSS
+
+- Hiệu ứng vào trang (fade, stagger, reveal) viết bằng CSS trong `styles/motion-primitives.module.css`: `fadeUp`, `fadeIn`, `revealOnScroll`. Dùng `animation-fill-mode: backwards`, **không** dùng `both`. Trạng thái "from" chỉ áp dụng lúc chờ delay, sau đó quy tắc opacity/transform bình thường (ví dụ làm mờ món khác khi hover) thắng.
+- Mỗi phần tử chỉ gắn **một** class animation.
+- Route fade: `app/(public)/template.tsx` dùng `fadeIn`.
+- Draw-once của connector lookbook: keyframes `draw` trong `components/lookbook/lookbook-motion.module.css` chỉ chạy khi có thuộc tính `[data-ready]`. `useLookbookReady` không quay lại `false`, nên đổi viewport không chạy lại animation. Thuộc tính `data-ready` là cơ chế kiểm trong e2e, không dùng `data-drawn`.
+
+### Motion (`motion@14.10.1`): chỉ cho tương tác sau hydrate
+
+- Chỉ dùng cho tương tác sau khi trang đã hydrate: hiện tại là header public ẩn/hiện khi cuộn (`components/public/hide-on-scroll-header.tsx`) và toast admin (`components/admin/shell/admin-toast-provider.tsx`).
+- Dùng component `m.*` (ví dụ `m.header`, `m.div`). `components/motion/motion-provider.tsx` bọc `LazyMotion` (`domAnimation`, `strict`) và `MotionConfig reducedMotion="user"`. `MotionProvider` được mount trong `app/layout.tsx`. Với `strict`, `motion.div` (không phải `m.div`) sẽ lỗi lúc chạy.
+- **Cấm trạng thái ẩn lúc SSR** bằng motion: không đặt `initial` làm phần tử ẩn trong HTML trả về. Nội dung phải có sẵn trong HTML.
+- Thay đổi bề rộng rail admin dùng CSS `transition: width`, không dùng motion, vì bố cục do cookie quyết định từ server.
+
+### Tắt JS và giảm chuyển động
+
+- Nội dung cuối cùng phải hiển thị khi tắt JS. Animation CSS vẫn chạy khi tắt JS, nên mọi phần tử được animate phải về `opacity: 1` khi animation kết thúc.
+- `prefers-reduced-motion: reduce`: `motion-primitives.module.css` đặt `animation: none`. `globals.css` rút thời lượng animation và transition về `0.01ms`. Motion dùng `reducedMotion="user"`.
+- Kiểm bằng e2e: `public-viewport-and-no-js.spec.ts` đọc `getComputedStyle(...).opacity` sau khi animation xong. Không chỉ dùng `toBeVisible()`, vì Playwright không xét opacity.
+- Lookbook ẩn connector khi chưa `data-ready` (`visibility: hidden`). Ảnh lỗi cũng phải được coi là sẵn sàng (listener `error` trong `use-lookbook-ready.ts`), nếu không đường nối ẩn vĩnh viễn.
+
+### Icon
+
+- Icon trang trí dùng `DecorativeIcon` (`components/ui/decorative-icon.tsx`), bọc `lucide-react@1.70.0`. Component gắn `aria-hidden="true"` và `focusable="false"`.
+- Icon mang nghĩa (nút chỉ có icon) phải có nhãn riêng qua `aria-label` hoặc text ẩn, không dựa vào icon.
+- Rail sidebar: khi thu gọn, link có `aria-label` và tooltip CSS (`data-tip`). Khi mở rộng, bỏ `aria-label` vì chữ đã hiện, tránh lệch tên (WCAG 2.5.3).
+
+### Hộp thoại, drawer, toast
+
+- Mọi hộp thoại và drawer dùng `hooks/use-modal-dialog.ts` (`useModalDialog`) trên `<dialog>` với `showModal()`. Đóng thì trả focus về phần tử đã mở. Drawer mobile hiện dùng hook này (`components/admin/shell/admin-nav-drawer.tsx`).
+- **Toast chỉ báo thành công.** `toast.success(...)` qua `useAdminToast` (`components/admin/shell/use-admin-toast.ts`). Tự ẩn sau `--toast-duration`.
+- **Lỗi hiện inline** cạnh field hoặc form (`FormError`), không đưa vào toast. Một lỗi không được xuất hiện trên hai kênh cùng lúc, vì cả hai đều nằm trong vùng `role="alert"`.
+- Hai live region của toast luôn có sẵn trong DOM. Chỉ phần tử toast con được animate bằng `m.*`.
+
+### Điều khiển chạm và URL
+
+- Vùng chạm tối thiểu **44px** cho điều khiển admin (`--admin-control-height`). Nav public cũng được kiểm ở 320 và 390px trong e2e.
+- Nút và link trong admin bo theo `--admin-radius`, focus ring theo `--admin-focus`.
+- Mọi URL admin lấy từ `ADMIN_PATHS` (xem [Route admin](./system-architecture.md#nhóm-admin-appadmin)).
+
+### Baseline visual của lookbook
+
+- Spec `e2e/visual-reference-screenshots.spec.ts` chụp `[data-lookbook]` bằng `toHaveScreenshot` ở 390 và 1440px. Ảnh baseline nằm trong `e2e/visual-reference-screenshots.spec.ts-snapshots/`, tên có hậu tố `-visual-win32.png`.
+- Baseline ghi nhận với **dev mode** (`pnpm dev`) trên **Windows (win32)**. Chạy ở môi trường khác (OS, chế độ build) sẽ lệch font và pixel, cần baseline riêng.
+- Chạy: `pnpm e2e --project visual`.
+- Không dùng `--update-snapshots` tuỳ tiện. Chỉ cập nhật baseline khi có thay đổi thiết kế chủ đích, và ghi vào [Lịch sử thay đổi](./project-changelog.md).
 
 ## Hợp đồng dùng chung (`packages/shared`)
 
@@ -130,11 +201,11 @@ Component lookbook nằm trong `components/lookbook/`. Đường cong connector 
 
 Giá trị nghiệp vụ (giới hạn upload, ngưỡng rate limit, số trang, múi giờ, thời gian cache, tên site) không được hard-code. Chúng nằm ở một trong ba nơi, ưu tiên theo thứ tự:
 
-1. **Settings trong DB** (admin sửa trên UI): tên site, SEO, OG image, `uploadMaxMb`.
+1. **Settings trong DB** (admin sửa trên UI): tên site, SEO, OG image, `uploadMaxMb`, `looksPageSize`, `relatedOutfitsCount`.
 2. **Biến môi trường** có schema: `apps/api/src/config/env-config.ts`, `apps/web/src/lib/web-env.ts`, tham số tuỳ chọn trong `apps/api/src/lib/runtime-defaults.ts`.
 3. **Compose**: giá trị mặc định cho các biến trong `infra/docker-compose.yml` (dạng `${VAR:-default}`).
 
-Ngoại lệ là guard kỹ thuật, không phải giá trị nghiệp vụ (ví dụ `MAX_INPUT_PIXELS` 100 triệu, `REVALIDATE_TIMEOUT_MS` 3000, `JSON_BODY_LIMIT` 1 MB, `MAX_PATHS` 50). Ngoại lệ phải có lý do ghi trong code.
+Ngoại lệ là guard kỹ thuật, không phải giá trị nghiệp vụ (ví dụ `MAX_INPUT_PIXELS` 100 triệu, `REVALIDATE_TIMEOUT_MS` 3000, `JSON_BODY_LIMIT` 1 MB, `MAX_PATHS` 50, `MAX_LIST_PAGE` 100000). Ngoại lệ phải có lý do ghi trong code.
 
 **Checklist khi thêm một biến môi trường mới:**
 
@@ -147,7 +218,8 @@ Ngoại lệ là guard kỹ thuật, không phải giá trị nghiệp vụ (ví
 ## Danh sách lọc, tìm kiếm, phân trang
 
 - Query, lọc, sắp xếp và phân trang làm ở **server**. Admin gọi `GET /api/admin/outfits?q&status&page&size` và nhận đúng một trang. Không kéo toàn bộ dữ liệu về trình duyệt rồi lọc bằng JS.
-- Kích thước trang mặc định và tối đa lấy từ `ADMIN_PAGE_SIZE_DEFAULT` và `ADMIN_PAGE_SIZE_MAX`.
+- Public: `/looks?page=n` render phía server; API `GET /api/public/outfits?page&size` trả đúng một trang.
+- Kích thước trang mặc định và tối đa lấy từ settings hoặc env: admin dùng `ADMIN_PAGE_SIZE_DEFAULT` và `ADMIN_PAGE_SIZE_MAX`; public dùng `looksPageSize` (fallback `PUBLIC_LOOKS_PAGE_SIZE`) và trần `PUBLIC_PAGE_SIZE_MAX`.
 - Tương tác nhỏ (ô tìm kiếm, phân trang) dùng form hoặc link để server dựng lại kết quả.
 
 ## Comment
@@ -191,27 +263,38 @@ Quy tắc: không bỏ qua test đang fail để qua build. Không dùng mock th
 
 | Phạm vi | Công cụ | Vị trí | Số test (2026-11-07) |
 |---------|---------|--------|----------------------|
-| `packages/shared` | Vitest | `packages/shared/src/**/*.test.ts` | 32 |
-| `apps/api` | Vitest, supertest, mongodb-memory-server | `apps/api/src/**/*.test.ts`, `apps/api/test/**/*.test.ts` | 83 |
-| `apps/web` | Vitest, jsdom, Testing Library | `apps/web/src/**/*.test.{ts,tsx}`, `apps/web/test/**/*.test.{ts,tsx}` | 166 |
-| E2E | Playwright (Chromium) | `e2e/*.spec.ts`, `e2e/cleanup.teardown.ts` | 17 |
+| `packages/shared` | Vitest | `packages/shared/src/**/*.test.ts` | 37 |
+| `apps/api` | Vitest, supertest, mongodb-memory-server | `apps/api/src/**/*.test.ts`, `apps/api/test/**/*.test.ts` | 102 |
+| `apps/web` | Vitest, jsdom, Testing Library | `apps/web/src/**/*.test.{ts,tsx}`, `apps/web/test/**/*.test.{ts,tsx}` | 265 |
+| E2E | Playwright (Chromium) | `e2e/*.spec.ts`, `e2e/cleanup.teardown.ts` | 65 (đã liệt kê, xem bên dưới) |
 
 Chi tiết:
 
 - **API.** `apps/api/vitest.config.ts` dùng `globalSetup: test/setup/shared-mongod-global-setup.ts`. Một MongoDB in-memory được khởi động cho cả lần chạy, nên test không cần Mongo thật. Test HTTP dùng supertest trên `createApp`.
 - **Web.** `environment: jsdom`, `globals: true`, setup `apps/web/test/setup.ts`. Alias `@/` trỏ tới `apps/web/src`.
-- **E2E.** `playwright.config.ts` ở gốc, `testDir: e2e`, `baseURL` mặc định `http://localhost:8080`. Config không tự khởi động server, stack phải chạy sẵn.
-  - Project `admin-flow` tạo outfit qua UI. `public` phụ thuộc `admin-flow` (kiểm link, hover, viewport 390 và 320 px, chế độ không JS, 404). `visual` chụp ảnh so với ảnh mẫu. `cleanup` là teardown: xoá outfit test qua API.
+- **E2E.** `playwright.config.ts` ở gốc, `testDir: e2e`, `baseURL` mặc định `http://localhost:8080`. Config không tự khởi động server, stack phải chạy sẵn (Docker hoặc `pnpm dev`, xem [Triển khai](./deployment-guide.md)).
+  - Project và thứ tự:
+
+    | Project | Spec | Ghi chú |
+    |---------|------|---------|
+    | `admin-flow` | `admin-outfit-flow.spec.ts` | Tạo outfit qua UI. Project `public` chờ project này xong |
+    | `public` | `public-*.spec.ts` | Trang public, `/looks`, connector, viewport, chế độ không JS |
+    | `admin-shell` | `admin-shell-*.spec.ts` | Theme, rail, drawer, toast, redirect, viewport admin. Không phụ thuộc `admin-flow` |
+    | `visual` | `visual-*.spec.ts` | Chụp `[data-lookbook]` so với baseline |
+    | `cleanup` | `cleanup.teardown.ts` | Xoá outfit test qua API sau khi chạy |
+
   - Biến môi trường: `E2E_ADMIN_PASSWORD` (bắt buộc, không có giá trị mặc định, không lưu trong repo), `E2E_ADMIN_EMAIL` (mặc định `admin@under30ss.local`), `E2E_BASE_URL` (mặc định `http://localhost:8080`).
-  - Test chỉ đăng nhập thành công, không thử sai, nên không chạm rate limit. Mỗi lần chạy tốn hai lần đăng nhập thành công (`admin-flow` và `cleanup`). Playwright chạy `retries: 0`.
-- **Lighthouse.** Mục tiêu SEO và accessibility ≥ 95 (kế hoạch P7). Lần đo gần nhất 2026-11-06 cho 100 ở cả hai, trên `/` và `/look/dramatic`, desktop và mobile. Không có script tự động trong repo, chạy tay bằng Lighthouse CLI.
+  - Test chỉ đăng nhập thành công, không thử sai, nên không chạm rate limit. Playwright chạy `retries: 0`.
+  - Số test: 65 (admin-flow 1, public 41, admin-shell 18, visual 4, cleanup 1). Chạy đầy đủ 2026-11-07: 65 passed.
+- **Lighthouse.** Mục tiêu SEO và accessibility ≥ 95 (kế hoạch P7). Không có script tự động trong repo, chạy tay bằng Lighthouse CLI. Kết quả đo và điều kiện xem [Roadmap, trạng thái](./development-roadmap.md#trạng-thái-phase).
 
 ## Bảo mật trong code
 
 - Secret chỉ đi qua biến môi trường. Không ghi vào repo, không đặt trong `*.example`.
 - Mật khẩu admin không nhận qua tham số dòng lệnh. `create-admin` từ chối cờ `--password` và hỏi mật khẩu qua prompt (ẩn khi có TTY).
-- Mọi input đi qua schema Zod ở biên (`validateBody`, schema query, schema body upload). Không tin dữ liệu từ client.
+- Mọi input đi qua schema Zod ở biên (`validateBody`, schema query, schema body upload, Server Action cookie). Không tin dữ liệu từ client.
 - Ảnh được decode và encode lại bằng sharp, không lưu file gốc. Chỉ nhận định dạng cho phép.
 - Key object S3 công khai phải nằm dưới `public/`. Mọi đường ghi chỉ qua API.
 - Dùng `timingSafeEqual` cho so sánh secret và chữ ký. Dùng `crypto.randomUUID` cho key ảnh.
 - Thông báo lỗi 500 không lộ stack hay chi tiết nội bộ cho client.
+- Cookie giao diện admin không chứa dữ liệu nhạy cảm, chỉ `admin-theme` và `admin-sidebar` với giá trị nằm trong danh sách cho phép.

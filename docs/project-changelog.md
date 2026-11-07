@@ -4,6 +4,66 @@ Ghi lại các thay đổi đáng kể theo phiên bản. Mỗi mục ghi ngày,
 
 Liên quan: [Roadmap](./development-roadmap.md) · [Kiến trúc](./system-architecture.md) · [Triển khai](./deployment-guide.md)
 
+## Refactor giao diện client và admin (2026-11-07)
+
+Phạm vi: `apps/web`, `apps/api`, `packages/shared`, `e2e`. Kế hoạch: `plans/261107-0913-professional-ui-refactor-client-admin/` (7 phase). Thay đổi chưa commit tại thời điểm viết mục này.
+
+### Tính năng
+
+| Phase | Nội dung |
+|-------|----------|
+| P1 | Token chia 3 file (`design-tokens.css`, `client-theme-tokens.css`, `admin-theme-tokens.css`). Primitive chuyển động CSS. Baseline visual lookbook (`[data-lookbook]`) |
+| P2 | API `GET /api/public/outfits?page&size` và `GET /api/admin/stats`. Settings thêm `looksPageSize`, `relatedOutfitsCount`. Index `{ status, updatedAt, _id }`. Revalidate thêm `/looks` và tag `public-settings`. Bốn biến env mới |
+| P3 | Shell public: header ẩn khi cuộn xuống, hiện khi cuộn lên, footer có link. Trang `/looks` phân trang phía server. Breadcrumb, mục "Outfit khác", 404 public |
+| P4 | Lookbook: connector vẽ một lần khi có `data-ready`, không vẽ lại khi đổi kích thước. Route fade. Hover giữ hiệu ứng phóng ảnh và làm mờ món khác |
+| P5 | Shell admin: sidebar, rail thu gọn, drawer trên mobile. Dark mode ba trạng thái (`admin-theme`). Trang Tổng quan `/admin`. URL cũ `/admin?q|status|page` chuyển 307 sang `/admin/outfits`. Toast, trang đăng nhập làm lại, skeleton |
+| P6 | Danh sách outfit tại `/admin/outfits` (dạng card dưới 768px). Editor, settings (hai trường số trang mới), users theo breakpoint |
+| P7 | Playwright: thêm project `admin-shell`, spec responsive và spec theme/drawer. Cập nhật các spec cũ theo route mới |
+
+Dependency mới trong `apps/web`: `lucide-react@1.70.0`, `motion@14.10.1`.
+
+### Sửa lỗi và điều chỉnh
+
+| Mục | Thay đổi |
+|-----|----------|
+| Tương phản admin | `--admin-border-strong` (sáng) từ `#a8a29e` (2.52:1 trên nền trắng, không đạt) lên `#8a827c` (3.77:1, đạt ngưỡng 3:1 cho thành phần UI). Xem `design-palette-and-contrast.md` |
+| Chiều cao điều khiển admin | `--admin-control-height` từ 40px lên 44px, đạt vùng chạm tối thiểu |
+| Toast | Chỉ báo thành công. Lỗi hiện inline, không lặp trên hai kênh `role="alert"` (review 2026-11-07) |
+| Drawer | Dùng `<dialog>` với `showModal()` qua `useModalDialog`, trả focus khi đóng, đóng khi đổi route |
+| Lookbook | Ảnh lỗi được coi là sẵn sàng, connector không bị ẩn vĩnh viễn. `ready` không quay lại `false` |
+| Backdrop admin | `::backdrop` dùng token `--admin-backdrop` thay màu thô |
+| SEO `/looks` | Có mô tả dự phòng khi `seoDescription` trống (`build-looks-metadata.ts`) |
+| Cache settings | Lưu settings gọi `revalidateTag('public-settings')` ngoài `revalidatePath` |
+| API list | `page` có trần `MAX_LIST_PAGE` (100000) để `skip` không tràn. Thêm index compound cho truy vấn public |
+| Breadcrumb | `aria-label` tiếng Việt ("Đường dẫn trang") |
+| E2E teardown | File trạng thái outfit test chỉ bị xoá sau khi xoá outfit thành công. Lần chạy sau thử lại thay vì mất dấu |
+
+### Khác với kế hoạch ban đầu
+
+- Không có `loading.tsx` ở `(protected)/`. Tổng quan dùng `Suspense` trong `page.tsx`, vì loading boundary làm redirect thành 200 kèm meta refresh.
+- Dark mode admin dùng khối `[data-theme]`, không dùng `light-dark()`. Next (lightningcss) hạ cấp hàm này.
+- Connector dùng thuộc tính `data-ready` (không phải `data-drawn`).
+- Bỏ hiệu ứng nhích lên khi hover món trong lookbook, vì làm lệch đường chỉ khỏi ảnh.
+- Header public không có nút menu. Hai link hiện thẳng ở mọi màn hình.
+- Thẻ "Thiếu link affiliate" chỉ hiện số, chưa có bộ lọc riêng.
+
+### Kiểm thử
+
+| Hạng mục | Kết quả |
+|----------|---------|
+| Unit shared | 37 pass (trước: 32) |
+| Unit api | 102 pass (trước: 83). Lần chạy đầu có một lần worker crash ở `auth-cookie-flags.test.ts`, lần chạy lại 102/102 |
+| Unit web | 265 pass (trước: 166) |
+| E2E | 65 passed (trước: 17), gồm visual 4 với baseline P1 |
+| Lighthouse SEO (dev mode) | `/`, `/looks`, `/look/dramatic`: 100 mobile và desktop |
+
+### Lưu ý khi nâng cấp
+
+- API tự tạo index `{ status, updatedAt, _id }` khi khởi động. Không cần thao tác tay.
+- Bốn env mới đã có trong `.env.example`, `apps/api/.env.example` và `infra/docker-compose.yml`: `PUBLIC_LOOKS_PAGE_SIZE`, `PUBLIC_RELATED_OUTFITS_COUNT`, `PUBLIC_PAGE_SIZE_MAX`, `ADMIN_STATS_RECENT_COUNT`.
+- Cookie mới `admin-theme` và `admin-sidebar` không yêu cầu đăng nhập lại.
+- URL `/admin?q|status|page` cũ được chuyển sang `/admin/outfits`. Bookmark cũ vẫn dùng được.
+
 ## v1 (2026-11-07)
 
 Bản đầu tiên của Under30ss Shop the look: lookbook dựng từ dữ liệu, admin quản lý outfit và ảnh, triển khai bằng Docker Compose với Caddy. Hoàn thành qua 7 phase (P1 đến P7), kế hoạch tại `plans/261106-1201-under30ss-shop-the-look/`.
