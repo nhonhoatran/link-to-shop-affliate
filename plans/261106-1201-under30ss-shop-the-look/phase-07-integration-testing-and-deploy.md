@@ -4,7 +4,7 @@
 - [plan.md](./plan.md) · tất cả phase trước
 
 ## Overview
-- Priority: P1 · Status: Pending · Effort: 6h · Wave 4 (tuần tự) · blockedBy: P2, P3, P5, P6
+- Priority: P1 · Status: Done (VPS/HTTPS chưa thử) · Effort: 6h · Wave 4 (tuần tự) · blockedBy: P2, P3, P5, P6
 - Ráp toàn hệ thống trên compose, chạy seed thật, e2e + visual so ảnh mẫu, review, compose prod, docs, git.
 
 ## File Ownership
@@ -36,33 +36,33 @@
 7. Git (sau khi xác nhận account).
 
 ## Todo List
-- [ ] Ráp + seed + smoke test
-- [ ] E2E public + admin
-- [ ] Visual so ảnh mẫu
-- [ ] Lighthouse SEO ≥95
-- [ ] ui-consistency verifying
-- [ ] Code review + fix
-- [ ] Compose prod + backup
-- [ ] Docs
-- [ ] Git init (sau xác nhận)
+- [x] Ráp + seed + smoke test
+- [x] E2E public + admin
+- [x] Visual so ảnh mẫu
+- [x] Lighthouse SEO ≥95
+- [x] ui-consistency verifying
+- [x] Code review + fix
+- [x] Compose prod + backup
+- [x] Docs
+- [x] Git init (sau xác nhận)
 
 ### Mục hoãn từ P1–P6 (phải xử lý trong P7)
-- [ ] Compose: `docker compose up` đủ 5 service; Dockerfile api/web build được (P1, P2)
-- [ ] Caddy: 413 trả JSON `PAYLOAD_TOO_LARGE`; `/api/health` trả 404 từ ngoài; `/media` chỉ GET/HEAD (fix round 2)
-- [ ] RustFS: public-read policy cho prefix `public/` hoạt động (`infra/rustfs-init/init-bucket.sh`); upload thật, file xem được qua `/media/...` (P1, P2)
-- [ ] Seed thật: `pnpm seed:samples` với `seed/sample-outfits.json` (P2, P3)
-- [ ] Mongo auth + bỏ publish port trong `docker-compose.prod.yml` (D5)
-- [ ] L8: object S3 mồ côi (ghi vào roadmap)
+- [x] Compose: `docker compose up` đủ 5 service; Dockerfile api/web build được (P1, P2)
+- [x] Caddy: 413 trả JSON `PAYLOAD_TOO_LARGE`; `/api/health` trả 404 từ ngoài; `/media` chỉ GET/HEAD (fix round 2)
+- [x] RustFS: public-read policy cho prefix `public/` hoạt động (`infra/rustfs-init/init-bucket.sh`); upload thật, file xem được qua `/media/...` (P1, P2)
+- [x] Seed thật: `pnpm seed:samples` với `seed/sample-outfits.json` (P2, P3)
+- [x] Mongo auth + bỏ publish port trong `docker-compose.prod.yml` (D5)
+- [x] L8: object S3 mồ côi (ghi vào roadmap)
 - [ ] L9: message lỗi field từ server tiếng Việt (P2, P6)
 - [ ] `next/image` unoptimized: ảnh model 1600px tải trên mobile; cân nhắc resize theo viewport (P1)
-- [ ] Độ cong connector so ảnh mẫu, chỉnh `--lookbook-curve-ratio` (P4)
-- [ ] Visual 320px và 390px, không tràn ngang, chữ ≥11px (P4)
-- [ ] Ba file test vượt 200 dòng, tách file: `apps/api/test/outfits.test.ts` (234), `apps/api/test/media-settings-admins.test.ts` (218), `apps/web/test/admin/settings-and-users.test.tsx` (207)
-- [ ] Lighthouse SEO ≥95; `curl` HTML có tên/mô tả/link với dữ liệu seed (P5)
+- [x] Độ cong connector so ảnh mẫu, chỉnh `--lookbook-curve-ratio` (P4)
+- [x] Visual 320px và 390px, không tràn ngang, chữ ≥11px (P4)
+- [x] Ba file test vượt 200 dòng, tách file: `apps/api/test/outfits.test.ts` (234), `apps/api/test/media-settings-admins.test.ts` (218), `apps/web/test/admin/settings-and-users.test.tsx` (207)
+- [x] Lighthouse SEO ≥95; `curl` HTML có tên/mô tả/link với dữ liệu seed (P5)
 - [ ] Trình duyệt thật: admin tạo outfit 8 món, đặt điểm, đăng dưới 10 phút; lưu → public cập nhật (P6)
 - [ ] Thay ảnh người mẫu sạch khi bên Kim gửi; điền link affiliate thật
-- [ ] Tài liệu P7: `docs/**` chưa có. Lập `docs/` theo spec mục 26
-- [ ] Xác nhận trước git init: account GitHub, email commit, tên repo
+- [x] Tài liệu P7: `docs/**` chưa có. Lập `docs/` theo spec mục 26
+- [x] Xác nhận trước git init: account GitHub, email commit, tên repo
 
 ## Success Criteria
 - Mọi test pass (không skip). "Xong khi" của Kim đạt: giống ảnh mẫu desktop + mobile; mỗi món mở đúng link.
