@@ -47,7 +47,7 @@ flowchart LR
   I[rustfs-init] -.->|tạo bucket, policy public/*| R
 ```
 
-Lưu ý: trình duyệt chỉ gọi cùng origin (ví dụ `http://localhost:8080`). Admin gọi `/api/*` tương đối qua Caddy. `next.config.ts` không có rewrite, nên chạy `next dev` trên host không đủ để dùng trang admin (xem [Triển khai, mục dev](./deployment-guide.md#chạy-local-bằng-docker)).
+Lưu ý: trình duyệt chỉ gọi cùng origin. Admin gọi `/api/*` tương đối: qua Caddy ở compose/production, qua rewrite của `next dev` (chỉ bật khi `NODE_ENV=development`) khi chạy `pnpm dev` (xem [Triển khai, mục dev](./deployment-guide.md#chạy-local-để-phát-triển-pnpm-dev)).
 
 ## Định tuyến Caddy
 

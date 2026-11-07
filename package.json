@@ -7,6 +7,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
+    "dev:infra": "docker compose --env-file .env -f infra/docker-compose.yml up -d mongo rustfs-init",
     "dev": "pnpm --filter @under30ss/shared build && pnpm -r --parallel --filter \"./apps/*\" --filter @under30ss/shared dev",
     "build": "pnpm -r build",
     "lint": "eslint .",

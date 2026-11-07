@@ -6,6 +6,7 @@ Liên quan: [Kiến trúc hệ thống](./system-architecture.md) · [Quy chuẩ
 
 ## Contents
 - [Yêu cầu](#yêu-cầu)
+- [Chạy local để phát triển (`pnpm dev`)](#chạy-local-để-phát-triển-pnpm-dev)
 - [Chạy local bằng Docker](#chạy-local-bằng-docker)
 - [Dữ liệu mẫu](#dữ-liệu-mẫu)
 - [Triển khai production](#triển-khai-production)
@@ -26,9 +27,39 @@ Liên quan: [Kiến trúc hệ thống](./system-architecture.md) · [Quy chuẩ
 
 Build trong Docker dùng context là gốc repo: `apps/api/Dockerfile` và `apps/web/Dockerfile` cùng build từ `..` của `infra/`.
 
+## Chạy local để phát triển (`pnpm dev`)
+
+Cách dùng hằng ngày khi sửa code: api và web chạy trên máy (tự nạp lại khi sửa), chỉ Mongo và RustFS chạy trong Docker. Đã kiểm chứng 2026-11-07: e2e 17/17 pass trên `http://localhost:3000`.
+
+```bash
+cp .env.example .env                      # đầu vào docker compose
+cp apps/api/.env.example apps/api/.env    # api chạy trên host
+cp apps/web/.env.example apps/web/.env.local
+# REVALIDATE_SECRET trong apps/web/.env.local phải trùng apps/api/.env;
+# S3_ACCESS_KEY / S3_SECRET_KEY trong apps/api/.env phải trùng .env (gốc)
+pnpm install
+pnpm dev:infra      # chỉ Mongo + RustFS (+ tạo bucket), không build api/web
+pnpm create-admin   # lần đầu
+pnpm seed:samples --publish-with-placeholder   # tuỳ chọn: dữ liệu mẫu để xem
+pnpm dev            # api :4000, web :3000
+```
+
+Mở `http://localhost:3000` (public) và `http://localhost:3000/admin` (admin).
+
+Cách hoạt động:
+- `next dev` chuyển tiếp `/api/*` của trình duyệt sang `API_INTERNAL_URL` (rewrite chỉ bật khi `NODE_ENV=development`, xem `apps/web/next.config.ts`). Trình duyệt vẫn cùng origin nên cookie phiên và kiểm tra origin hoạt động như production. Route của chính web (`/api/revalidate`) vẫn do web xử lý.
+- Ảnh lấy thẳng từ RustFS: `MEDIA_PUBLIC_BASE_URL=http://localhost:9000/under30ss` (bucket cho đọc ẩn danh phần `public/*`). URL ảnh được API tính từ key lúc trả về, nên cùng dữ liệu dùng được cho cả dev lẫn stack Docker.
+- `ALLOWED_ORIGIN` của api cho phép cả `http://localhost:3000` và `http://localhost:8080`.
+- Docker chỉ có trong WSL (không có lệnh `docker` trên Windows): thay `pnpm dev:infra` bằng `wsl -e bash -lc "cd /mnt/<ổ>/<đường dẫn repo> && docker compose --env-file .env -f infra/docker-compose.yml up -d mongo rustfs-init"`.
+
+Lưu ý:
+- Sửa `apps/web/next.config.ts` khi `pnpm dev` đang chạy: Next tự khởi động lại và trên Windows có lúc crash (`exit 3221226505`). Chạy lại `pnpm dev`.
+- `next dev` ghi lại `apps/web/next-env.d.ts` (trỏ `.next/dev/types`). Không commit thay đổi này; `next build` ghi lại bản gốc.
+- Chạy e2e trên dev: `E2E_BASE_URL=http://localhost:3000 pnpm e2e`.
+
 ## Chạy local bằng Docker
 
-Đây là cách chạy được kiểm chứng đầy đủ: cả năm service chạy trong compose, truy cập qua `http://localhost:8080`.
+Chạy toàn bộ năm service trong compose, giống production nhất, truy cập qua `http://localhost:8080`. Dùng để kiểm tra trước khi deploy (Caddy, Dockerfile, giới hạn upload).
 
 ### 1. Chuẩn bị file env
 
@@ -88,16 +119,6 @@ docker compose --env-file .env -f infra/docker-compose.yml down
 
 **Cảnh báo:** `down -v` xoá luôn volume `mongo-data` và `rustfs-data`. Dữ liệu outfit, admin và ảnh sẽ mất.
 
-### Ghi chú chạy trên host (không phải đường được khuyến nghị)
-
-Script `pnpm dev` ở gốc build `packages/shared` rồi chạy api (`tsx watch`, cổng 4000) và web (`next dev`, cổng 3000) trên host. Cần thêm `apps/web/.env.local` (copy từ `apps/web/.env.example`) và Mongo, RustFS, Caddy từ compose.
-
-Hạn chế đã biết:
-- Trình duyệt gọi `/api/*` cùng origin. Không có rewrite trong `apps/web/next.config.ts`, nên trang admin trên `localhost:3000` không gọi được API. Trang admin chỉ dùng được qua `http://localhost:8080`.
-- Ảnh lấy từ `MEDIA_PUBLIC_BASE_URL` (`http://localhost:8080/media`), nên Caddy vẫn phải chạy.
-
-Với công việc giao diện và admin, dùng stack Docker và rebuild `web`.
-
 ## Dữ liệu mẫu
 
 Seed đọc `seed/sample-outfits.json`, upload ảnh lên bucket, rồi ghi outfit vào Mongo theo `slug` (upsert). Chạy lại được.
@@ -117,7 +138,7 @@ Cờ (truyền sau tên script, ví dụ `pnpm seed:samples --publish-with-place
 Hành vi quan trọng:
 - `seed/sample-outfits.json` đặt `status: draft` cho cả hai outfit mẫu, vì link affiliate đang để trống. Outfit `draft` không hiện trên public. Điền link https và anchor cho mọi món rồi publish từ admin, hoặc dùng `--publish-with-placeholder` ở local để xem thử.
 - Mỗi dòng kết quả có dạng `<slug>: <status>`. Dòng kèm `(saved as draft: links or anchors missing)` nghĩa là bị hạ về draft.
-- Script gọi revalidate tới `WEB_REVALIDATE_URL` trong `apps/api/.env` (mặc định `http://localhost:3000/api/revalidate`). Web không publish cổng 3000 ra host, nên lời gọi này thất bại. Đây là hành vi đã biết. Trang public vẫn làm mới trong `PUBLIC_REVALIDATE_SECONDS` (mặc định 300 giây), hoặc ngay sau khi admin lưu.
+- Script gọi revalidate tới `WEB_REVALIDATE_URL` trong `apps/api/.env` (mặc định `http://localhost:3000/api/revalidate`). Khi `pnpm dev` đang chạy thì lời gọi thành công. Nếu chỉ chạy stack Docker, web không publish cổng 3000 ra host nên lời gọi thất bại (đã biết). Trang public vẫn làm mới trong `PUBLIC_REVALIDATE_SECONDS` (mặc định 300 giây), hoặc ngay sau khi admin lưu.
 
 ## Triển khai production
 
@@ -266,11 +287,11 @@ Cột "Bắt buộc" theo code: **Có** nghĩa là schema hoặc compose báo l�
 | Biến | Dùng bởi | Dev (`.env.example`) | Production | Bắt buộc | Ghi chú |
 |------|----------|----------------------|------------|----------|---------|
 | `SITE_ADDRESS` | caddy | `:80` (mặc định compose) | Domain | Prod: Có | `:80` cho HTTP, domain cho HTTPS tự động |
-| `SITE_URL` | web | `http://localhost:8080` | `https://<domain>` | Có | Không có dấu `/` cuối |
+| `SITE_URL` | web | `http://localhost:3000` khi `pnpm dev`; `http://localhost:8080` trong compose | `https://<domain>` | Có | Không có dấu `/` cuối |
 | `CADDY_HTTP_PORT` | caddy | 8080 | 80 | Không | Cổng publish của host |
 | `CADDY_HTTPS_PORT` | caddy | 8443 | 443 | Không | Cổng publish của host |
-| `ALLOWED_ORIGIN` | api | `http://localhost:8080` | `https://<domain>` | Có | Danh sách phân tách bằng dấu phẩy. Origin khác bị 403 khi ghi |
-| `MEDIA_PUBLIC_BASE_URL` | api, web | `http://localhost:8080/media` | `https://<domain>/media` | Có | URL công khai của bucket qua Caddy |
+| `ALLOWED_ORIGIN` | api | `http://localhost:3000,http://localhost:8080` (host); `http://localhost:8080` (compose) | `https://<domain>` | Có | Danh sách phân tách bằng dấu phẩy. Origin khác bị 403 khi ghi |
+| `MEDIA_PUBLIC_BASE_URL` | api, web | `http://localhost:9000/under30ss` khi `pnpm dev` (RustFS trực tiếp); `http://localhost:8080/media` trong compose | `https://<domain>/media` | Có | URL công khai của bucket |
 | `MONGO_DB` | api, compose | `under30ss` | `under30ss` | Không | Tên database |
 | `MONGO_ROOT_USER` | compose prod | — | Có | Prod: Có | Chỉ dùng khi `MONGO_INITDB_*` (volume trống). Ký tự URL-safe |
 | `MONGO_ROOT_PASSWORD` | compose prod | — | Có | Prod: Có | Ký tự URL-safe. Chỉ có tác dụng khi volume trống |
