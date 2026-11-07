@@ -1,0 +1,46 @@
+/*
+ * Page-load motion in pure CSS so content stays visible without JS.
+ * `backwards` (not `both`): the from-state only applies while waiting for the delay,
+ * afterwards normal opacity/transform rules (e.g. lookbook dimming) win again.
+ * Do not put two animation classes on one element.
+ */
+.fadeUp {
+  animation: fade-up var(--duration-slow) var(--easing-out) backwards;
+  animation-delay: calc(var(--i, 0) * var(--stagger-step));
+}
+
+.fadeIn {
+  animation: fade-in var(--duration-route) var(--easing-standard) backwards;
+  animation-delay: calc(var(--i, 0) * var(--stagger-step));
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .revealOnScroll {
+      animation: fade-up linear backwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-distance));
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fadeUp,
+  .fadeIn,
+  .revealOnScroll {
+    animation: none;
+  }
+}

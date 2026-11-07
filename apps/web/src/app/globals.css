@@ -1,4 +1,6 @@
 @import '../styles/design-tokens.css';
+@import '../styles/client-theme-tokens.css';
+@import '../styles/admin-theme-tokens.css';
 
 *,
 *::before,
@@ -7,6 +9,7 @@
 }
 
 html {
+  scroll-padding-top: var(--client-header-height);
   -webkit-text-size-adjust: 100%;
 }
 

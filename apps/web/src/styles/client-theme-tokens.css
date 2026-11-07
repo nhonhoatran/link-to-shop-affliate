@@ -1,0 +1,19 @@
+/* Public (client) palette. Lookbook keeps using --color-* from design-tokens.css. */
+:root {
+  --client-bg: #f6f1ea;
+  --client-surface: #ffffff;
+  --client-surface-soft: #ede4d8;
+  --client-ink: #3b2f2a;
+  --client-ink-muted: #6b5d54;
+  --client-accent: #8a5a3c;
+  --client-on-ink: #ffffff;
+  --client-border: #e4d9cc;
+  --client-focus: #8a5a3c;
+  --client-radius-lg: 16px;
+  --client-radius-pill: 999px;
+  --client-shadow-soft: 0 6px 24px rgba(59, 47, 42, 0.08);
+  --client-header-height: 64px;
+  --client-card-hover-scale: 1.03;
+  --client-container-max: 1200px;
+  --client-card-image-ratio: 2 / 5;
+}

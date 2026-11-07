@@ -7,3 +7,9 @@ allowBuilds:
   esbuild: true
   mongodb-memory-server: true
   sharp: true
+
+minimumReleaseAgeExclude:
+  - lucide-react@1.70.0
+  - framer-motion@14.10.1
+  - motion-dom@14.10.1
+  - motion@14.10.1
