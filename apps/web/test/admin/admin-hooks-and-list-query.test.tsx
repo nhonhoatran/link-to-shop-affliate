@@ -72,8 +72,8 @@ describe('outfit list query', () => {
 
   it('builds links that keep q and status and drop page 1', () => {
     const query = { q: 'áo thun', status: 'draft' as const, page: 2 };
-    expect(buildListHref(query, 3)).toBe('/admin?q=%C3%A1o+thun&status=draft&page=3');
-    expect(buildListHref(query, 1)).toBe('/admin?q=%C3%A1o+thun&status=draft');
-    expect(buildListHref({ q: '', status: undefined, page: 1 }, 1)).toBe('/admin');
+    expect(buildListHref(query, 3)).toBe('/admin/outfits?q=%C3%A1o+thun&status=draft&page=3');
+    expect(buildListHref(query, 1)).toBe('/admin/outfits?q=%C3%A1o+thun&status=draft');
+    expect(buildListHref({ q: '', status: undefined, page: 1 }, 1)).toBe('/admin/outfits');
   });
 });

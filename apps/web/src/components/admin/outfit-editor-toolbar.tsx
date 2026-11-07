@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { outfitPath } from '@/lib/seo/absolute-url';
 import type { EditorState } from '@/hooks/admin/editor-state';
 import type { SaveStatus } from '@/hooks/admin/use-outfit-actions';
 import styles from './admin.module.css';
+import editorStyles from './admin-editor.module.css';
 import { ConfirmDialog } from './confirm-dialog';
 import { SaveStatusText } from './save-status-text';
 
@@ -30,9 +32,11 @@ export function OutfitEditorToolbar(props: OutfitEditorToolbarProps) {
   const secondary = `${styles.btn} ${styles.btnSecondary}`;
 
   return (
-    <div className={styles.toolbar}>
-      <h1 className={styles.title}>{state.title || 'Outfit chưa có tên'}</h1>
-      <div className={styles.btnGroup}>
+    <>
+      <div className={styles.toolbar}>
+        <h1 className={`${styles.title} ${editorStyles.heading}`}>{state.title || 'Outfit chưa có tên'}</h1>
+      </div>
+      <div className={`${styles.btnGroup} ${editorStyles.actionsBar}`} data-editor-actions>
         <SaveStatusText status={saveStatus} dirty={dirty} />
         <button type="button" className={`${styles.btn} ${styles.btnPrimary}`} disabled={busy} onClick={props.onSave}>
           Lưu
@@ -56,7 +60,7 @@ export function OutfitEditorToolbar(props: OutfitEditorToolbarProps) {
           </span>
         ) : null}
         {published ? (
-          <a className={secondary} href={`/look/${state.slug}`} target="_blank" rel="noopener noreferrer">
+          <a className={secondary} href={outfitPath(state.slug)} target="_blank" rel="noopener noreferrer">
             Xem trang
           </a>
         ) : null}
@@ -81,6 +85,6 @@ export function OutfitEditorToolbar(props: OutfitEditorToolbarProps) {
           props.onDelete();
         }}
       />
-    </div>
+    </>
   );
 }

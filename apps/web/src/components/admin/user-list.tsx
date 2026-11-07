@@ -42,23 +42,23 @@ export function UserList({ users, currentUserId, timeZone }: UserListProps) {
   return (
     <div className={styles.panel}>
       <FormError message={error} />
-      <table className={listStyles.table}>
+      <table className={listStyles.table} role="table">
         <caption className={styles.srOnly}>Danh sách quản trị viên</caption>
-        <thead>
-          <tr>
-            <th scope="col">Email</th>
-            <th scope="col">Ngày tạo</th>
-            <th scope="col">
+        <thead role="rowgroup">
+          <tr role="row">
+            <th scope="col" role="columnheader">Email</th>
+            <th scope="col" role="columnheader">Ngày tạo</th>
+            <th scope="col" role="columnheader">
               <span className={styles.srOnly}>Thao tác</span>
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody role="rowgroup">
           {users.map((user) => (
-            <tr key={user.id}>
-              <td>{user.email}</td>
-              <td>{formatAdminDate(user.createdAt, timeZone)}</td>
-              <td>
+            <tr key={user.id} role="row">
+              <td role="cell" data-label="">{user.email}</td>
+              <td role="cell" data-label="Ngày tạo">{formatAdminDate(user.createdAt, timeZone)}</td>
+              <td role="cell" data-label="">
                 {user.id === currentUserId ? (
                   <span className={styles.hint}>Tài khoản của bạn</span>
                 ) : (

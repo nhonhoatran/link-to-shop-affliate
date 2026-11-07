@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { API_PATHS, settingsInputSchema, type AdminSettingsDto, type ImageWithUrl } from '@under30ss/shared';
+import { useAdminToast } from '@/components/admin/shell/use-admin-toast';
 import { useFormSubmit } from '@/hooks/admin/use-form-submit';
 import { apiFetch } from '@/lib/api-client-browser';
 import styles from './admin.module.css';
@@ -12,6 +13,7 @@ import { FormError } from './field-error';
 import { MediaDropzone } from './media-dropzone';
 import { MediaThumb } from './media-thumb';
 import { SaveStatusText } from './save-status-text';
+import { SettingsListingFields, type ListingFieldValues } from './settings-listing-fields';
 import type { SaveStatus } from '@/hooks/admin/use-outfit-actions';
 
 export function SettingsForm({ initial }: { initial: AdminSettingsDto }) {
@@ -19,11 +21,16 @@ export function SettingsForm({ initial }: { initial: AdminSettingsDto }) {
   const [seoTitle, setSeoTitle] = useState(initial.seoTitle);
   const [seoDescription, setSeoDescription] = useState(initial.seoDescription);
   const [uploadMaxMb, setUploadMaxMb] = useState(initial.uploadMaxMb?.toString() ?? '');
+  const [listing, setListing] = useState<ListingFieldValues>({
+    looksPageSize: initial.looksPageSize?.toString() ?? '',
+    relatedOutfitsCount: initial.relatedOutfitsCount?.toString() ?? '',
+  });
   const [ogImage, setOgImage] = useState<ImageWithUrl | undefined>(initial.ogImage);
   const router = useRouter();
   const [dirty, setDirty] = useState(false);
   const [saved, setSaved] = useState(false);
   const { pending, formError, fieldErrors, handle } = useFormSubmit();
+  const toast = useAdminToast();
 
   const onSubmit = handle(
     settingsInputSchema,
@@ -33,11 +40,14 @@ export function SettingsForm({ initial }: { initial: AdminSettingsDto }) {
       seoDescription,
       ...(ogImage ? { ogImage: { key: ogImage.key, width: ogImage.width, height: ogImage.height } } : {}),
       ...(uploadMaxMb.trim() === '' ? {} : { uploadMaxMb: Number(uploadMaxMb) }),
+      ...(listing.looksPageSize.trim() === '' ? {} : { looksPageSize: Number(listing.looksPageSize) }),
+      ...(listing.relatedOutfitsCount.trim() === '' ? {} : { relatedOutfitsCount: Number(listing.relatedOutfitsCount) }),
     }),
     async (data) => {
       await apiFetch(API_PATHS.admin.settings, { method: 'PUT', json: data });
       setDirty(false);
       setSaved(true);
+      toast.success('Đã lưu cài đặt');
       router.refresh();
     },
   );
@@ -91,6 +101,14 @@ export function SettingsForm({ initial }: { initial: AdminSettingsDto }) {
           />
         )}
       </AdminFormField>
+      <SettingsListingFields
+        values={listing}
+        errors={fieldErrors}
+        onChange={(name, value) => {
+          setDirty(true);
+          setListing((current) => ({ ...current, [name]: value }));
+        }}
+      />
       <MediaDropzone
         id="settings-og-image"
         kind="model"

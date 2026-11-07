@@ -80,6 +80,12 @@ describe('UserList', () => {
     expect(screen.getAllByText('6/11/26')).toHaveLength(2);
   });
 
+  it('labels the created-date cell for the stacked card layout on small screens', () => {
+    render(<UserList users={users} currentUserId="me" timeZone="UTC" />);
+    expect(screen.getAllByRole('cell')[1]).toHaveAttribute('data-label', 'Ngày tạo');
+    expect(screen.getByRole('table')).toBeInTheDocument();
+  });
+
   it('confirms with a consistent title, then shows a pending state while deleting', async () => {
     const user = userEvent.setup();
     let finish: (response: Response) => void = () => undefined;

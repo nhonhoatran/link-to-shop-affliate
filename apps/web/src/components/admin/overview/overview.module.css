@@ -1,0 +1,121 @@
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 192px), 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: inherit;
+  text-decoration: none;
+}
+
+a.kpi:hover {
+  border-color: var(--admin-border-strong);
+}
+
+.kpiLabel {
+  color: var(--admin-text-muted);
+}
+
+.kpiValue {
+  font-size: var(--page-title-size);
+  line-height: var(--line-height-tight);
+}
+
+.kpiHint {
+  font-size: var(--text-xs);
+  color: var(--admin-text-muted);
+}
+
+.sections {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.featured {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.featuredImage {
+  position: relative;
+  flex: none;
+  width: var(--space-8);
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-surface-2);
+}
+
+.featuredImage img {
+  object-fit: cover;
+}
+
+.featuredBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.featuredTitle {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+  overflow-wrap: anywhere;
+}
+
+.viewAll {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--admin-control-height);
+}
+
+.recentList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recentRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  min-height: var(--admin-control-height);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--admin-border);
+}
+
+.recentRow:first-child {
+  border-top: 0;
+}
+
+.recentTitle {
+  display: flex;
+  align-items: center;
+  flex: 1 1 160px;
+  min-height: var(--admin-control-height);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.recentDate {
+  color: var(--admin-text-muted);
+  font-size: var(--text-xs);
+}
+
+/* 1024px = --bp-lg */
+@media (min-width: 1024px) {
+  .sections {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    align-items: start;
+  }
+}

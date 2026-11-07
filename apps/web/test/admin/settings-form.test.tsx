@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { AdminToastContext } from '@/components/admin/shell/use-admin-toast';
 import { SettingsForm } from '@/components/admin/settings-form';
 import { jsonResponse } from './admin-outfit-fixture';
 
@@ -108,5 +109,54 @@ describe('SettingsForm', () => {
     await user.click(screen.getByRole('button', { name: 'Lưu' }));
 
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/admin/login'));
+  });
+
+  it('sends the listing sizes as numbers and leaves blank ones out', async () => {
+    const user = userEvent.setup();
+    fetchMock.mockResolvedValue(jsonResponse({}));
+    render(<SettingsForm initial={settings} />);
+    const pageSize = screen.getByLabelText('Số outfit mỗi trang (trang Tất cả outfit)');
+    expect(pageSize).toHaveAttribute('type', 'number');
+    expect(pageSize).toHaveAttribute('min', '1');
+
+    await user.type(pageSize, '12');
+    await user.click(screen.getByRole('button', { name: 'Lưu' }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    const body = JSON.parse(fetchMock.mock.calls[0]![1].body);
+    expect(body.looksPageSize).toBe(12);
+    expect(body).not.toHaveProperty('relatedOutfitsCount');
+  });
+
+  it('shows the API ceiling error on the listing field', async () => {
+    const user = userEvent.setup();
+    fetchMock.mockResolvedValue(
+      jsonResponse(
+        { error: { code: 'VALIDATION_ERROR', message: 'Dữ liệu không hợp lệ', fields: { relatedOutfitsCount: 'Tối đa 48' } } },
+        400,
+      ),
+    );
+    render(<SettingsForm initial={{ ...settings, relatedOutfitsCount: 99 }} />);
+
+    await user.click(screen.getByRole('button', { name: 'Lưu' }));
+
+    const input = await screen.findByLabelText('Số outfit trong mục Outfit khác');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByText('Tối đa 48')).toBeInTheDocument();
+  });
+
+  it('raises a success toast whose text differs from the save status line', async () => {
+    const user = userEvent.setup();
+    const toast = { success: vi.fn(), error: vi.fn() };
+    fetchMock.mockResolvedValue(jsonResponse({}));
+    render(
+      <AdminToastContext.Provider value={toast}>
+        <SettingsForm initial={settings} />
+      </AdminToastContext.Provider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Lưu' }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Đã lưu cài đặt'));
   });
 });

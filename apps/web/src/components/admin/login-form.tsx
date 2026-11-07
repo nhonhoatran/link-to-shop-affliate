@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { API_PATHS, loginInputSchema } from '@under30ss/shared';
 import { useFormSubmit } from '@/hooks/admin/use-form-submit';
+import { ADMIN_PATHS } from '@/lib/admin-paths';
 import { apiFetch } from '@/lib/api-client-browser';
 import styles from './admin.module.css';
 import formStyles from './admin-form.module.css';
@@ -18,7 +19,7 @@ export function LoginForm() {
 
   const onSubmit = handle(loginInputSchema, () => ({ email, password }), async (data) => {
     await apiFetch(API_PATHS.auth.login, { method: 'POST', json: data });
-    router.replace('/admin');
+    router.replace(ADMIN_PATHS.overview);
     router.refresh();
   });
 

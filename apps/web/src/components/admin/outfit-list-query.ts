@@ -1,4 +1,5 @@
 import { outfitStatusSchema, type OutfitStatus } from '@under30ss/shared';
+import { ADMIN_PATHS } from '@/lib/admin-paths';
 
 export interface OutfitListQuery {
   q: string;
@@ -26,5 +27,5 @@ export const buildListHref = (query: OutfitListQuery, page: number): string => {
   if (query.status) params.set('status', query.status);
   if (page > 1) params.set('page', String(page));
   const search = params.toString();
-  return search ? `/admin?${search}` : '/admin';
+  return search ? `${ADMIN_PATHS.outfits}?${search}` : ADMIN_PATHS.outfits;
 };

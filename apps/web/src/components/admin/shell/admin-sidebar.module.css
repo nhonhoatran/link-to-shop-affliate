@@ -1,0 +1,190 @@
+.sidebar {
+  grid-area: side;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  height: 100dvh;
+  padding: var(--space-3);
+  background: var(--admin-surface);
+  border-right: 1px solid var(--admin-border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--admin-control-height);
+  padding: 0 var(--space-3);
+  font-weight: var(--font-weight-bold);
+}
+
+.mono {
+  display: none;
+  font-size: var(--body-size);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--admin-control-height);
+  padding: 0 var(--space-3);
+  border-radius: var(--admin-radius-sm);
+  color: var(--admin-text-muted);
+  text-decoration: none;
+}
+
+.link:hover {
+  background: var(--admin-surface-2);
+  color: var(--admin-text);
+}
+
+.link[aria-current='page'] {
+  background: var(--admin-surface-2);
+  color: var(--admin-text);
+  font-weight: var(--font-weight-medium);
+  box-shadow: inset 2px 0 0 var(--admin-accent);
+}
+
+.link::after {
+  content: attr(data-tip);
+  display: none;
+  position: absolute;
+  left: calc(100% + var(--space-2));
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-primary);
+  color: var(--admin-primary-contrast);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: auto;
+}
+
+.email {
+  margin: 0;
+  padding: 0 var(--space-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  color: var(--admin-text-muted);
+}
+
+.themeGroup,
+.footerForm,
+.collapseForm {
+  display: flex;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.themeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: var(--admin-control-height);
+  min-height: var(--admin-control-height);
+  padding: 0;
+  border: 1px solid var(--admin-border-strong);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-surface);
+  color: var(--admin-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.themeButton[aria-pressed='true'] {
+  background: var(--admin-primary);
+  border-color: var(--admin-primary);
+  color: var(--admin-primary-contrast);
+}
+
+/* Hidden visually, still read aloud: the text is the link's accessible name in rail mode. */
+[data-sidebar='rail'] .sidebar .label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+[data-sidebar='rail'] .sidebar .link:hover::after,
+[data-sidebar='rail'] .sidebar .link:focus-visible::after {
+  display: block;
+}
+
+[data-sidebar='rail'] .sidebar .mono {
+  display: inline;
+}
+
+[data-sidebar='rail'] .sidebar .themeGroup {
+  flex-direction: column;
+}
+
+[data-sidebar='rail'] .sidebar .link,
+[data-sidebar='rail'] .sidebar .brand {
+  justify-content: center;
+  padding: 0;
+}
+
+/* 768px = --bp-md, 1024px = --bp-lg. Same rules as above: 768-1023px forces rail whatever the cookie says. */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .sidebar .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .sidebar .link:hover::after,
+  .sidebar .link:focus-visible::after {
+    display: block;
+  }
+
+  .sidebar .mono {
+    display: inline;
+  }
+
+  .sidebar .themeGroup {
+    flex-direction: column;
+  }
+
+  .sidebar .link,
+  .sidebar .brand {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .sidebar .collapseForm {
+    display: none;
+  }
+}
+
+/* 768px = --bp-md */
+@media (max-width: 767.98px) {
+  .sidebar {
+    display: none;
+  }
+}

@@ -1,0 +1,47 @@
+.block {
+  border-radius: var(--admin-radius-sm);
+  background: linear-gradient(90deg, var(--admin-surface-2) 25%, var(--admin-border) 50%, var(--admin-surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer var(--duration-shimmer) linear infinite;
+}
+
+.lines,
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.lines .block {
+  height: var(--space-4);
+}
+
+.table .block {
+  height: var(--admin-control-height);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 224px), 1fr));
+  gap: var(--space-4);
+}
+
+.cards .block {
+  height: calc(var(--space-8) + var(--space-5));
+  border-radius: var(--admin-radius);
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block {
+    animation: none;
+  }
+}

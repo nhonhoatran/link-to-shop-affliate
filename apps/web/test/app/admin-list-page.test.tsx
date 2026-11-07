@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import AdminOutfitListPage from '@/app/admin/(protected)/page';
+import AdminOutfitListPage from '@/app/admin/(protected)/outfits/page';
 
 const { adminGet } = vi.hoisted(() => ({ adminGet: vi.fn() }));
 vi.mock('@/app/admin/_lib/admin-api', () => ({ adminGet }));

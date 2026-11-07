@@ -1,0 +1,153 @@
+.themeRoot {
+  --color-focus: var(--admin-focus);
+  --admin-sidebar-width: 240px;
+  --admin-rail-width: 72px;
+  /* Menu button + vertical padding + bottom border: sticky elements below the topbar offset by this. */
+  --admin-topbar-height: calc(var(--admin-control-height) + var(--space-2) * 2 + 1px);
+  min-height: 100dvh;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  font-size: var(--text-sm);
+}
+
+.frame {
+  display: grid;
+  grid-template-columns: var(--admin-sidebar-width) minmax(0, 1fr);
+  grid-template-areas: 'side main';
+  min-height: 100dvh;
+  transition: grid-template-columns var(--duration-base) var(--easing-standard);
+}
+
+.frame[data-sidebar='rail'] {
+  grid-template-columns: var(--admin-rail-width) minmax(0, 1fr);
+}
+
+.main {
+  grid-area: main;
+  min-width: 0;
+  padding: var(--space-5);
+}
+
+.skip {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--admin-control-height);
+  padding: 0 var(--space-3);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-primary);
+  color: var(--admin-primary-contrast);
+  transform: translateY(-200%);
+}
+
+.skip:focus {
+  transform: none;
+}
+
+.topbar {
+  grid-area: top;
+  display: none;
+  align-items: center;
+  gap: var(--space-3);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-height: var(--admin-topbar-height);
+  padding: var(--space-2) var(--space-4);
+  background: var(--admin-surface);
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.topbarTitle {
+  font-weight: var(--font-weight-bold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--admin-control-height);
+  height: var(--admin-control-height);
+  padding: 0;
+  border: 1px solid var(--admin-border-strong);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-surface);
+  color: var(--admin-text);
+  cursor: pointer;
+}
+
+.drawer {
+  inset: 0 auto 0 0;
+  margin: 0;
+  width: min(288px, 86vw);
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid var(--admin-border);
+  background: var(--admin-surface);
+  color: var(--admin-text);
+}
+
+.drawer::backdrop {
+  background: var(--admin-backdrop);
+}
+
+.drawerBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-height: 100%;
+  padding: var(--space-3);
+}
+
+.drawerHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.drawerFooter {
+  margin-top: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame {
+    transition: none;
+  }
+}
+
+/* 1024px = --bp-lg. Below it the sidebar is always a rail. */
+@media (max-width: 1023.98px) {
+  .frame,
+  .frame[data-sidebar='rail'] {
+    grid-template-columns: var(--admin-rail-width) minmax(0, 1fr);
+  }
+}
+
+/* 768px = --bp-md. Below it the sidebar becomes a topbar plus drawer. */
+@media (max-width: 767.98px) {
+  .frame,
+  .frame[data-sidebar='rail'] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'top' 'main';
+    grid-template-rows: auto 1fr;
+  }
+
+  .topbar {
+    display: flex;
+  }
+
+  .main {
+    padding-inline: var(--space-3);
+  }
+}

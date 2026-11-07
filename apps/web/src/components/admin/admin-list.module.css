@@ -19,6 +19,12 @@
   vertical-align: middle;
 }
 
+.titleLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--admin-control-height);
+}
+
 .thumb {
   position: relative;
   width: var(--space-7);
@@ -53,7 +59,91 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
   gap: var(--space-3);
   margin-top: var(--space-4);
+}
+
+.pageButton {
+  min-width: var(--admin-control-height);
+}
+
+.table td,
+.table th {
+  overflow-wrap: anywhere;
+}
+
+.cellThumb {
+  width: 1%;
+}
+
+/* 768px = --bp-md. The table keeps its markup and becomes stacked cards below it. */
+@media (max-width: 767.98px) {
+  .filters > :global(div),
+  .filters > button {
+    flex: 1 1 100%;
+  }
+
+  /* Same declarations as .srOnly in admin.module.css; a class cannot be applied inside the media query. */
+  .table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .table,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: block;
+  }
+
+  .table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-1) var(--space-3);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  .table td {
+    min-width: 0;
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .table td[data-label]:not([data-label=''])::before {
+    content: attr(data-label) ': ';
+    color: var(--admin-text-muted);
+  }
+
+  .table .rowWithThumb {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .table .rowWithThumb > td {
+    grid-column: 2;
+  }
+
+  .table .rowWithThumb > .cellThumb {
+    grid-column: 1;
+    grid-row: 1 / span 4;
+    width: auto;
+  }
+
+  .table .emptyRow {
+    grid-column: 1 / -1;
+    padding: var(--space-4) 0;
+  }
+
+  .pagination > span {
+    flex: 1 1 100%;
+    order: -1;
+    text-align: center;
+  }
 }
 

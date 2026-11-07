@@ -10,6 +10,7 @@ import {
   type OutfitResponse,
 } from '@under30ss/shared';
 import { useFormSubmit } from '@/hooks/admin/use-form-submit';
+import { ADMIN_PATHS } from '@/lib/admin-paths';
 import { apiFetch } from '@/lib/api-client-browser';
 import styles from './admin.module.css';
 import formStyles from './admin-form.module.css';
@@ -34,7 +35,7 @@ export function OutfitCreateForm() {
     },
     async (data) => {
       const created = await apiFetch<OutfitResponse>(API_PATHS.admin.outfits, { method: 'POST', json: data });
-      router.push(`/admin/outfits/${created.id}`);
+      router.push(ADMIN_PATHS.outfitEdit(created.id));
     },
   );
 

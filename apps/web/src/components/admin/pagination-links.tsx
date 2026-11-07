@@ -11,7 +11,7 @@ interface PaginationLinksProps {
 
 export function PaginationLinks({ query, page, totalPages }: PaginationLinksProps) {
   if (totalPages <= 1) return null;
-  const linkClass = `${styles.btn} ${styles.btnSecondary}`;
+  const linkClass = `${styles.btn} ${styles.btnSecondary} ${listStyles.pageButton}`;
   return (
     <nav aria-label="Phân trang" className={listStyles.pagination}>
       {page > 1 ? (
@@ -19,7 +19,7 @@ export function PaginationLinks({ query, page, totalPages }: PaginationLinksProp
           Trước
         </Link>
       ) : null}
-      <span>
+      <span aria-current="page">
         Trang {page} / {totalPages}
       </span>
       {page < totalPages ? (

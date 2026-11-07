@@ -3,6 +3,7 @@
 import { useRef, useState, type Dispatch } from 'react';
 import { apiUrl, outfitInputSchema } from '@under30ss/shared';
 import { describeApiFailure } from '@/components/admin/describe-api-failure';
+import { useAdminToast } from '@/components/admin/shell/use-admin-toast';
 import { issuesToFieldErrors, type FieldErrors } from '@/components/admin/validation-messages';
 import { apiFetch } from '@/lib/api-client-browser';
 import { snapshotOf, toOutfitInput, type EditorAction, type EditorItem, type EditorState } from './editor-state';
@@ -21,6 +22,7 @@ export const firstInvalidItemId = (errors: FieldErrors, items: readonly EditorIt
 
 export function useOutfitActions(state: EditorState, dispatch: Dispatch<EditorAction>) {
   const redirectToLogin = useRedirectOnUnauthorized();
+  const toast = useAdminToast();
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [removing, setRemoving] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -64,6 +66,9 @@ export function useOutfitActions(state: EditorState, dispatch: Dispatch<EditorAc
       // The API drops the featured flag when an outfit goes back to draft.
       if (status === 'draft' && state.featured) dispatch({ type: 'featured', value: false });
       setSaveStatus('saved');
+      toast.success(
+        status === state.status ? 'Đã lưu outfit' : status === 'published' ? 'Đã đăng outfit' : 'Đã ẩn outfit',
+      );
       return true;
     } catch (error) {
       handleApiError(error);
@@ -82,6 +87,7 @@ export function useOutfitActions(state: EditorState, dispatch: Dispatch<EditorAc
       await apiFetch(apiUrl.adminOutfitFeatured(state.id), { method: 'POST', json: { featured } });
       dispatch({ type: 'featured', value: featured });
       setSaveStatus('saved');
+      toast.success(featured ? 'Đã đặt outfit nổi bật' : 'Đã bỏ nổi bật');
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -95,6 +101,7 @@ export function useOutfitActions(state: EditorState, dispatch: Dispatch<EditorAc
     setRemoving(true);
     try {
       await apiFetch(apiUrl.adminOutfit(state.id), { method: 'DELETE' });
+      toast.success('Đã xoá outfit');
       return true;
     } catch (error) {
       handleApiError(error);

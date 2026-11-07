@@ -136,3 +136,32 @@ describe('OutfitEditor: unsaved changes', () => {
     expect(router.push).not.toHaveBeenCalled();
   });
 });
+
+describe('OutfitEditor: error tabs', () => {
+  it('marks the tab holding the error and switches to it', async () => {
+    const user = userEvent.setup();
+    render(
+      <OutfitEditor
+        initial={makeAdminOutfit((outfit) => {
+          outfit.items[2]!.affiliateUrl = '';
+        })}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Đăng' }));
+
+    expect(screen.getByRole('tab', { name: /Món đồ\s*\(có lỗi\)/ })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Thông tin' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Link affiliate')).toHaveFocus();
+  });
+
+  it('puts a title error on the info tab', async () => {
+    const user = userEvent.setup();
+    render(<OutfitEditor initial={makeAdminOutfit((outfit) => (outfit.title = ''))} />);
+
+    await user.click(screen.getByRole('button', { name: 'Lưu' }));
+
+    expect(screen.getByRole('tab', { name: /Thông tin\s*\(có lỗi\)/ })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByLabelText('Tên outfit')).toHaveFocus();
+  });
+});

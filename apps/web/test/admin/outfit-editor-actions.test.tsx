@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { AdminToastContext } from '@/components/admin/shell/use-admin-toast';
 import { OutfitEditor } from '@/components/admin/outfit-editor';
 import { jsonResponse, makeAdminOutfit } from './admin-outfit-fixture';
 
@@ -71,6 +72,32 @@ describe('OutfitEditor: save', () => {
   });
 });
 
+describe('OutfitEditor: toasts', () => {
+  const renderWithToast = (initial = makeAdminOutfit()) => {
+    const toast = { success: vi.fn(), error: vi.fn() };
+    render(
+      <AdminToastContext.Provider value={toast}>
+        <OutfitEditor initial={initial} />
+      </AdminToastContext.Provider>,
+    );
+    return toast;
+  };
+  it('toasts a success after saving', async () => {
+    fetchMock.mockResolvedValue(jsonResponse({}));
+    const toast = renderWithToast();
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu' }));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Đã lưu outfit'));
+  });
+  it('shows a save failure inline only, never as a toast', async () => {
+    const user = userEvent.setup();
+    fetchMock.mockResolvedValue(jsonResponse({ error: { code: 'CONFLICT', message: 'Slug đã tồn tại' } }, 409));
+    const toast = renderWithToast();
+    await user.click(screen.getByRole('button', { name: 'Lưu' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Slug đã tồn tại');
+    expect(toast.error).not.toHaveBeenCalled();
+  });
+});
+
 describe('OutfitEditor: featured', () => {
   it('disables "Đặt nổi bật" for a draft and explains why', () => {
     render(<OutfitEditor initial={makeAdminOutfit()} />);
@@ -121,11 +148,21 @@ describe('OutfitEditor: delete', () => {
     expect(screen.getByRole('button', { name: 'Lưu' })).toBeDisabled();
 
     finish(new Response(null, { status: 204 }));
-    await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/admin'));
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/admin/outfits'));
   });
 });
 
 describe('OutfitEditor: structure', () => {
+  // Wide layout: all panels visible, no tab roles.
+  beforeEach(() => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: true,
+      media: query,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+    }));
+  });
+
   it('has one h1 in the toolbar and panels named by their visible h2', () => {
     render(<OutfitEditor initial={makeAdminOutfit()} />);
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);

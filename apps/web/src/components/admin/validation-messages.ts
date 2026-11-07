@@ -8,7 +8,7 @@ type Issue = z.core.$ZodIssue;
 const translateIssue = (issue: Issue): string => {
   const last = String(issue.path[issue.path.length - 1] ?? '');
   // A number, not a text length: the generic "ký tự" messages below would be wrong here.
-  if (last === 'uploadMaxMb') return 'Nhập số nguyên lớn hơn 0';
+  if (last === 'uploadMaxMb' || last === 'looksPageSize' || last === 'relatedOutfitsCount') return 'Nhập số nguyên lớn hơn 0';
   if (issue.code === 'too_small') {
     return issue.minimum === 1 ? REQUIRED_MESSAGE : `Tối thiểu ${String(issue.minimum)} ký tự`;
   }

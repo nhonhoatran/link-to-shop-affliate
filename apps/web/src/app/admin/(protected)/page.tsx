@@ -1,41 +1,54 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { API_PATHS, type AdminOutfitListResponse } from '@under30ss/shared';
-import { OutfitListFilters } from '@/components/admin/outfit-list-filters';
-import { OutfitListTable } from '@/components/admin/outfit-list-table';
-import { parseOutfitListQuery } from '@/components/admin/outfit-list-query';
-import { PaginationLinks } from '@/components/admin/pagination-links';
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { OverviewContent } from '@/components/admin/overview/overview-content';
+import { AdminSkeleton } from '@/components/admin/shell/admin-skeleton';
 import styles from '@/components/admin/admin.module.css';
-import { getWebEnv } from '@/lib/web-env';
-import { adminGet } from '../_lib/admin-api';
+import { ADMIN_PATHS } from '@/lib/admin-paths';
 
-export const metadata: Metadata = { title: 'Outfit' };
+export const metadata: Metadata = { title: 'Tổng quan' };
 
-export default async function AdminOutfitListPage({
+// The outfit list used to live at /admin; these params identify old bookmarks and filter forms.
+const LEGACY_LIST_PARAMS = ['q', 'status', 'page'];
+
+const toSearch = (raw: Record<string, string | string[] | undefined>): string => {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(raw)) {
+    const entries = Array.isArray(value) ? value : value === undefined ? [] : [value];
+    for (const entry of entries) search.append(key, entry);
+  }
+  return search.toString();
+};
+
+export default async function AdminOverviewPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const query = parseOutfitListQuery(await searchParams);
-  const params = new URLSearchParams({ page: String(query.page) });
-  if (query.q) params.set('q', query.q);
-  if (query.status) params.set('status', query.status);
-  const list = await adminGet<AdminOutfitListResponse>(`${API_PATHS.admin.outfits}?${params.toString()}`);
-  const totalPages = Math.max(1, Math.ceil(list.total / list.size));
+  const raw = await searchParams;
+  if (LEGACY_LIST_PARAMS.some((key) => key in raw)) redirect(`${ADMIN_PATHS.outfits}?${toSearch(raw)}`);
 
+  // Suspense lives here, not in a segment loading.tsx: a loading boundary around this page would
+  // stream the redirect above as a 200 + meta refresh instead of a real 307.
   return (
     <div className={styles.container}>
       <div className={styles.toolbar}>
-        <h1 className={styles.title}>Outfit</h1>
-        <Link href="/admin/outfits/new" className={`${styles.btn} ${styles.btnPrimary}`}>
+        <h1 className={styles.title}>Tổng quan</h1>
+        <Link href={ADMIN_PATHS.outfitNew} className={`${styles.btn} ${styles.btnPrimary}`}>
           Tạo outfit
         </Link>
       </div>
-      <div className={styles.panel}>
-        <OutfitListFilters query={query} />
-        <OutfitListTable items={list.items} timeZone={getWebEnv().ADMIN_TIME_ZONE} />
-        <PaginationLinks query={query} page={list.page} totalPages={totalPages} />
-      </div>
+      <Suspense
+        fallback={
+          <div className={styles.stack}>
+            <AdminSkeleton variant="cards" count={4} />
+            <AdminSkeleton variant="table" />
+          </div>
+        }
+      >
+        <OverviewContent />
+      </Suspense>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { OutfitCreateForm } from '@/components/admin/outfit-create-form';
 import styles from '@/components/admin/admin.module.css';
+import { ADMIN_PATHS } from '@/lib/admin-paths';
 
 export const metadata: Metadata = { title: 'Tạo outfit' };
 
@@ -10,7 +11,7 @@ export default function AdminOutfitNewPage() {
     <div className={styles.narrow}>
       <div className={styles.toolbar}>
         <h1 className={styles.title}>Tạo outfit</h1>
-        <Link href="/admin" className={`${styles.btn} ${styles.btnSecondary}`}>
+        <Link href={ADMIN_PATHS.outfits} className={`${styles.btn} ${styles.btnSecondary}`}>
           Quay lại danh sách
         </Link>
       </div>

@@ -1,3 +1,4 @@
+import { ADMIN_PATHS } from '@/lib/admin-paths';
 import styles from './admin.module.css';
 import listStyles from './admin-list.module.css';
 import { AdminFormField } from './admin-form-field';
@@ -6,7 +7,7 @@ import type { OutfitListQuery } from './outfit-list-query';
 /** Plain GET form: the server re-renders the list, no client state. */
 export function OutfitListFilters({ query }: { query: OutfitListQuery }) {
   return (
-    <form method="get" action="/admin" role="search" className={listStyles.filters}>
+    <form method="get" action={ADMIN_PATHS.outfits} role="search" className={listStyles.filters}>
       <AdminFormField id="filter-q" label="Tìm theo tên" compact>
         {(control) => <input {...control} type="search" name="q" defaultValue={query.q} maxLength={100} />}
       </AdminFormField>

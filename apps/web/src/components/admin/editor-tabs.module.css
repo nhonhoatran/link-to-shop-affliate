@@ -1,0 +1,56 @@
+/* Sticks under the action bar; --editor-* are set by the editor root (admin-editor.module.css, use-element-height-var). */
+.tabList {
+  position: sticky;
+  top: calc(var(--editor-sticky-top, 0px) + var(--editor-actions-height, 0px));
+  z-index: 4;
+  display: flex;
+  margin-bottom: var(--space-4);
+  background: var(--admin-bg);
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 0;
+  min-height: var(--admin-control-height);
+  padding: 0 var(--space-2);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--admin-text-muted);
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.tab[aria-selected='true'] {
+  border-bottom-color: var(--admin-primary);
+  color: var(--admin-text);
+}
+
+.errorDot {
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: 50%;
+  background: var(--admin-danger);
+}
+
+.panel {
+  min-width: 0;
+}
+
+/* 1024px = --bp-lg. Two columns: tabs disappear and every panel shows, even before the script has run. */
+@media (min-width: 1024px) {
+  .tabList {
+    display: none;
+  }
+
+  .panel[hidden] {
+    display: block;
+  }
+}

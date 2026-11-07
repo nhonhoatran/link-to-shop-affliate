@@ -1,14 +1,66 @@
-.layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-4);
-  align-items: start;
+.root {
+  --editor-sticky-top: 0px;
 }
 
-/* Admin editor breakpoint: the three panes stack below 1100px. */
-@media (min-width: 1100px) {
-  .layout {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+.heading {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.actionsBar {
+  position: sticky;
+  top: var(--editor-sticky-top);
+  z-index: 5;
+  margin-bottom: var(--space-3);
+  padding-block: var(--space-2);
+  background: var(--admin-bg);
+}
+
+.panels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* 768px = --bp-md. The sticky topbar sits above the action bar. */
+@media (max-width: 767.98px) {
+  .root {
+    --editor-sticky-top: var(--admin-topbar-height);
+  }
+}
+
+/* 1024px = --bp-lg. Below it the three panels are tabs; from it, form on the left and preview on the right. */
+@media (min-width: 1024px) {
+  .panels {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .paneInfo {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .paneItems {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .panePreview {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    position: sticky;
+    top: calc(var(--admin-control-height) + var(--space-5));
+    max-height: calc(100dvh - var(--admin-control-height) - var(--space-6));
+    overflow-y: auto;
+  }
+}
+
+/* 768px = --bp-md. The topbar is sticky below this width, so the action bar sits under it. */
+@media (max-width: 767.98px) {
+  .actionsBar {
+    top: var(--admin-topbar-height);
   }
 }
 
