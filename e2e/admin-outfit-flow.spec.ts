@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { assetPath } from './support/env';
 import { itemRow, loginAsAdmin } from './support/admin-helpers';
-import { writeOutfitState, type E2EOutfitItem } from './support/outfit-state';
+import { deleteE2EOutfit } from './support/outfit-cleanup';
+import { clearOutfitState, readOutfitStateOrNull, writeOutfitState, type E2EOutfitItem } from './support/outfit-state';
 
 const ITEM_SPECS = [
   {
@@ -38,6 +39,14 @@ test('admin creates, places and publishes an outfit that shows on the public pag
   }));
 
   await loginAsAdmin(page);
+
+  // A previous run that died before its teardown leaves its outfit in the state file; delete it
+  // before the file is overwritten, otherwise that outfit would stay on the public site forever.
+  const stale = readOutfitStateOrNull();
+  if (stale) {
+    await deleteE2EOutfit(page.request, stale);
+    clearOutfitState();
+  }
 
   await page.goto('/admin/outfits/new');
   await page.getByLabel('Tên outfit', { exact: true }).fill(title);
@@ -78,6 +87,9 @@ test('admin creates, places and publishes an outfit that shows on the public pag
   await expect
     .poll(async () => (await page.request.get(`/look/${slug}`)).text(), { timeout: 10_000, intervals: [500, 1_000] })
     .toContain(title);
+
+  await page.goto('/admin/outfits');
+  await expect(page.getByRole('link', { name: title, exact: true })).toBeVisible();
 
   await page.goto(`/look/${slug}`);
   await expect(page.getByRole('heading', { level: 1, name: title, exact: true })).toBeVisible();

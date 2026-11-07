@@ -83,6 +83,61 @@ test.describe('without JavaScript', () => {
   });
 });
 
+const ANIMATED_CONTENT =
+  '[data-lookbook] h1, [data-lookbook] h2, [data-lookbook] h3, [data-lookbook] li, [data-lookbook] figure';
+
+/** Waits for page-load CSS animations to finish, then checks every lookbook element ends fully opaque. */
+async function expectContentFullyVisible(page: Page): Promise<void> {
+  await expect
+    .poll(() =>
+      page.evaluate(
+        // Scroll-driven reveals (view timelines) stay "running" until scrolled into view, so only page-load timelines count.
+        () =>
+          document
+            .getAnimations()
+            .filter((a) => a.timeline instanceof DocumentTimeline && (a.playState === 'running' || a.pending)).length,
+      ),
+    )
+    .toBe(0);
+  const opacities = await page
+    .locator(ANIMATED_CONTENT)
+    .evaluateAll((els) => els.map((el) => getComputedStyle(el).opacity));
+  expect(opacities.length, 'lookbook content elements').toBeGreaterThan(0);
+  expect(
+    opacities.filter((o) => o !== '1'),
+    'lookbook content not fully opaque after animations',
+  ).toEqual([]);
+}
+
+test.describe('page-load animation ends fully visible', () => {
+  test('with JavaScript and motion enabled', async ({ page }) => {
+    await page.goto(`/look/${readOutfitState().slug}`);
+    await expectContentFullyVisible(page);
+  });
+
+  test.describe('reduced motion', () => {
+    test.use({ reducedMotion: 'reduce' });
+
+    test('content is visible immediately', async ({ page }) => {
+      await page.goto(`/look/${readOutfitState().slug}`);
+      await expectContentFullyVisible(page);
+    });
+  });
+
+  test.describe('without JavaScript', () => {
+    test.use({ javaScriptEnabled: false });
+
+    test('content ends fully opaque and the header stays at rest', async ({ page }) => {
+      await page.goto(`/look/${readOutfitState().slug}`);
+      await expectContentFullyVisible(page);
+
+      const header = page.getByRole('banner');
+      await expect(header).toBeVisible();
+      expect(await header.evaluate((el) => getComputedStyle(el).transform)).toBe('none');
+    });
+  });
+});
+
 test('unknown slug returns 404 with the not-found message', async ({ page }) => {
   const response = await page.goto('/look/no-such-outfit-e2e');
   expect(response?.status()).toBe(404);

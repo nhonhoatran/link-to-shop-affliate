@@ -25,6 +25,8 @@ export default defineConfig({
     // Creates the outfit through the admin UI; teardown deletes it after the public project.
     { name: 'admin-flow', testMatch: /admin-outfit-flow\.spec\.ts/, teardown: 'cleanup' },
     { name: 'public', testMatch: /public-.*\.spec\.ts/, dependencies: ['admin-flow'] },
+    // Not chained to public, so it runs even when a public spec fails. Both projects touch the shared settings document.
+    { name: 'admin-shell', testMatch: /admin-shell-.*\.spec\.ts/ },
     { name: 'visual', testMatch: /visual-.*\.spec\.ts/ },
     { name: 'cleanup', testMatch: /cleanup\.teardown\.ts/ },
   ],
