@@ -140,6 +140,37 @@ Hành vi quan trọng:
 - Mỗi dòng kết quả có dạng `<slug>: <status>`. Dòng kèm `(saved as draft: links or anchors missing)` nghĩa là bị hạ về draft.
 - Script gọi revalidate tới `WEB_REVALIDATE_URL` trong `apps/api/.env` (mặc định `http://localhost:3000/api/revalidate`). Khi `pnpm dev` đang chạy thì lời gọi thành công. Nếu chỉ chạy stack Docker, web không publish cổng 3000 ra host nên lời gọi thất bại (đã biết). Trang public vẫn làm mới trong `PUBLIC_REVALIDATE_SECONDS` (mặc định 300 giây), hoặc ngay sau khi admin lưu.
 
+## Dữ liệu demo
+
+Bộ dữ liệu demo dựng đủ nội dung để trình diễn: settings (SEO, footer, dải thông báo, câu đồng ý bản tin), 5 bộ sưu tập, 16 outfit đã publish (đủ link và anchor), bố cục trang chủ dùng cả 11 loại section (đã đăng) và 8 người đăng ký bản tin. File seed: `seed/demo/demo-seed.json`, schema `demoSeedFileSchema` trong `packages/shared/src/seed-demo-schema.ts`.
+
+```bash
+pnpm seed:demo            # upsert theo slug, chạy lại được
+pnpm seed:demo --reset    # xoá outfit, bộ sưu tập, người đăng ký và bố cục trang chủ trước khi seed (admin và session giữ nguyên)
+```
+
+Cờ `--file` và `--image-root` giống `seed:samples`.
+
+**Trên production** (quyết định 2026-11-08: site demo dùng đúng bộ dữ liệu này). Image api không chứa `seed/` và `assets-source/`, nên mount hai thư mục đó từ bản checkout trên VPS vào container rồi chạy bản đã build:
+
+```bash
+docker compose -f infra/docker-compose.yml -f infra/docker-compose.prod.yml --env-file .env.prod   run --rm -v "$PWD/seed:/repo/seed:ro" -v "$PWD/assets-source:/repo/assets-source:ro"   api node dist/scripts/seed-demo.js --reset
+```
+
+- Chạy từ gốc repo trên VPS, sau khi stack đã lên (`mongo` và `rustfs` healthy). `run --rm` tạo container tạm cùng env với service `api`.
+- `--reset` xoá outfit, bộ sưu tập, người đăng ký bản tin và bố cục trang chủ đang có. Bỏ cờ này nếu chỉ muốn cập nhật theo slug.
+- Ảnh được upload vào bucket với key theo nội dung, chạy lại không tạo bản sao. Revalidate tới web thành công vì chạy trong mạng compose.
+- Tài khoản admin không nằm trong seed: tạo bằng `create-admin` (mục 4 bên dưới).
+
+Ảnh demo nằm ở `assets-source/demo/` (ảnh người mẫu, bìa, banner lấy từ Unsplash theo giấy phép Unsplash; món đồ dùng lại bộ cắt trong `assets-source/cut/` và ảnh sản phẩm Unsplash đã tách nền). Hai script trong `scripts/demo-images/`:
+
+| Script | Việc làm |
+|--------|----------|
+| `prepare-demo-images.py` | Tải ảnh gốc theo `assets-source/demo/image-manifest.json` vào `raw/` (gitignore), cắt theo tỉ lệ, tách nền trắng cho ảnh món đồ, ghi ra `model/`, `item/`, `hero/`, `cover/`, `section/` |
+| `detect-item-anchors.py` | Dùng Gemini (`GEMINI_API_KEY`, model text) tìm vị trí từng món trên ảnh người mẫu và ghi `anchor` vào file seed. Món không có `detect` giữ anchor đặt tay |
+
+Trong seed, section trang chủ tham chiếu bộ sưu tập và outfit bằng slug (`collectionSlugs`, `outfitSlugs`, `outfitSlug`); seeder đổi sang id rồi validate bằng `homeLayoutContentSchema` và `assertHomeLayoutLimits` trước khi ghi. Bố cục được ghi thẳng vào bản đăng (không có bản trước để hoàn tác).
+
 ## Triển khai production
 
 Mục này dựa trên `infra/docker-compose.prod.yml`, `infra/.env.prod.example` và `infra/caddy/Caddyfile`. Phần HTTPS thật và cron trên VPS chưa được kiểm chứng (chưa có VPS và domain trong v1). Xem [Roadmap](./development-roadmap.md#việc-chưa-kiểm-chứng).

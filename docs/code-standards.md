@@ -35,7 +35,7 @@ pnpm workspace (`pnpm-workspace.yaml`: `apps/*`, `packages/*`). Các lệnh ở 
 │   │   │   ├── middleware/   # session, origin, JSON-only, rate limit, lỗi
 │   │   │   ├── models/       # schema Mongoose: outfit, admin-user, settings
 │   │   │   ├── routes/       # khai báo route, gọi service (public, admin stats, ...)
-│   │   │   ├── scripts/      # create-admin, seed-samples (chạy bằng tsx hoặc node dist/)
+│   │   │   ├── scripts/      # create-admin, seed-samples, seed-demo (chạy bằng tsx hoặc node dist/)
 │   │   │   ├── services/     # nghiệp vụ: outfit, public list, admin stats, media, settings, revalidate, ...
 │   │   │   ├── storage/      # client S3
 │   │   │   ├── create-app.ts # ghép middleware và route (createApp)
@@ -64,8 +64,10 @@ pnpm workspace (`pnpm-workspace.yaml`: `apps/*`, `packages/*`). Các lệnh ở 
 │   └── .env.prod.example
 ├── e2e/                      # Playwright (spec, teardown, support/)
 ├── seed/sample-outfits.json  # dữ liệu mẫu
+├── seed/demo/demo-seed.json  # bộ dữ liệu demo đầy đủ (settings, bộ sưu tập, outfit, trang chủ, bản tin)
 ├── scripts/assets/           # script Python/TS xử lý ảnh mẫu và validate seed
-├── assets-source/            # ảnh nguồn đã cắt (raw/ bị gitignore)
+├── scripts/demo-images/      # tải và xử lý ảnh demo, dò anchor bằng Gemini
+├── assets-source/            # ảnh nguồn đã cắt; demo/ là ảnh demo (raw/ bị gitignore)
 ├── plans/                    # kế hoạch và báo cáo phase
 ├── docs/                     # tài liệu này
 ├── .env.example              # env cho docker compose (copy thành .env)
@@ -188,7 +190,7 @@ Kiểm nhanh với bố cục mặc định: `curl -s http://localhost:3000/ | g
 
 ### Chữ chạy (Marquee) và giảm chuyển động
 
-- Chạy bằng CSS, không dùng JS. Nút tạm dừng là checkbox với `aria-label` cố định (`HOME_SECTION_COPY.marquee.toggleLabel`); trạng thái do `checked` thể hiện.
+- Chạy bằng CSS, không dùng JS. Không có nút tạm dừng: dải chữ dừng khi rê chuột (`.marquee:hover .track`) và tắt hẳn dưới reduced motion (quyết định 2026-11-08).
 - `prefers-reduced-motion: reduce` đặt `animation: none` và ẩn nhóm chữ lặp (`marquee.module.css`). Không chỉ rút ngắn thời lượng: vòng lặp vô hạn rút ngắn sẽ nhấp nháy.
 
 ### Icon

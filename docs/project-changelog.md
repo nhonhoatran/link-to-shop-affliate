@@ -4,6 +4,19 @@ Ghi lại các thay đổi đáng kể theo phiên bản. Mỗi mục ghi ngày,
 
 Liên quan: [Roadmap](./development-roadmap.md) · [Kiến trúc](./system-architecture.md) · [Triển khai](./deployment-guide.md)
 
+## Bộ dữ liệu demo (2026-11-08)
+
+Phạm vi: `packages/shared`, `apps/api`, `seed/demo`, `scripts/demo-images`, `assets-source/demo`, `docs`.
+
+- Thêm `pnpm seed:demo` (`apps/api/src/scripts/seed-demo.ts`, service `seed-demo-service.ts` và `seed-demo-home-layout.ts`): seed settings, 5 bộ sưu tập, 16 outfit đã publish, bố cục trang chủ đủ 11 loại section và 8 người đăng ký bản tin từ một file `seed/demo/demo-seed.json`. Cờ `--reset` xoá nội dung cũ trước khi seed. Script chạy được cả trên production (mount `seed/` và `assets-source/` vào container, xem hướng dẫn triển khai).
+- Schema `demoSeedFileSchema` (`packages/shared/src/seed-demo-schema.ts`); section trang chủ tham chiếu bằng slug.
+- `uploadSeedImage` trong `seed-service.ts` được export để seed demo dùng chung cách đặt key theo nội dung ảnh.
+- Ảnh demo lấy từ Unsplash, xử lý bằng `scripts/demo-images/prepare-demo-images.py`; anchor món đồ dò bằng `scripts/demo-images/detect-item-anchors.py`.
+- Ghi nhận khi seed: Gallery nguồn `latest` bị loại khỏi trang khi mọi outfit đã hiện ở OutfitList hoặc FeaturedLookbook cùng trang (đúng thiết kế), nên bố cục demo dùng Gallery nguồn `collection`.
+- Chi tiết: [Triển khai, mục Dữ liệu demo](./deployment-guide.md#dữ-liệu-demo).
+- Trang `/admin/login`: panel trái có ảnh bìa đen trắng (`apps/web/public/admin/login-cover.jpg`, từ Unsplash) dưới lớp phủ tối; chữ và wordmark giữ nguyên vị trí.
+- Trang chủ: bỏ nút tạm dừng của banner trượt và của dải chữ chạy (chủ repo chốt 2026-11-08, "mặc định luôn play"). Banner vẫn dừng khi rê chuột hoặc focus bên trong, dải chữ dừng khi rê chuột, cả hai tắt dưới reduced motion. Chỉ báo slide đổi từ chấm sang vạch ngang trắng đặt thẳng trên ảnh (token `--client-slider-mark-*`), bỏ bộ đếm và nền đen; mũi tên trước/sau thành nút tròn kính mờ (`--client-slider-arrow-size`). Test đơn vị và e2e cập nhật theo.
+
 ## Editorial monochrome, section trang chủ mới và bản tin (2026-11-08)
 
 Phạm vi: `packages/shared`, `apps/api`, `apps/web`, `e2e`, `docs`. Kế hoạch: `plans/261108-0923-editorial-luxury-redesign-and-new-sections/` (6 phase). Thay đổi chưa commit tại thời điểm viết mục này.
