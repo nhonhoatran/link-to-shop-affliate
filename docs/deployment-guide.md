@@ -189,6 +189,9 @@ Khác với dev, compose prod:
 - Không publish cổng Mongo và RustFS. Chỉ `caddy` publish 80 và 443.
 - `SESSION_COOKIE_SECURE=true`.
 - `SITE_ADDRESS` là domain, Caddy tự cấp HTTPS.
+- Limiter đăng ký bản tin và đăng nhập tính theo IP khách do Caddy đặt vào `X-Forwarded-For`. Nếu đặt CDN hoặc load balancer phía trước Caddy thì phải khai `trusted_proxies` trong Caddyfile cho dải IP của CDN (xem tài liệu `reverse_proxy` của Caddy). Nếu không, mọi khách chung IP của CDN và dùng chung một bộ đếm.
+- Limiter bản tin chỉ đếm đúng theo từng khách khi API chạy `NODE_ENV=production` (bật `trust proxy` 1 bước, tin `X-Forwarded-For` do Caddy đặt). Ngoài production, Server Action của web gọi API trực tiếp nên `req.ip` là IP của web, mọi khách dùng chung một bộ đếm (`NEWSLETTER_RATE_LIMIT_MAX_PER_IP` lượt mỗi cửa sổ). Staging đặt sau Caddy phải chạy `NODE_ENV=production`, nếu không sẽ gặp 429 sớm.
+- CDN đặt trước Caddy cần khai `trusted_proxies` trong Caddyfile, nếu không phần tử cuối của `X-Forwarded-For` là IP của CDN và mọi khách chung một bộ đếm.
 
 Kiểm tra `ps` cho thấy `api`, `web`, `mongo` đều healthy trước khi tạo admin.
 
@@ -341,6 +344,8 @@ Cột "Bắt buộc" theo code: **Có** nghĩa là schema hoặc compose báo l�
 | `LOGIN_RATE_LIMIT_MAX_FAILURES` | 5 | Không | Lần sai theo cặp IP + email |
 | `LOGIN_RATE_LIMIT_MAX_FAILURES_PER_EMAIL` | 50 | Không | Lần sai theo email, mọi IP. Nên đặt cao hơn ngưỡng trên |
 | `LOGIN_RATE_LIMIT_MAX_ATTEMPTS_PER_IP` | 20 | Không | Mọi lần thử theo IP |
+| `NEWSLETTER_RATE_LIMIT_WINDOW_MINUTES` | 15 | Không | Cửa sổ của limiter form đăng ký bản tin |
+| `NEWSLETTER_RATE_LIMIT_MAX_PER_IP` | 10 | Không | Số lần gửi form bản tin mỗi IP trong cửa sổ. Bộ đếm nằm trong bộ nhớ API. Có trong `.env.example`, `apps/api/.env.example` và compose (service api) |
 | `LOGIN_DEVICE_COOKIE_MAX_AGE_DAYS` | 90 | Không | Thời hạn cookie thiết bị `u30.dev`. Có trong `.env.example`, `apps/api/.env.example` và compose (service api) |
 | `ARGON2_MAX_CONCURRENCY` | 2 | Không | Số phép băm/so sánh mật khẩu đồng thời |
 | `ARGON2_MAX_QUEUE` | 20 | Không | Số yêu cầu được chờ. Vượt thì 503 |
@@ -380,6 +385,7 @@ Cột "Bắt buộc" theo code: **Có** nghĩa là schema hoặc compose báo l�
 | `Failed to build outfit indexes (check for duplicate featured outfits)` | DB có nhiều outfit `featured: true` (thường do dữ liệu khôi phục hoặc chỉnh tay) | API không khởi động có chủ đích. Bỏ cờ `featured` ở các bản dư bằng mongosh, rồi đặt lại một outfit nổi bật từ admin, sau đó khởi động lại api |
 | Đăng nhập xong nhưng phiên không giữ được | `SESSION_COOKIE_SECURE=true` khi truy cập qua HTTP | Dev: `SESSION_COOKIE_SECURE=false`. Prod: phải truy cập qua HTTPS |
 | Đăng nhập báo `Đăng nhập sai quá nhiều lần` từ thiết bị mới | Limiter theo email đã chạm trần (có thể do người khác thử sai) | Chờ hết `LOGIN_RATE_LIMIT_WINDOW_MINUTES`. Hoặc đăng nhập từ thiết bị đã tin cậy (có cookie `u30.dev`). Hoặc `docker compose ... restart api` (bộ đếm nằm trong bộ nhớ) |
+| Form đăng ký bản tin báo "thao tác quá nhanh" (429) khi thử tay hoặc chạy e2e | Dev không có Caddy nên mọi request chung một bucket theo IP; bộ đếm nằm trong RAM của API | Khi chạy e2e đặt `NEWSLETTER_RATE_LIMIT_MAX_PER_IP` cao cho API dev. Sau khi thử tay thì khởi động lại API để xoá bộ đếm |
 | Đăng nhập báo 503 `Hệ thống đang bận` | Hàng đợi argon2 đầy | Thử lại sau vài giây. Tăng `ARGON2_MAX_CONCURRENCY` hoặc `ARGON2_MAX_QUEUE` nếu lặp lại |
 | `401` ở mọi request admin sau khi đăng nhập | Admin đã bị xoá, hoặc session không gửi được cookie | Kiểm tra admin còn trong DB. Kiểm tra cookie `u30.sid` có được gửi |
 | Đổi `MONGO_ROOT_PASSWORD` trong `.env.prod` nhưng API không kết nối được | `MONGO_INITDB_*` chỉ áp dụng khi volume mongo trống. Mật khẩu thật nằm trong Mongo | Đổi mật khẩu bên trong Mongo (`db.changeUserPassword`), rồi đồng bộ `.env.prod`. Không xoá volume để "reset" nếu có dữ liệu |

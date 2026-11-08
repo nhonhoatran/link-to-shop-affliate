@@ -130,8 +130,8 @@ Phần này áp dụng cho mọi thay đổi CSS và component giao diện. Ngu�
 
 | File | Phạm vi | Ghi chú |
 |------|---------|---------|
-| `styles/design-tokens.css` | Dùng chung | Thang chữ, khoảng cách, bán kính, motion (`--duration-*`, `--easing-*`, `--stagger-step`, `--motion-distance`, `--toast-duration`), breakpoint `--bp-md` (768), `--bp-lg` (1024), `--bp-xl` (1440), chiều cao điều khiển admin `--admin-control-height` (44px) |
-| `styles/client-theme-tokens.css` | Public | `--client-*`, khai báo trên `:root`. Không có khối dark |
+| `styles/design-tokens.css` | Dùng chung | Thang chữ, khoảng cách, bán kính, motion (`--duration-*`, `--easing-*`, `--stagger-step`, `--motion-distance`, `--toast-duration`), breakpoint `--bp-md` (768), `--bp-lg` (1024), `--bp-xl` (1440), chiều cao điều khiển admin `--admin-control-height` (44px). Font: `--font-sans` (Be Vietnam Pro), `--font-display` (Playfair Display), `--font-weight-display` (400), `--letter-spacing-label` (0.14em) |
+| `styles/client-theme-tokens.css` | Public | `--client-*`, khai báo trên `:root`. Không có khối dark. Phong cách editorial monochrome: nền `--client-bg` #FAF8F5, chữ `--client-ink` #111111, chữ phụ `--client-ink-muted` #5C5752, bo góc 2px, `--client-shadow-soft: none` |
 | `styles/admin-theme-tokens.css` | Admin | `--admin-*`. Sáng ở `:root`, tối ở khối `[data-theme='dark']` và `[data-theme='system']` (kèm `@media (prefers-color-scheme: dark)`) |
 
 Quy tắc:
@@ -161,6 +161,35 @@ Quy tắc:
 - `prefers-reduced-motion: reduce`: `motion-primitives.module.css` đặt `animation: none`. `globals.css` rút thời lượng animation và transition về `0.01ms`. Motion dùng `reducedMotion="user"`.
 - Kiểm bằng e2e: `public-viewport-and-no-js.spec.ts` đọc `getComputedStyle(...).opacity` sau khi animation xong. Không chỉ dùng `toBeVisible()`, vì Playwright không xét opacity.
 - Lookbook ẩn connector khi chưa `data-ready` (`visibility: hidden`). Ảnh lỗi cũng phải được coi là sẵn sàng (listener `error` trong `use-lookbook-ready.ts`), nếu không đường nối ẩn vĩnh viễn.
+- Form đăng ký bản tin gửi được khi tắt JS: Server Action + redirect (PRG), kết quả đọc từ `?newsletter=` (xem [Bản tin](./system-architecture.md#bản-tin-newsletter)). Thông báo kết quả nhận focus (`newsletter-status-message.tsx`) để trình đọc màn hình đọc được.
+
+### Editorial: chữ, nhãn, nút
+
+- **Tiêu đề public** dùng `--font-display` với `--font-weight-display` (400). Không đặt bold cho chữ serif. Tiêu đề admin (`h1`) cũng dùng `--font-weight-display`.
+- **Nhãn, nav, nút, breadcrumb** viết hoa bằng CSS: `text-transform: uppercase` cộng `letter-spacing: var(--client-label-tracking)`. Không gõ chữ hoa trong HTML. DOM giữ nguyên nội dung, nên `getByRole(..., { name })` trong e2e không đổi.
+- **Nút public** dùng `components/public/public-button.module.css` (đang dùng ở 9 file). Không viết lại rule pill riêng trong module mới. Chấm điều hướng của hero là ngoại lệ có chủ đích.
+- Không thêm `box-shadow` và màu accent ngoài ink, nền, chữ phụ ở public. Bo góc qua token `--client-radius-*`.
+- **Form public** validate bằng thuộc tính HTML gốc (`required`, `type="email"`, `autoComplete`). Không thêm thư viện validate. Honeypot là `<input name="website" tabIndex={-1} autoComplete="off">` nằm trong vùng `aria-hidden` có class ẩn (`srOnlyClass`).
+- **Hero** (`HeroSlider`): lớp phủ gradient alpha ≥ 0.6 trong vùng chữ (`hero-slider-caption.module.css`), đủ tương phản trên ảnh sáng. Dưới 768px chữ nằm trên panel đặc bên dưới ảnh; mũi tên ẩn, vuốt và chấm vẫn dùng được.
+- **Tên vùng section** (`SectionShell`): khi tiêu đề nằm trong panel (`CampaignBanner`, `NewsletterSignup`), truyền `labelledBy` trỏ tới `h2` đang hiện. Không dùng `label` (aria-label) lặp lại chữ hiển thị.
+
+### Ảnh LCP: một ảnh ưu tiên
+
+Mục tiêu: mỗi trang chỉ có một ảnh được tải sớm. Trước đây `/` phát ra năm `<link rel="preload">`.
+
+| Nơi | Cách làm |
+|-----|----------|
+| Lookbook (`LookbookModelFigure`) | Prop `preload` của `next/image`. `FeaturedLookbookView` truyền `preload={priority}`. Trang `/look/[slug]` giữ mặc định `preload` |
+| Card outfit, card bộ sưu tập | `loading="eager"` và `fetchPriority="high"` chỉ khi ô đầu của grid là LCP (`firstRow && highPriority`). Các ô còn lại để lazy |
+| Slide đầu `HeroSlider` khi là LCP | `fetchPriority="high"` (`hero-image-props.ts`), không preload |
+| `Gallery` (ô đầu), `CampaignBanner` (ảnh chính) | Chỉ preload khi section là LCP (`priority`) |
+
+Kiểm nhanh với bố cục mặc định: `curl -s http://localhost:3000/ | grep -c 'rel="preload" as="image"'` phải ra 1.
+
+### Chữ chạy (Marquee) và giảm chuyển động
+
+- Chạy bằng CSS, không dùng JS. Nút tạm dừng là checkbox với `aria-label` cố định (`HOME_SECTION_COPY.marquee.toggleLabel`); trạng thái do `checked` thể hiện.
+- `prefers-reduced-motion: reduce` đặt `animation: none` và ẩn nhóm chữ lặp (`marquee.module.css`). Không chỉ rút ngắn thời lượng: vòng lặp vô hạn rút ngắn sẽ nhấp nháy.
 
 ### Icon
 
@@ -173,6 +202,7 @@ Quy tắc:
 - Mọi hộp thoại và drawer dùng `hooks/use-modal-dialog.ts` (`useModalDialog`) trên `<dialog>` với `showModal()`. Đóng thì trả focus về phần tử đã mở. Drawer mobile hiện dùng hook này (`components/admin/shell/admin-nav-drawer.tsx`).
 - **Toast chỉ báo thành công.** `toast.success(...)` qua `useAdminToast` (`components/admin/shell/use-admin-toast.ts`). Tự ẩn sau `--toast-duration`.
 - **Lỗi hiện inline** cạnh field hoặc form (`FormError`), không đưa vào toast. Một lỗi không được xuất hiện trên hai kênh cùng lúc, vì cả hai đều nằm trong vùng `role="alert"`.
+- **Xoá vĩnh viễn** trong admin (ví dụ người đăng ký bản tin): nút `btnDanger`, có hộp thoại xác nhận, và chữ nút đổi sang "Đang xoá…" khi đang chạy. Huỷ/huỷ đăng ký là thao tác đảo ngược được nên dùng nút thường.
 - Hai live region của toast luôn có sẵn trong DOM. Chỉ phần tử toast con được animate bằng `m.*`.
 
 ### Điều khiển chạm và URL
@@ -187,6 +217,7 @@ Quy tắc:
 - Baseline ghi nhận với **dev mode** (`pnpm dev`) trên **Windows (win32)**. Chạy ở môi trường khác (OS, chế độ build) sẽ lệch font và pixel, cần baseline riêng.
 - Chạy: `pnpm e2e --project visual`.
 - Không dùng `--update-snapshots` tuỳ tiện. Chỉ cập nhật baseline khi có thay đổi thiết kế chủ đích, và ghi vào [Lịch sử thay đổi](./project-changelog.md).
+- Đợt editorial (2026-11-08): font lookbook đã đổi sang Playfair, nên baseline cũ không còn khớp ở phần nhãn. Baseline mới chỉ được cập nhật sau khi chủ repo duyệt ảnh bằng mắt. Lệch bố cục (vị trí, kích thước, số dòng nhãn) là lỗi phải sửa trước, không đưa vào baseline.
 
 ## Hợp đồng dùng chung (`packages/shared`)
 
@@ -203,6 +234,8 @@ Thư mục:
 
 - `apps/web/src/components/home-sections/`: view của từng loại section, `HomeSectionList`, `SectionShell` (holder chung, tiêu đề qua `aria-labelledby`).
 - `apps/web/src/components/admin/collections/` (form, danh sách, outfit trong bộ sưu tập), `components/admin/pickers/` (`AdminEntityPicker` tìm kiếm phía server, dùng chung cho outfit và bộ sưu tập), `components/admin/home-editor/` (màn hình, toolbar, danh sách thẻ section, form theo `home-section-field-specs.ts`, xem trước).
+- `apps/web/src/lib/newsletter/`: Server Action đăng ký bản tin, `pickClientIp`, `newsletterResultHref`. Không import từ module client.
+- `apps/web/src/components/admin/newsletter/`: danh sách, bộ lọc, hành động từng dòng của trang Đăng ký nhận tin.
 
 Luật "view section client-safe": view trong `home-sections/` chỉ nhận DTO đã resolve từ API (`GET /api/public/home`). Không import module server-only, không gọi API, không đọc env. Test `apps/web/test/home-sections/views-client-safe.test.tsx` giữ luật này.
 

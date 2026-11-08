@@ -1,12 +1,13 @@
 # Roadmap Under30ss
 
-Trạng thái tính đến 2026-11-07. Chi tiết từng phase nằm trong `plans/261106-1201-under30ss-shop-the-look/` (v1) và `plans/261107-0913-professional-ui-refactor-client-admin/` (refactor giao diện).
+Trạng thái tính đến 2026-11-08. Chi tiết từng phase nằm trong `plans/261106-1201-under30ss-shop-the-look/` (v1) và `plans/261107-0913-professional-ui-refactor-client-admin/` (refactor giao diện).
 
 Liên quan: [Lịch sử thay đổi](./project-changelog.md) · [Kiến trúc](./system-architecture.md) · [Triển khai](./deployment-guide.md)
 
 ## Contents
 - [Trạng thái phase](#trạng-thái-phase)
 - [Refactor giao diện client và admin](#refactor-giao-diện-client-và-admin)
+- [Đợt editorial và bản tin](#đợt-editorial-và-bản-tin)
 - [Cột mốc](#cột-mốc)
 - [Việc chưa kiểm chứng](#việc-chưa-kiểm-chứng)
 - [Việc hoãn sang sau v1](#việc-hoãn-sang-sau-v1)
@@ -88,6 +89,56 @@ Plan: `plans/261107-1341-homepage-sections-and-collections/`. Trạng thái: P1�
 - Đã xong, không còn là follow-up: link mạng xã hội mở cùng tab (`PublicSmartLink` có prop `newTab`, chỉ bật `target="_blank"` cho URL ngoài; `site-social-links.tsx`).
 - Follow-up trong plan: xoá `getFeaturedOutfit` nếu không còn dùng, blog (dự án con), giá và brand món đồ, dọn loader không dùng, dọn heading/pill trùng ở module cũ (checklist UI, C2 và Q1).
 
+## Đợt editorial và bản tin
+
+Plan: `plans/261108-0923-editorial-luxury-redesign-and-new-sections/`. Trạng thái: đã code và kiểm chứng, chưa commit. P6 còn mở: axe và pixel nền hero (xem mục "Việc chưa kiểm chứng" trong đợt này).
+
+| Phase | Nội dung | Trạng thái |
+|-------|----------|------------|
+| P1–P5 | Xem [mục changelog](./project-changelog.md#editorial-monochrome-section-trang-chủ-mới-và-bản-tin-2026-11-08) | Xong. Unit, e2e, smoke compose xanh (2026-11-08) |
+| P6 | E2E, kiểm chứng, tài liệu | Xong trừ axe và pixel hero. Xem bảng bên dưới |
+
+### Số liệu
+
+- Unit: `packages/shared` 164, `apps/api` 223, `apps/web` 664 (báo cáo `fullstack-developer-261108-review-fixes.md`; `pnpm test` gốc chạy lại 2026-11-08 sau sửa header, xanh).
+- E2E: `pnpm e2e` đầy đủ 111/111 xanh (public 61, admin-shell, visual 4/4, chuỗi content gồm newsletter-signup 6, newsletter-admin 8, editorial-sections-render 9).
+- Visual: 4/4 xanh sau khi cập nhật baseline một lần (Q2).
+- Trang `/` trên compose prod: LCP 328-368 ms, CLS 0, một `<link rel="preload" as="image">`, Playfair vietnamese preload.
+- First Load JS `/`: 199,8 KiB, baseline 199,1, ngân sách +15 KiB. Đo bằng `scripts/perf/measure-first-load-js.mjs` trên `localhost:8080`.
+
+### Việc còn mở
+
+| Việc | Lý do và bằng chứng | Hướng xử lý |
+|------|---------------------|-------------|
+| Lookbook dramatic 390 | Báo cáo tester ghi cột ngắn hơn 16 px, nhãn "TÚI ĐEO CHÉO" xuống dòng khác (`visuals/`). Baseline đã cập nhật 4/4, nhưng chưa có báo cáo xác nhận lỗi layout đã sửa | Rà `visuals/lookbook-dramatic-390-*` bằng mắt. Nếu còn lệch layout thì sửa P3 rồi chụp lại baseline |
+| Dữ liệu dev có bộ sưu tập `test` đã đăng | Spec xoá bộ sưu tập đã sửa: chỉ kiểm bộ sưu tập e2e biến mất (`content-collections-flow.spec.ts`). Link "Bộ sưu tập" vẫn hiện vì dữ liệu dev | Chủ repo quyết: dọn dữ liệu dev, hoặc giữ như hiện tại |
+| Q4: câu đồng ý và link chính sách | Chưa chốt. Site chưa có trang chính sách | Chủ repo duyệt chữ. Nên có luật sư xem trước go-live |
+| Mục UI còn mở (báo cáo verifying) | K3: nhóm Bản tin còn `fieldset disabled` (`settings-newsletter-consent-fields.tsx:29`, kiểm 2026-11-08). G4: tên món lookbook vẫn đậm (`lookbook.module.css:65`, theo báo cáo). G1: token `--client-hero-overlay` còn định nghĩa, không dùng (`client-theme-tokens.css:35`, kiểm 2026-11-08). I2: hover ô Gallery chưa bọc `(hover: hover)` (theo báo cáo, chưa kiểm lại) | Sửa theo mẫu announcement; chọn đậm hoặc 400 khi duyệt lookbook; xoá token; kiểm lại I2 |
+
+### Việc chưa kiểm chứng
+
+Các mục sau chưa chạy. Không coi là đã xong.
+
+| Mục | Lý do | Cần để kiểm chứng |
+|-----|-------|-------------------|
+| axe trên `/`, `/looks`, `/look/[slug]`, `/collections`, `/admin/newsletter`, `/admin/settings`, sáng và tối | Chưa có `@axe-core/playwright` trong deps. Plan không thêm dependency | Quyết định: thêm dev dependency, hay chạy axe-core thủ công và ghi kết quả |
+| Pixel nền hero dưới ảnh trắng | Chưa có HeroSlider publish trên DB dùng chung. Mới tính theo công thức scrim: 5,10:1 (tester, mục Prod verification) | Publish một HeroSlider ảnh trắng trên DB dev, chụp và đo pixel vùng chữ |
+
+### Follow-up
+
+- Double opt-in khi có nhà cung cấp email.
+- Link huỷ đăng ký tự phục vụ trong email (cần có email gửi đi trước).
+- CAPTCHA nếu spam tăng.
+- Xoá token `--client-hero-overlay`.
+- Số món và thương hiệu trên thẻ outfit. Cần thêm trường vào DTO. Giá và icon giỏ đã bỏ theo mockup.
+- Menu mobile nếu thanh nav có thêm mục. Hiện nav tự xuống dòng.
+- Tự động hoá axe-core trong e2e (chưa có dependency).
+- Gallery nguồn `collection` và `manual` có nên bỏ trùng như `latest` không. Hiện chỉ `latest` bỏ trùng.
+- `CampaignBanner`, `Marquee`, `Gallery` chỉ nằm trong container, chưa có tuỳ chọn tràn viền (full-bleed).
+- Staging: nếu đặt sau Caddy mà chạy `NODE_ENV=development` thì limiter bản tin gộp mọi khách vào một bộ đếm. CDN đặt trước Caddy cần `trusted_proxies`. Xem [Triển khai](./deployment-guide.md).
+- Caddy `encode zstd gzip` (`infra/caddy/Caddyfile:3`): với JS của `/`, zstd lớn hơn gzip (208,8 KiB so với 199,5 KiB, đo bằng curl 2026-11-08). Đo lại trước khi đổi thứ tự (gzip trước) để chọn theo số liệu.
+- `e2e/support/outfit-state.ts:21` vẫn ghi state vào `test-results/e2e-outfit-state.json`. Playwright xoá `test-results/` khi bắt đầu chạy, nên chuyển state sang `e2e/.state/` như snapshot.
+
 ## Cột mốc
 
 | Ngày | Cột mốc |
@@ -96,6 +147,7 @@ Plan: `plans/261107-1341-homepage-sections-and-collections/`. Trạng thái: P1�
 | 2026-11-06 | Lookbook khớp ảnh mẫu hơn (connector cong, mũi tên, hotspot, pin trên mobile) |
 | 2026-11-07 | Xác nhận lại test và E2E. Viết tài liệu `docs/` (v1) |
 | 2026-11-07 | Refactor giao diện client và admin hoàn thành về code (7 phase). Cập nhật tài liệu `docs/` |
+| 2026-11-08 | Đợt editorial: token monochrome, Playfair, 4 section mới, bản tin (form, admin, CSV). Review, sửa vòng hai, e2e 111/111 xanh, smoke compose và số đo prod. Còn mở: axe, pixel hero, Q4 |
 
 ## Việc chưa kiểm chứng
 

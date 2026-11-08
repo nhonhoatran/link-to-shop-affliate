@@ -11,6 +11,7 @@ Tài liệu liên quan: [Quy chuẩn code](./code-standards.md) · [Triển khai
 - [API đọc cho giao diện](#api-đọc-cho-giao-diện)
 - [Mô hình dữ liệu](#mô-hình-dữ-liệu)
 - [Bất biến featured](#bất-biến-featured)
+- [Bản tin (newsletter)](#bản-tin-newsletter)
 - [Luồng revalidate API → web](#luồng-revalidate-api--web)
 - [Tuỳ chọn giao diện admin (cookie)](#tuỳ-chọn-giao-diện-admin-cookie)
 - [Pipeline ảnh và media](#pipeline-ảnh-và-media)
@@ -67,7 +68,7 @@ Cấu hình nằm ở `infra/caddy/Caddyfile`. Thứ tự khối `handle` quan t
 Các cơ chế đã kiểm chứng khi chạy stack thật:
 - Lỗi 413 luôn có `Content-Type: application/json; charset=utf-8` và body `{"error":{"code":"PAYLOAD_TOO_LARGE",...}}`. Thông điệp khớp hằng số `FILE_TOO_LARGE_MESSAGE` trong `apps/api/src/middleware/error-handler-middleware.ts`.
 - Giới hạn body của Caddy được tính trong lệnh `command` của service `caddy` (`UPLOAD_BODY_MAX_MB=$$((UPLOAD_MAX_MB_CEILING + 1))`), vì placeholder của Caddyfile không tính số học được.
-- Caddy ghi đè `X-Forwarded-For`, nên IP client mà API thấy không thể bị giả qua header.
+- Caddy bỏ qua `X-Forwarded-For` do client gửi (mặc định, vì client không thuộc `trusted_proxies`) và tự đặt IP thật. Limiter bản tin dựa vào cơ chế này, xem [Bản tin](#bản-tin-newsletter).
 - Caddyfile chỉ khai báo `header_up Host` cho upstream web. Không có dòng nào đặt `X-Forwarded-Proto` tường minh (xem [cờ secure của cookie admin](#tuỳ-chọn-giao-diện-admin-cookie)).
 
 ## Route web và giao diện
@@ -78,7 +79,7 @@ Web dùng Next.js 16 App Router với hai route group, mỗi nhóm có layout ri
 
 | Đường dẫn | File | Vai trò |
 |-----------|------|---------|
-| `/` | `(public)/page.tsx` | Trang chủ dựng từ bố cục section (xem [Trang chủ và bộ sưu tập](#trang-chủ-và-bộ-sưu-tập)). Có một `h1` ẩn lấy tên SEO của site. Bố cục mặc định: lookbook nổi bật, "Outfit khác", ô bộ sưu tập (tự ẩn khi chưa có bộ sưu tập đã đăng) |
+| `/` | `(public)/page.tsx` | Trang chủ dựng từ bố cục section (xem [Trang chủ và bộ sưu tập](#trang-chủ-và-bộ-sưu-tập)). Có một `h1` ẩn lấy tên SEO của site. Bố cục mặc định: lookbook nổi bật, ô bộ sưu tập (tự ẩn khi chưa có bộ sưu tập đã đăng), "Outfit khác", thư viện ảnh, form đăng ký bản tin (chỉ hiện khi đã lưu câu đồng ý). Nhận query `?newsletter=` sau khi gửi form |
 | `/collections?page=n` | `(public)/collections/page.tsx` | Danh sách bộ sưu tập đã đăng, phân trang theo `looksPageSize`. Tên trang lấy từ setting `collectionsLabel` |
 | `/collections/[slug]` | `(public)/collections/[slug]/page.tsx` | Một bộ sưu tập: breadcrumb, `h1`, mô tả, lưới outfit, phân trang. Slug không tồn tại trả 404 |
 | `/looks?page=n` | `(public)/looks/page.tsx` | Danh sách outfit đã publish, phân trang phía server. `page` không hợp lệ được đưa về trang 1. `page` lớn hơn tổng số trang trả 404. Không có outfit nào thì hiện thông báo trống |
@@ -102,6 +103,7 @@ Số outfit mỗi trang và số outfit "Outfit khác" lấy từ settings (`loo
 | `/admin/collections`, `/admin/collections/new`, `/admin/collections/[id]` | `collections/page.tsx`, `collections/new/page.tsx`, `collections/[id]/page.tsx` | Danh sách, tạo và sửa bộ sưu tập (ảnh bìa, outfit trong bộ sưu tập, Lên/Xuống, xoá) |
 | `/admin/home` | `home/page.tsx` | Trình soạn trang chủ: thêm, sắp xếp, ẩn, sửa section; lưu nháp, đăng, hoàn tác |
 | `/admin/home-preview` | `home-preview/page.tsx` | Xem trước bản nháp (ngoài nhóm `(protected)`, có banner "Bản xem trước, chưa đăng"). Không đổi những gì khách thấy |
+| `/admin/newsletter` | `admin/(protected)/newsletter/page.tsx` | Danh sách người đăng ký, lọc theo email và trạng thái (phía server), xuất CSV, huỷ đăng ký, xoá vĩnh viễn |
 | `/admin/users` | `users/page.tsx` | Danh sách, tạo và xoá admin |
 | `/admin/login` | `admin/login/page.tsx` | Đăng nhập, nằm ngoài `(protected)` |
 | 404 trong admin | `(protected)/not-found.tsx` | "Không tìm thấy trang", nút về `/admin/outfits` |
@@ -204,7 +206,11 @@ Giới hạn đã biết: hai admin cùng bấm đặt nổi bật đồng thờ
 | `PageLayout` | `apps/api/src/models/page-layout-model.ts` | Collection `page_layouts`, `pageKey: 'home'` (`HOME_PAGE_KEY`). Giữ `draft`, `published`, `publishedAt`, và đúng một bản đăng trước (`previous`) |
 | `Outfit.collectionIds` | `apps/api/src/models/outfit-model.ts` | Mảng id bộ sưu tập chứa outfit. Index `{ collectionIds, status, updatedAt, _id }` |
 
-Bố cục trang chủ là JSON `[{ type, props: { id, visible, ... } }]` với `schemaVersion`. Bảy loại section: `HeroSlider`, `CollectionTiles`, `OutfitList`, `FeaturedLookbook`, `TextWithImage`, `Faq`, `Commitments`. Schema nằm ở `packages/shared/src/home-sections/`, kiểu và union section ở `home-section-union.ts`; contract bố cục (nháp, đăng, hoàn tác, xem trước, section đã resolve) ở `packages/shared/src/home-layout-contract.ts`.
+Bố cục trang chủ là JSON `[{ type, props: { id, visible, ... } }]` với `schemaVersion`. Mười một loại section: `HeroSlider`, `CollectionTiles`, `OutfitList`, `FeaturedLookbook`, `TextWithImage`, `Faq`, `Commitments`, `CampaignBanner`, `Marquee`, `Gallery`, `NewsletterSignup`. Schema nằm ở `packages/shared/src/home-sections/`, kiểu và union section ở `home-section-union.ts`; contract bố cục (nháp, đăng, hoàn tác, xem trước, section đã resolve) ở `packages/shared/src/home-layout-contract.ts`.
+
+`HOME_SECTION_META` (`home-section-meta.ts`) mô tả từng loại cho trình soạn và trang xem trước, gồm hai cờ:
+- `resolvesData`: API phải resolve dữ liệu cho loại này (outfit, bộ sưu tập, câu đồng ý).
+- `hasImage`: loại này có ảnh tải lên, nên có thể giữ ảnh LCP của trang. `home-section-list.tsx` chọn section LCP theo cờ này.
 
 ### API
 
@@ -213,7 +219,7 @@ Bố cục trang chủ là JSON `[{ type, props: { id, visible, ... } }]` với 
 | `GET /api/public/collections?page&size` | Công khai | Bộ sưu tập đã đăng, phân trang theo `looksPageSize` |
 | `GET /api/public/collections/slugs` | Công khai | Slug và `updatedAt` cho sitemap |
 | `GET /api/public/collections/:slug` | Công khai | Một bộ sưu tập kèm outfit đã đăng, mới nhất trước. Không có hoặc chưa đăng: 404 |
-| `GET /api/public/home` | Công khai | Các section đã resolve từ bản đăng; chưa đăng thì trả 3 section mặc định (`DEFAULT_HOME_CONTENT`). Section lỗi dữ liệu bị lọc khỏi danh sách |
+| `GET /api/public/home` | Công khai | Các section đã resolve từ bản đăng; chưa đăng thì trả bố cục mặc định (`DEFAULT_HOME_CONTENT`, năm section). Section lỗi dữ liệu bị lọc khỏi danh sách |
 | `GET/POST /api/admin/collections`, `GET/PUT/DELETE /api/admin/collections/:id` | Admin | CRUD. Đăng (`published`) bắt buộc có ảnh bìa |
 | `POST /api/admin/collections/:id/move` | Admin | `{ direction: 'up' | 'down' }`, đổi `order` |
 | `POST/DELETE /api/admin/collections/:id/outfits[/:outfitId]` | Admin | Gán và gỡ outfit. Gán theo kiểu tất cả hoặc không: giới hạn `MAX_COLLECTIONS_PER_OUTFIT` = 24 bộ sưu tập mỗi outfit. Có outfit đã đủ 24 bộ sưu tập thì trả 400 `VALIDATION_ERROR` (`fields.outfitIds`), không thêm outfit nào. Nếu bộ sưu tập bị xoá giữa chừng thì gỡ id vừa thêm và trả 404 |
@@ -255,8 +261,84 @@ Các trường mới của `Settings` (đều optional, API luôn điền khi đ
 - `collectionsLabel`: tên hiển thị của link và trang bộ sưu tập, mặc định `DEFAULT_COLLECTIONS_LABEL`.
 - `footer`: `{ columns: [{ title, links: [{ label, href }] }], social: [{ label, href }] }`. Tối đa 4 cột, 8 link mỗi cột, 8 link mạng xã hội. `href` nội bộ (`/...`) hoặc `https://`; link `javascript:` bị từ chối (schema `safeHrefSchema`, `packages/shared/src/safe-href.ts`; e2e kiểm tra tại ô nhập).
 - `announcement`: `{ enabled, text (≤160), linkLabel? (≤40), href? }`, mặc định tắt. Là cấu hình toàn site, hiện phía trên header public, không phải section trang chủ.
+- `newsletterConsent` và `newsletterConsentVersion`: câu đồng ý cạnh ô chọn của form bản tin. Chi tiết ở [Bản tin](#bản-tin-newsletter).
 
-Settings là PUT toàn bộ document: client phải gửi lại mọi trường, trường bị bỏ sẽ bị xoá (xem `e2e/support/admin-settings.ts`).
+Settings là PUT toàn bộ document: client phải gửi lại mọi trường, trường bị bỏ sẽ bị xoá (xem `e2e/support/admin-settings.ts`). `newsletterConsentVersion` là ngoại lệ: không bị xoá khi bỏ câu đồng ý.
+
+### Section editorial và section mới
+
+| Section | Resolve ở API | Ghi chú |
+|---------|---------------|---------|
+| `CampaignBanner` | Không (`attachSectionImageUrls`) | Một ảnh lớn kèm khung chữ nền đặc và nút. Ảnh đi qua `listSectionImageKeys` → `isPublicKey` như mọi ảnh section |
+| `Marquee` | Không | Một dòng chữ chạy ngang bằng CSS. Không có dữ liệu |
+| `Gallery` | Có (`home-section-gallery-resolver.ts`) | `source`: `latest` (mặc định), `collection` hoặc `manual`. Ô ảnh link tới `/look/<slug>`. Số ô tối đa theo `MAX_GALLERY_ITEMS` và `PUBLIC_PAGE_SIZE_MAX`; có bao nhiêu outfit thực thì hiện bấy nhiêu. Không có outfit nào thì cả section bị bỏ |
+| `NewsletterSignup` | Có (câu đồng ý đã lưu) | Không có câu đồng ý đã lưu thì section bị bỏ khỏi kết quả |
+
+Trên một trang, `Gallery` nguồn `latest` bỏ các outfit đã hiện ở `OutfitList` và `FeaturedLookbook` của cùng trang (`shownOutfitSlugs` trong `home-section-resolver-service.ts`), và lấy thêm để đủ số ô. Nguồn `collection` và `manual` hiện chưa bỏ trùng.
+
+Bố cục mặc định (`DEFAULT_HOME_CONTENT`, `packages/shared/src/home-sections/default-home-content.ts`) gồm năm section: `FeaturedLookbook`, `CollectionTiles`, `OutfitList`, `Gallery`, `NewsletterSignup`. Bố cục đã đăng trước đó không đổi khi mặc định thay đổi.
+
+## Bản tin (newsletter)
+
+Form đăng ký nhận tin là section `NewsletterSignup` trên trang chủ. Hệ thống chỉ dùng single opt-in: khách đăng ký là có tên trong danh sách, không có email xác nhận. Double opt-in để sau, xem [Roadmap](./development-roadmap.md).
+
+### Mô hình dữ liệu
+
+| Model | File | Nội dung |
+|-------|------|----------|
+| `NewsletterSubscriber` | `apps/api/src/models/newsletter-subscriber-model.ts` | Collection `newsletter_subscribers`. `email` duy nhất, lowercase. `status`: `subscribed` hoặc `unsubscribed`. Giữ `consentedAt`, `consentText`, `consentTextVersion`, `source` (hiện chỉ `home`), `unsubscribedAt?`, và `events` |
+
+- `events` là lịch sử chỉ thêm: `subscribe` hoặc `unsubscribe`, `actor` là `self` hoặc `admin`, kèm `at`, `textVersion?`, `consentText?`. `consentText` là bản chụp câu đồng ý khách đã tick, dùng làm bằng chứng.
+- Không lưu IP của khách. IP chỉ dùng trong bộ nhớ của limiter.
+- Đăng ký lại sau khi huỷ: bản ghi chuyển về `subscribed`, các event cũ được giữ.
+
+Câu đồng ý (`Settings`):
+- `newsletterConsent` là `{ text, privacyHref?, privacyLabel }`. `newsletterConsentVersion` là số nguyên tăng dần, bắt đầu từ 1.
+- Version tăng khi đổi `text` hoặc `privacyHref`. Chỉ đổi `privacyLabel` thì không tăng. Việc tăng dùng một lệnh cập nhật có điều kiện (`saveConsent`, `apps/api/src/services/settings-newsletter-consent-service.ts`), nên hai lần lưu đồng thời cùng nội dung chỉ tăng một lần.
+- Chưa có câu đồng ý đã lưu thì `toSavedConsent` trả `null`. Form không hiện, dù section đã có trong bố cục. Tắt công tắc "Hiện form đăng ký trên trang chủ" trong Cài đặt cũng làm form ẩn.
+
+### Luồng gửi form
+
+1. Khách tick ô đồng ý và bấm đăng ký. Form gửi tới Server Action `subscribeNewsletter` (`apps/web/src/lib/newsletter/subscribe-newsletter-action.ts`). Form gửi được khi tắt JS.
+2. Action lấy IP khách từ `X-Forwarded-For`, lấy phần tử cuối (`pickClientIp`, `newsletter-client-ip.ts`). Phần tử cuối là IP mà Caddy đã thấy, khách không tự đặt được. Action gọi `POST /api/public/newsletter` kèm header đó.
+3. API xử lý theo thứ tự: giới hạn tần suất, kiểm body (`newsletterSubscribeRequestSchema`, trong đó `consent` phải là `true`), honeypot (trường `website`), kiểm `consentTextVersion` khớp câu đang lưu, rồi ghi bản ghi.
+4. Action redirect về `/?newsletter=<kết quả>` kèm neo tới section (PRG). Trang đọc query và hiện thông báo, không cần JS.
+
+| Phản hồi API | `?newsletter=` | Ghi chú |
+|--------------|----------------|---------|
+| 202 `{ ok: true }` | `ok` | Gồm email mới, email đã có và honeypot. API không lộ email nào đã có trong danh sách |
+| 400 | `invalid` | Email sai hoặc chưa tick ô đồng ý |
+| 409 | `stale` | `consentTextVersion` lệch: câu đồng ý đã đổi. Action gọi `revalidateTag('public-home', { expire: 0 })` để lần tải sau thấy câu mới |
+| 429 | `rate` | Vượt giới hạn tần suất |
+| Khác | `error` | Log không ghi email hay IP |
+
+Honeypot: action trả `ok` ngay, không gọi API. Email không được ghi vào log.
+
+### Giới hạn tần suất
+
+- `createNewsletterRateLimit` (`apps/api/src/middleware/newsletter-rate-limit-middleware.ts`) dùng `express-rate-limit`, bộ đếm nằm trong RAM của API. Khởi động lại API thì bộ đếm mất.
+- Cửa sổ `NEWSLETTER_RATE_LIMIT_WINDOW_MINUTES` (mặc định 15) và ngưỡng `NEWSLETTER_RATE_LIMIT_MAX_PER_IP` (mặc định 10). Đọc ở `apps/api/src/lib/runtime-defaults.ts`.
+- Đếm mọi request, kể cả 400 và 409, để bot không dò được email miễn phí. Header `RateLimit` theo draft-8.
+- Khoá theo IP chỉ đúng khi `trust proxy` đang bật. Code bật `trust proxy` (1 bước) chỉ khi `NODE_ENV=production` (`apps/api/src/create-app.ts`). Ngoài production, web gọi API trực tiếp nên mọi khách chung một bộ đếm. Hướng dẫn staging và CDN: [Triển khai](./deployment-guide.md).
+- API không publish cổng ra ngoài trong compose, nên không ai gọi thẳng API được để giả `X-Forwarded-For`.
+
+### Quản trị
+
+Trang `/admin/newsletter` đọc danh sách phía server. Các route nằm sau `requireAdmin` (`apps/api/src/create-app.ts`).
+
+| Phương thức, đường dẫn | Nội dung |
+|------------------------|----------|
+| `GET /api/admin/newsletter?q&status&page&size` | Một trang danh sách, lọc theo email (`q`) và trạng thái (`status`). `size` mặc định lấy từ `ADMIN_PAGE_SIZE_*` |
+| `GET /api/admin/newsletter/export` | CSV, stream theo cursor, `Cache-Control: no-store`. Dùng cùng bộ lọc với danh sách |
+| `PATCH /api/admin/newsletter/:id/unsubscribe` | Huỷ đăng ký. Giữ bản ghi, đổi `status` thành `unsubscribed` và ghi event `unsubscribe` với `actor: admin` |
+| `DELETE /api/admin/newsletter/:id` | Xoá cứng, trả 204. Mất cả lịch sử đồng ý của email đó |
+
+Huỷ đăng ký là thao tác mặc định. Xoá cứng phải xác nhận trong hộp thoại.
+
+Định dạng CSV (`apps/api/src/services/newsletter-csv-export.ts`):
+- Có BOM UTF-8 để Excel đọc đúng tiếng Việt. Xuống dòng CRLF. Mọi ô nằm trong dấu nháy kép.
+- Ô bắt đầu bằng `=`, `+`, `-`, `@`, tab hoặc CR được thêm dấu `'` phía trước, để chặn công thức (CSV injection).
+- Các cột: Email, Trạng thái, Ngày đăng ký, Cập nhật, Nguồn, Phiên bản câu đồng ý, Lịch sử (các event, nối bằng `; `).
 
 ## Luồng revalidate API → web
 
@@ -424,6 +506,8 @@ Biến liên quan tới giao diện public và admin:
 | `PUBLIC_PAGE_SIZE_MAX` | 48 | `env-config.ts` (schema) | Trần cho `size` và hai giá trị trên. Schema từ chối khi hai giá trị mặc định vượt trần |
 | `ADMIN_STATS_RECENT_COUNT` | 5 | `runtime-defaults.ts` (`process.env` trực tiếp) | Số outfit sửa gần đây trên Tổng quan. Không đi qua schema, nên không được kiểm tra lúc khởi động |
 | `PUBLIC_REVALIDATE_SECONDS` | 300 | `web-env.ts` | Thời gian tối đa dữ liệu public cũ khi revalidate bị mất |
+| `NEWSLETTER_RATE_LIMIT_WINDOW_MINUTES` | 15 | `runtime-defaults.ts` (`process.env` trực tiếp) | Cửa sổ đếm của limiter form bản tin |
+| `NEWSLETTER_RATE_LIMIT_MAX_PER_IP` | 10 | `runtime-defaults.ts` (`process.env` trực tiếp) | Số request mỗi IP trong một cửa sổ. Không đi qua schema, nên không được kiểm lúc khởi động |
 
 Các biến này có trong `.env.example`, `apps/api/.env.example` và `infra/docker-compose.yml`.
 

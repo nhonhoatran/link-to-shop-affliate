@@ -4,6 +4,65 @@ Ghi lại các thay đổi đáng kể theo phiên bản. Mỗi mục ghi ngày,
 
 Liên quan: [Roadmap](./development-roadmap.md) · [Kiến trúc](./system-architecture.md) · [Triển khai](./deployment-guide.md)
 
+## Editorial monochrome, section trang chủ mới và bản tin (2026-11-08)
+
+Phạm vi: `packages/shared`, `apps/api`, `apps/web`, `e2e`, `docs`. Kế hoạch: `plans/261108-0923-editorial-luxury-redesign-and-new-sections/` (6 phase). Thay đổi chưa commit tại thời điểm viết mục này.
+
+### Tính năng
+
+| Phase | Nội dung |
+|-------|----------|
+| P1 | Token editorial monochrome: nền `#FAF8F5`, chữ `#111111`, bo góc 2px, không shadow. Font Playfair Display cho tiêu đề (`--font-display`, subset vietnamese). Nút public dùng chung `public-button.module.css` |
+| P2 | API: section `CampaignBanner`, `Marquee`, `Gallery` (nguồn `latest`, `collection`, `manual`), `NewsletterSignup`. Settings `newsletterConsent` và `newsletterConsentVersion`. Route `POST /api/public/newsletter`, `GET /api/admin/newsletter`, xuất CSV, huỷ đăng ký, xoá cứng |
+| P3 | Re-skin shell và trang public: header, footer, `/`, `/looks`, `/look/[slug]`, `/collections`, 404. Lookbook đổi font, giữ layout đo sẵn |
+| P4 | Renderer cho 4 section mới, restyle 7 section cũ. Hero có lớp phủ đủ tương phản trên ảnh sáng. Form bản tin: Server Action, PRG, gửi được khi tắt JS |
+| P5 | Re-skin admin. Trang `/admin/newsletter`. Mục đồng ý bản tin trong Cài đặt |
+| P6 | E2E cho luồng mới, sửa spec cũ theo bố cục mới, tài liệu |
+
+- Bố cục trang chủ mặc định đổi thành năm section: `FeaturedLookbook`, `CollectionTiles`, `OutfitList`, `Gallery`, `NewsletterSignup`. Bố cục đã đăng không đổi.
+- Form bản tin chỉ hiện khi admin đã lưu câu đồng ý. Đăng ký single opt-in, ô đồng ý không tick sẵn, bản ghi lưu câu đồng ý đã tick (không lưu IP).
+- Admin xuất CSV (có BOM, chặn công thức), huỷ đăng ký là thao tác mặc định, xoá cứng cần xác nhận.
+- Chi tiết kỹ thuật: [Kiến trúc, mục Bản tin](./system-architecture.md#bản-tin-newsletter) và [Quy chuẩn, mục Editorial](./code-standards.md#editorial-chữ-nhãn-nút).
+
+### Sửa lỗi và điều chỉnh sau review
+
+- Trang `/` phát ra năm `<link rel="preload" as="image">`, plan chỉ cho một. Card chỉ eager khi là ô đầu của grid LCP. Lookbook dùng prop `preload` của `next/image`. Kiểm bằng curl ngày 2026-11-08: còn một preload.
+- Gallery nguồn `latest` không còn lặp outfit đang hiện ở `FeaturedLookbook` (cùng trang).
+- Thông báo kết quả form nhận focus để trình đọc màn hình đọc được. Ô email có `aria-describedby` khi sai.
+- Khách gửi form khi câu đồng ý vừa đổi (409) thấy thông báo riêng (`stale`) và cache trang chủ được làm mới.
+- Section có tiêu đề trong panel (`CampaignBanner`, `NewsletterSignup`) đặt tên vùng qua `labelledBy`.
+- Hằng trùng (giới hạn email, độ dài mã section) gom về `packages/shared`.
+- Menu public: `.nav` của header không còn `overflow-x: auto` nên link không bị cắt ở 320px. Lỗi này được tester ghi nhận trước khi sửa. Sau sửa, e2e public 61/61 xanh.
+- Admin: tiêu đề và logo đăng nhập dùng `--font-weight-display`. Nút xoá người đăng ký dùng `btnDanger`, đổi chữ khi đang xử lý, ô lọc là "Tìm".
+
+### Kiểm chứng
+
+| Hạng mục | Kết quả | Nguồn |
+|----------|---------|-------|
+| Unit: `packages/shared` / `apps/api` / `apps/web` | 164 / 223 / 664, xanh | `fullstack-developer-261108-review-fixes.md`. Không chạy lại trong lượt viết tài liệu |
+| E2E spec mới: newsletter-signup, newsletter-admin, editorial-sections-render | 6 + 8 + 9 = 23 test, xanh | `tester-261108-editorial-redesign-e2e.md` |
+| E2E spec cũ | Sửa theo Q3 (bố cục mặc định) và dữ liệu. Chi tiết trong báo cáo tester | Như trên |
+| E2E toàn bộ (`pnpm e2e`, không `--no-deps`) | 111/111 xanh: public 61, admin-shell, visual 4/4, chuỗi content gồm 3 spec mới | `tester-261108-editorial-redesign-e2e.md`, `fullstack-developer-261108-e2e-closeout.md` |
+| Visual lookbook | 4/4 xanh sau khi chụp lại baseline một lần, sau khi chủ repo duyệt ảnh. Báo cáo tester ghi cặp dramatic 390 lệch layout (cột ngắn hơn 16 px); chưa có báo cáo xác nhận đã sửa, cần rà lại | `visuals/` trong thư mục plan |
+| Đo trên stack compose prod (2026-11-08) | LCP `/` 328-368 ms, CLS 0, 1 ảnh preload, bundle `/` 199,8 KiB (baseline 199,1), Playfair vietnamese preload, smoke chuỗi IP PASS | `tester-261108-editorial-redesign-e2e.md`, mục Prod verification |
+| Chưa chạy | axe trên 6 trang × 2 theme (chưa có `@axe-core/playwright`, plan không thêm dependency); đo pixel nền hero (chưa publish HeroSlider, tính theo công thức 5,10:1) | Ghi trong Roadmap |
+
+Báo cáo kiểm tra UI ghi 20/26 mục đạt lúc chạy. Một số mục đã sửa sau đó (CTA `btnDanger`, nhãn "Tìm", tiêu đề admin, `labelledBy` của banner). Mục còn mở ghi ở [Roadmap](./development-roadmap.md#đợt-editorial-và-bản-tin).
+
+### Lưu ý khi nâng cấp
+
+- Không có migration DB. Trường mới trong Settings đều optional. Collection `newsletter_subscribers` được tạo khi có đăng ký đầu tiên.
+- Trang chủ không hiện form bản tin cho đến khi admin lưu câu đồng ý trong Cài đặt. Câu mặc định trong code chỉ là gợi ý, chưa lưu thì không hiện.
+- Biến môi trường mới: `NEWSLETTER_RATE_LIMIT_WINDOW_MINUTES` (mặc định 15) và `NEWSLETTER_RATE_LIMIT_MAX_PER_IP` (mặc định 10). Có trong `.env.example`, `apps/api/.env.example` và compose. Hướng dẫn proxy và staging: [Triển khai](./deployment-guide.md).
+- Bộ đếm limiter nằm trong RAM của API. Khởi động lại API thì bộ đếm reset.
+- Form bản tin bật/tắt bằng công tắc trong Cài đặt. Lưu khi công tắc tắt thì xoá câu đồng ý. `newsletterConsentVersion` vẫn giữ và tăng đơn điệu khi bật lại.
+
+### Đã biết (chưa xử lý)
+
+- Q4: câu đồng ý và link chính sách bảo mật chưa chốt. Site chưa có trang chính sách. Cần chủ repo duyệt chữ và nên có luật sư xem trước khi go-live.
+- Chưa có double opt-in và link huỷ tự phục vụ. Hệ thống hiện chỉ lưu danh sách, chưa gửi email.
+- Smoke chuỗi IP (Caddy, hai nguồn, XFF) chưa chạy. Chưa nên mở form bản tin ra production trước khi chạy.
+
 ## Trang chủ section, bộ sưu tập và editor (2026-11-07)
 
 Phạm vi: `apps/api`, `apps/web`, `packages/shared`, `e2e`, `docs`. Kế hoạch: `plans/261107-1341-homepage-sections-and-collections/` (7 phase). Thay đổi chưa commit tại thời điểm viết mục này.
