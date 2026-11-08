@@ -4,13 +4,18 @@
   min-height: 100dvh;
 }
 
+/* Editorial cover photo under a dark scrim, so the wordmark stays readable on any crop. */
 .brand {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   gap: var(--space-2);
+  min-height: 40dvh;
   padding: var(--space-6) var(--space-4) var(--space-5);
-  background: var(--admin-primary);
+  background:
+    linear-gradient(to top, rgba(17, 17, 17, 0.92), rgba(17, 17, 17, 0.35) 55%, rgba(17, 17, 17, 0.15)),
+    var(--admin-primary) url('/admin/login-cover.jpg') center 30% / cover no-repeat;
   color: var(--admin-primary-contrast);
 }
 
