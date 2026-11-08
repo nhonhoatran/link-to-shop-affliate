@@ -1,7 +1,10 @@
 import { z } from 'zod';
+import { objectIdSchema } from './object-id-schema';
 
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const MAX_ITEMS_PER_OUTFIT = 30;
+// Technical guard on collection memberships per outfit.
+export const MAX_COLLECTIONS_PER_OUTFIT = 24;
 
 export const anchorSchema = z.object({
   x: z.number().min(0).max(100),
@@ -57,6 +60,12 @@ const outfitBaseSchema = z.object({
   modelImage: imageRefSchema,
   status: outfitStatusSchema,
   featured: z.boolean(),
+  // Absent on PUT = keep the current memberships.
+  collectionIds: z
+    .array(objectIdSchema)
+    .max(MAX_COLLECTIONS_PER_OUTFIT)
+    .refine((ids) => new Set(ids).size === ids.length, 'Duplicate collection id')
+    .optional(),
   items: z.array(outfitItemSchema).max(MAX_ITEMS_PER_OUTFIT),
 });
 

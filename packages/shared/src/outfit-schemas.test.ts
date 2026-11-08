@@ -135,3 +135,28 @@ describe('public outfit dto', () => {
     expect(publicOutfitSchema.safeParse(dto).success).toBe(true);
   });
 });
+
+describe('outfit collectionIds', () => {
+  const ID_A = '64b7f0c2a1b2c3d4e5f60701';
+  const ID_B = '64b7f0c2a1b2c3d4e5f60702';
+
+  it('is optional and accepts unique object ids', () => {
+    expect(outfitInputSchema.safeParse(makeOutfit()).success).toBe(true);
+    expect(outfitInputSchema.safeParse(makeOutfit({ collectionIds: [ID_A, ID_B] })).success).toBe(true);
+    expect(outfitUpdateSchema.safeParse(makeOutfit({ collectionIds: [] })).success).toBe(true);
+  });
+
+  it.each([
+    ['not an object id', ['nope']],
+    ['duplicates', [ID_A, ID_A]],
+    ['more than 24', Array.from({ length: 25 }, (_, i) => `64b7f0c2a1b2c3d4e5f6${String(i).padStart(4, '0')}`)],
+  ])('rejects %s', (_name, collectionIds) => {
+    expect(outfitInputSchema.safeParse(makeOutfit({ collectionIds })).success).toBe(false);
+    expect(outfitUpdateSchema.safeParse(makeOutfit({ collectionIds })).success).toBe(false);
+  });
+
+  it('stays absent from the parsed update when the client omits it', () => {
+    const parsed = outfitUpdateSchema.parse(makeOutfit());
+    expect('collectionIds' in parsed).toBe(false);
+  });
+});
