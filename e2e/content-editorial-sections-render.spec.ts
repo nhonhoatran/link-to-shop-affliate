@@ -64,18 +64,19 @@ test('all eleven section types render in layout order with one h1', async ({ pag
   expect(await sectionIds(page)).toEqual([...EDITORIAL_SECTION_IDS]);
 });
 
-test('the marquee has a pause button and stops moving for reduced motion', async ({ page }) => {
+test('the marquee moves and pauses while hovered', async ({ page }) => {
   await page.goto('/');
   const marquee = page.locator('[data-section-id="e2e-marquee"]');
   // The animation sits on the track, the parent of the item lists.
   const track = marquee.locator('ul').first().locator('xpath=..');
   await expect(track).toBeVisible();
   await expect.poll(() => track.evaluate((el) => getComputedStyle(el).animationName)).not.toBe('none');
+  await expect(marquee.locator('button, input, label')).toHaveCount(0);
 
-  // The checkbox is visually hidden; its label is the control a visitor clicks.
-  await marquee.getByText('Tạm dừng', { exact: true }).click();
-  await expect(marquee.getByRole('checkbox', { name: 'Tạm dừng chuyển động', exact: true })).toBeChecked();
+  await track.hover();
   await expect.poll(() => track.evaluate((el) => getComputedStyle(el).animationPlayState)).toBe('paused');
+  await page.mouse.move(0, 0);
+  await expect.poll(() => track.evaluate((el) => getComputedStyle(el).animationPlayState)).toBe('running');
 });
 
 test.describe('reduced motion', () => {

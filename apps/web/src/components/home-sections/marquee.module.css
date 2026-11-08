@@ -7,15 +7,6 @@
   color: var(--client-ink);
 }
 
-.toggle {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-}
-
 .viewport {
   flex: 1;
   min-width: 0;
@@ -28,6 +19,11 @@
   min-width: 200%;
   height: 100%;
   animation: marquee var(--marquee-duration, 30s) linear infinite;
+}
+
+/* Hovering is the pause control: the text stops so it can be read. */
+.marquee:hover .track {
+  animation-play-state: paused;
 }
 
 .group {
@@ -58,42 +54,6 @@
   background: var(--client-ink);
 }
 
-.control {
-  order: 2;
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  min-height: var(--client-tap-target);
-  padding-inline: var(--space-4);
-  border-inline-start: 1px solid var(--client-border);
-  background: var(--client-bg);
-  font-size: var(--client-label-size);
-  letter-spacing: var(--client-label-tracking);
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.playText {
-  display: none;
-}
-
-.toggle:checked ~ .control .pauseText {
-  display: none;
-}
-
-.toggle:checked ~ .control .playText {
-  display: inline;
-}
-
-.toggle:checked ~ .viewport .track {
-  animation-play-state: paused;
-}
-
-.toggle:focus-visible ~ .control {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: calc(var(--focus-ring-offset) * -1);
-}
-
 @keyframes marquee {
   to {
     transform: translate3d(-50%, 0, 0);
@@ -113,9 +73,7 @@
     padding-block: var(--space-3);
   }
 
-  .group[aria-hidden='true'],
-  .control,
-  .toggle {
+  .group[aria-hidden='true'] {
     display: none;
   }
 }

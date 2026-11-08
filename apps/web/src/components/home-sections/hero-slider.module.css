@@ -35,32 +35,61 @@
   object-fit: cover;
 }
 
+/* Round frosted buttons over the photo instead of the solid white blocks the shared button gives. */
 .root .arrow {
   position: absolute;
-  top: 50%;
+  bottom: var(--space-4);
   display: none;
-  transform: translateY(-50%);
+  width: var(--client-slider-arrow-size);
+  height: var(--client-slider-arrow-size);
+  min-height: 0;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  background: rgba(17, 17, 17, 0.35);
+  color: var(--client-on-ink);
+  backdrop-filter: blur(6px);
+  transition:
+    background var(--duration-fast) var(--easing-standard),
+    opacity var(--duration-fast) var(--easing-standard);
 }
 
+.root .arrow:hover:not(:disabled) {
+  background: rgba(17, 17, 17, 0.6);
+  color: var(--client-on-ink);
+}
+
+.root .arrow:disabled {
+  opacity: 0.25;
+}
+
+.root .arrow svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.5;
+}
+
+/* Both arrows sit in the bottom-right corner, clear of the caption on the left. */
 .previous {
-  inset-inline-start: var(--space-2);
+  inset-inline-end: calc(var(--space-4) + var(--client-slider-arrow-size) + var(--space-2));
 }
 
 .next {
-  inset-inline-end: var(--space-2);
+  inset-inline-end: var(--space-4);
 }
 
 .controls {
   position: absolute;
   inset: auto 0 var(--space-2);
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: var(--space-2);
   pointer-events: none;
 }
 
-.controls > * {
+/* The marks sit straight on the photo; a soft shadow keeps them readable on light images. */
+.dots {
+  display: flex;
+  align-items: center;
+  color: var(--client-on-ink);
   pointer-events: auto;
 }
 
@@ -76,44 +105,30 @@
   cursor: pointer;
 }
 
-.dots,
-.counter {
-  display: flex;
-  align-items: center;
-  min-height: var(--client-slider-button-size);
-  background: var(--client-ink);
-  color: var(--client-on-ink);
-}
-
-.counter {
-  padding-inline: var(--space-3);
-  font-size: var(--client-label-size);
-  letter-spacing: var(--client-label-tracking);
-  font-variant-numeric: tabular-nums;
-}
-
+/* Slide marks are short lines; the current one is longer and fully opaque. */
 .dot {
-  width: var(--client-slider-dot-size);
-  height: var(--client-slider-dot-size);
-  border: 2px solid var(--client-on-ink);
-  border-radius: var(--client-radius-pill);
-  background: transparent;
+  width: var(--client-slider-mark-width);
+  height: var(--client-slider-mark-height);
+  background: var(--client-on-ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  opacity: 0.55;
+  transition:
+    width var(--duration-fast) var(--easing-standard),
+    opacity var(--duration-fast) var(--easing-standard);
+}
+
+.dotButton:hover .dot {
+  opacity: 0.8;
 }
 
 .dotButton[aria-current='true'] .dot {
-  background: var(--client-on-ink);
+  width: var(--client-slider-mark-width-active);
+  opacity: 1;
 }
 
 .dotButton:focus-visible {
   outline: 2px solid var(--client-focus-on-ink);
   outline-offset: -4px;
-}
-
-/* Autoplay never starts under reduced motion, so the pause button would do nothing. */
-@media (prefers-reduced-motion: reduce) {
-  .controls .pause {
-    display: none;
-  }
 }
 
 /* Matches --bp-md. */

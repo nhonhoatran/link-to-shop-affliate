@@ -4,9 +4,7 @@ export const HOME_SECTION_COPY = {
     defaultLabel: 'Banner trang chủ',
     previous: 'Ảnh trước',
     next: 'Ảnh sau',
-    pause: 'Tạm dừng tự chuyển',
     dots: 'Chọn ảnh',
-    counter: (index: number, total: number) => `${String(index).padStart(2, '0')} / ${String(total).padStart(2, '0')}`,
     slideLabel: (index: number, total: number) => `${index} / ${total}`,
     goTo: (index: number, total: number) => `Tới ảnh ${index} / ${total}`,
   },
@@ -16,9 +14,6 @@ export const HOME_SECTION_COPY = {
   },
   marquee: {
     defaultLabel: 'Thông điệp cửa hàng',
-    toggleLabel: 'Tạm dừng chuyển động',
-    pause: 'Tạm dừng',
-    resume: 'Tiếp tục',
   },
   newsletter: {
     emailLabel: 'Email',

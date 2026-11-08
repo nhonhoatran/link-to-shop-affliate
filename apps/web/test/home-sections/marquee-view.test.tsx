@@ -35,12 +35,9 @@ describe('MarqueeView', () => {
     expect(screen.getByRole('region', { name: 'Thông điệp cửa hàng' })).toBeInTheDocument();
   });
 
-  it('offers a keyboard-operable pause checkbox that is not ticked at first', () => {
-    renderMarquee();
-    const toggle = screen.getByRole('checkbox', { name: /Tạm dừng/ });
-    expect(toggle).not.toBeChecked();
-    toggle.click();
-    expect(toggle).toBeChecked();
+  it('renders no control: hovering pauses the strip in CSS', () => {
+    const { container } = renderMarquee();
+    expect(container.querySelectorAll('button, input, label')).toHaveLength(0);
   });
 
   it('takes the animation duration from the section props', () => {

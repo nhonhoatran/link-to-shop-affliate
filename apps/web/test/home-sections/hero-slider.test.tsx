@@ -91,19 +91,6 @@ describe('HeroSliderView', () => {
     expect(scrollTo).not.toHaveBeenCalled();
   });
 
-  it('pauses and resumes from the pause button', () => {
-    renderSlider();
-    const pause = screen.getByRole('button', { name: 'Tạm dừng tự chuyển' });
-    expect(pause).toHaveAttribute('aria-pressed', 'false');
-    fireEvent.click(pause);
-    expect(pause).toHaveAttribute('aria-pressed', 'true');
-    tick();
-    expect(scrollTo).not.toHaveBeenCalled();
-    fireEvent.click(pause);
-    tick();
-    expect(scrollTo).toHaveBeenCalledTimes(1);
-  });
-
   it('stops while the tab is hidden', () => {
     renderSlider();
     Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
@@ -113,10 +100,12 @@ describe('HeroSliderView', () => {
     Object.defineProperty(document, 'hidden', { configurable: true, get: () => false });
   });
 
-  it('has no pause button when autoplay is off', () => {
+  it('keeps the arrows and slide marks when autoplay is off', () => {
     renderSlider({ autoplaySeconds: 0 });
-    expect(screen.queryByRole('button', { name: 'Tạm dừng tự chuyển' })).toBeNull();
+    tick();
+    expect(scrollTo).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Ảnh sau' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Chọn ảnh' })).toBeInTheDocument();
   });
 
   it('does not move by itself in the editor preview', () => {
@@ -124,7 +113,6 @@ describe('HeroSliderView', () => {
     renderSlider({}, 'preview');
     tick();
     expect(setIntervalSpy).not.toHaveBeenCalled();
-    expect(screen.queryByRole('button', { name: 'Tạm dừng tự chuyển' })).toBeNull();
   });
 
   it('shows no controls for a single slide', () => {

@@ -18,18 +18,13 @@ function MarqueeGroup({ items, hidden }: { items: MarqueeItems; hidden?: boolean
   );
 }
 
+// The strip pauses while hovered (CSS) and stops entirely under reduced motion; there is no visible control.
 export function MarqueeView({ section, headingId }: SectionViewProps<HomeSectionOf<'Marquee'>>) {
   const { id, label, items, durationSeconds } = section.props;
-  const toggleId = `marquee-pause-${id}`;
   const style = { '--marquee-duration': `${durationSeconds}s` } as CSSProperties;
   return (
     <SectionShell sectionId={id} headingId={headingId} label={label?.trim() || HOME_SECTION_COPY.marquee.defaultLabel}>
       <div className={styles.marquee} style={style}>
-        <input id={toggleId} type="checkbox" className={styles.toggle} aria-label={HOME_SECTION_COPY.marquee.toggleLabel} />
-        <label htmlFor={toggleId} className={styles.control}>
-          <span className={styles.pauseText}>{HOME_SECTION_COPY.marquee.pause}</span>
-          <span className={styles.playText}>{HOME_SECTION_COPY.marquee.resume}</span>
-        </label>
         <div className={styles.viewport}>
           <div className={styles.track}>
             <MarqueeGroup items={items} />

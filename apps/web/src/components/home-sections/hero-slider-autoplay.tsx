@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useRef, useState, type FocusEvent, type ReactNode } from 'react';
 import buttons from '@/components/public/public-button.module.css';
 import { DecorativeIcon } from '@/components/ui/decorative-icon';
@@ -18,8 +18,6 @@ interface HeroSliderAutoplayProps {
   /** One element per slide. */
   children: ReactNode;
 }
-
-type UserChoice = 'auto' | 'paused' | 'playing';
 
 const MOTION_ALLOWED_QUERY = '(prefers-reduced-motion: no-preference)';
 
@@ -49,7 +47,6 @@ function useTabVisible(): boolean {
 export function HeroSliderAutoplay({ label, count, seconds, autoplay, children }: HeroSliderAutoplayProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const { atStart, atEnd, active, scrollPage, scrollToIndex } = useScrollRail(trackRef);
-  const [choice, setChoice] = useState<UserChoice>('auto');
   const [hovering, setHovering] = useState(false);
   const [focused, setFocused] = useState(false);
   const motionAllowed = useMotionAllowed();
@@ -57,9 +54,8 @@ export function HeroSliderAutoplay({ label, count, seconds, autoplay, children }
 
   const multiple = count > 1;
   const canAutoplay = autoplay && multiple && seconds > 0;
-  // An explicit "play" click wins over hover and focus, otherwise the click itself would stop it again.
-  const held = choice === 'playing' ? false : hovering || focused;
-  const running = canAutoplay && motionAllowed && tabVisible && choice !== 'paused' && !held;
+  // Hovering or focusing inside the slider is the pause control; there is no separate button.
+  const running = canAutoplay && motionAllowed && tabVisible && !hovering && !focused;
 
   const advanceRef = useRef(() => {});
   useEffect(() => {
@@ -107,17 +103,6 @@ export function HeroSliderAutoplay({ label, count, seconds, autoplay, children }
             <DecorativeIcon icon={ChevronRight} />
           </button>
           <div className={styles.controls}>
-            {canAutoplay ? (
-              <button
-                type="button"
-                className={`${buttons.button} ${buttons.onDark} ${buttons.icon} ${styles.pause}`}
-                aria-label={HOME_SECTION_COPY.slider.pause}
-                aria-pressed={choice === 'paused'}
-                onClick={() => setChoice(choice === 'paused' ? 'playing' : 'paused')}
-              >
-                <DecorativeIcon icon={choice === 'paused' ? Play : Pause} size={16} />
-              </button>
-            ) : null}
             <div className={styles.dots} role="group" aria-label={HOME_SECTION_COPY.slider.dots}>
               {Array.from({ length: count }, (_, index) => (
                 <button
@@ -132,9 +117,6 @@ export function HeroSliderAutoplay({ label, count, seconds, autoplay, children }
                 </button>
               ))}
             </div>
-            <span className={styles.counter} aria-hidden="true">
-              {HOME_SECTION_COPY.slider.counter(active + 1, count)}
-            </span>
           </div>
         </>
       ) : null}

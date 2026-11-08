@@ -65,7 +65,7 @@ test('the seven-type layout renders one h1, one section per block and a FAQPage 
   expect(jsonLd.some((text) => text.includes('"FAQPage"')), 'FAQPage JSON-LD').toBe(true);
 });
 
-test('the autoplay slider stops on hover, has a pause button, and pauses for reduced motion', async ({ page }) => {
+test('the autoplay slider stops on hover and pauses for reduced motion', async ({ page }) => {
   await page.goto('/');
   // Autoplay runs when motion is allowed: the track announces nothing (aria-live off) while it moves.
   await expect(heroTrack(page)).toHaveAttribute('aria-live', 'off');
@@ -74,11 +74,7 @@ test('the autoplay slider stops on hover, has a pause button, and pauses for red
   await expect(heroTrack(page)).toHaveAttribute('aria-live', 'polite');
   await page.mouse.move(0, 0);
   await expect(heroTrack(page)).toHaveAttribute('aria-live', 'off');
-
-  const pause = page.getByRole('button', { name: 'Tạm dừng tự chuyển', exact: true });
-  await pause.click();
-  await expect(pause).toHaveAttribute('aria-pressed', 'true');
-  await expect(heroTrack(page)).toHaveAttribute('aria-live', 'polite');
+  await expect(page.getByRole('button', { name: 'Tạm dừng tự chuyển', exact: true })).toHaveCount(0);
 });
 
 test.describe('reduced motion', () => {
