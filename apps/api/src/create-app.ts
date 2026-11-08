@@ -7,6 +7,8 @@ import { createOriginCheck } from './middleware/origin-check-middleware';
 import { errorHandler, notFoundHandler } from './middleware/error-handler-middleware';
 import { requireAdmin } from './middleware/require-admin-middleware';
 import { createSessionMiddleware } from './middleware/session-middleware';
+import { createAdminCollectionRoutes } from './routes/admin-collection-routes';
+import { createAdminHomeRoutes } from './routes/admin-home-routes';
 import { createAdminMediaRoutes } from './routes/admin-media-routes';
 import { createAdminOutfitRoutes } from './routes/admin-outfit-routes';
 import { createAdminSettingsRoutes } from './routes/admin-settings-routes';
@@ -14,6 +16,8 @@ import { createAdminStatsRoutes } from './routes/admin-stats-routes';
 import { createAdminUserRoutes } from './routes/admin-user-routes';
 import { createAuthRoutes } from './routes/auth-routes';
 import { createHealthRoutes } from './routes/health-routes';
+import { createPublicCollectionRoutes } from './routes/public-collection-routes';
+import { createPublicHomeRoutes } from './routes/public-home-routes';
 import { createPublicRoutes } from './routes/public-outfit-routes';
 
 // Outfit payloads (<= 30 items) are small; uploads go through multer, not this parser.
@@ -35,6 +39,8 @@ export const createApp = (ctx: AppContext): Express => {
   const admin = Router();
   admin.use(requireAdmin);
   admin.use('/outfits', createAdminOutfitRoutes(ctx));
+  admin.use('/collections', createAdminCollectionRoutes(ctx));
+  admin.use('/home', createAdminHomeRoutes(ctx));
   admin.use('/stats', createAdminStatsRoutes(ctx));
   admin.use('/settings', createAdminSettingsRoutes(ctx));
   admin.use('/admins', createAdminUserRoutes());
@@ -44,6 +50,8 @@ export const createApp = (ctx: AppContext): Express => {
   api.use('/health', createHealthRoutes());
   api.use('/auth', createAuthRoutes(ctx.env));
   api.use('/public', createPublicRoutes(ctx));
+  api.use('/public', createPublicCollectionRoutes(ctx));
+  api.use('/public', createPublicHomeRoutes(ctx));
   api.use('/admin', admin);
 
   app.use('/api', api);

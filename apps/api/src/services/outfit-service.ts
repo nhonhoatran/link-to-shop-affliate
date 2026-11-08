@@ -12,6 +12,7 @@ import { badRequest, conflict } from '../lib/app-error';
 import { isObjectId } from '../lib/object-id';
 import { isPublicKey, PUBLIC_KEY_ERROR } from '../lib/public-key-prefix';
 import { OutfitModel, type OutfitRecord } from '../models/outfit-model';
+import { assertCollectionsExist } from './collection-membership-service';
 import { createMediaUrlResolver, toAdminListItem, toOutfit } from './outfit-mapper';
 
 const escapeRegex = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -33,6 +34,7 @@ export const listAdminOutfits = async (
   const size = Math.min(query.size ?? env.ADMIN_PAGE_SIZE_DEFAULT, env.ADMIN_PAGE_SIZE_MAX);
   const filter: Record<string, unknown> = {};
   if (query.status) filter.status = query.status;
+  if (query.collectionId) filter.collectionIds = query.collectionId;
   if (query.q) {
     const pattern = new RegExp(escapeRegex(query.q), 'i');
     filter.$or = [{ title: pattern }, { slug: pattern }];
@@ -96,6 +98,7 @@ export const applyFeatured = async (id: string, featured: boolean): Promise<Outf
 
 export const createOutfit = async (input: OutfitInput): Promise<Outfit> => {
   assertPublicImageKeys(input.modelImage, input.items);
+  await assertCollectionsExist(input.collectionIds ?? []);
   if (input.featured && input.status !== 'published') {
     throw conflict(FEATURED_DRAFT_MESSAGE, { featured: FEATURED_DRAFT_MESSAGE });
   }
@@ -110,6 +113,7 @@ export const updateOutfit = async (
   input: UpdateOutfitRequest,
 ): Promise<{ outfit: Outfit; previousSlug: string } | null> => {
   assertPublicImageKeys(input.modelImage, input.items);
+  await assertCollectionsExist(input.collectionIds ?? []);
   const existing = await findOutfitById(id);
   if (!existing) return null;
   const updated = await OutfitModel.findByIdAndUpdate(

@@ -20,7 +20,7 @@ import {
   listAdminOutfits,
   updateOutfit,
 } from '../services/outfit-service';
-import { outfitPaths } from '../services/revalidate-web-service';
+import { outfitRevalidation } from '../services/revalidate-web-service';
 
 export const createAdminOutfitRoutes = ({ env, revalidate }: AppContext): Router => {
   const router = Router();
@@ -33,7 +33,7 @@ export const createAdminOutfitRoutes = ({ env, revalidate }: AppContext): Router
 
   router.post('/', validateBody(outfitInputSchema), async (req, res) => {
     const outfit = await createOutfit(req.body as OutfitInput);
-    await revalidate(outfitPaths(outfit.slug));
+    await revalidate(outfitRevalidation(outfit.slug));
     res.status(201).json(toAdminOutfitDto(outfit, resolveUrl));
   });
 
@@ -46,14 +46,14 @@ export const createAdminOutfitRoutes = ({ env, revalidate }: AppContext): Router
   router.put('/:id', validateBody(outfitUpdateSchema), async (req, res) => {
     const result = await updateOutfit(String(req.params.id), req.body as UpdateOutfitRequest);
     if (!result) throw notFound('Không tìm thấy outfit');
-    await revalidate(outfitPaths(result.outfit.slug, result.previousSlug));
+    await revalidate(outfitRevalidation(result.outfit.slug, result.previousSlug));
     res.json(toAdminOutfitDto(result.outfit, resolveUrl));
   });
 
   router.delete('/:id', async (req, res) => {
     const outfit = await deleteOutfit(req.params.id);
     if (!outfit) throw notFound('Không tìm thấy outfit');
-    await revalidate(outfitPaths(outfit.slug));
+    await revalidate(outfitRevalidation(outfit.slug));
     res.status(204).end();
   });
 
@@ -61,7 +61,7 @@ export const createAdminOutfitRoutes = ({ env, revalidate }: AppContext): Router
     const { featured } = req.body as SetFeaturedRequest;
     const outfit = await applyFeatured(String(req.params.id), featured);
     if (!outfit) throw notFound('Không tìm thấy outfit');
-    await revalidate(outfitPaths(outfit.slug));
+    await revalidate(outfitRevalidation(outfit.slug));
     res.json(toAdminOutfitDto(outfit, resolveUrl));
   });
 

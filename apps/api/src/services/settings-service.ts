@@ -5,6 +5,7 @@ import { isPublicKey, PUBLIC_KEY_ERROR } from '../lib/public-key-prefix';
 import { getDefaultSettings } from '../lib/runtime-defaults';
 import { SettingsModel, type SettingsDoc } from '../models/settings-model';
 import { createMediaUrlResolver } from './outfit-mapper';
+import { toAdminChrome, toPublicChrome } from './settings-chrome-service';
 
 type SettingsRecord = SettingsDoc;
 
@@ -15,7 +16,15 @@ export interface ListingSettings {
 
 const loadSettings = (): Promise<SettingsRecord | null> => SettingsModel.findOne({ singleton: 'site' }).lean<SettingsRecord>();
 
-const OPTIONAL_KEYS = ['uploadMaxMb', 'looksPageSize', 'relatedOutfitsCount'] as const;
+const OPTIONAL_KEYS = [
+  'uploadMaxMb',
+  'looksPageSize',
+  'relatedOutfitsCount',
+  'collectionsNavEnabled',
+  'collectionsLabel',
+  'footer',
+  'announcement',
+] as const;
 
 const assertWithinCeiling = (value: number | undefined, ceiling: number, field: string, label: string, unit: string): void => {
   if (value !== undefined && value > ceiling) {
@@ -25,7 +34,7 @@ const assertWithinCeiling = (value: number | undefined, ceiling: number, field: 
 
 export const getAdminSettings = async (env: Env): Promise<AdminSettingsDto> => {
   const stored = await loadSettings();
-  if (!stored) return getDefaultSettings();
+  if (!stored) return { ...getDefaultSettings(), ...toAdminChrome(null) };
   const resolveUrl = createMediaUrlResolver(env);
   const { siteName, seoTitle, seoDescription, ogImage, uploadMaxMb, looksPageSize, relatedOutfitsCount, updatedAt } = stored;
   return {
@@ -36,6 +45,7 @@ export const getAdminSettings = async (env: Env): Promise<AdminSettingsDto> => {
     ...(uploadMaxMb ? { uploadMaxMb } : {}),
     ...(looksPageSize ? { looksPageSize } : {}),
     ...(relatedOutfitsCount ? { relatedOutfitsCount } : {}),
+    ...toAdminChrome(stored),
     updatedAt: updatedAt.toISOString(),
   };
 };
@@ -51,9 +61,11 @@ export const getListingSettings = async (env: Env): Promise<ListingSettings> => 
 export const getPublicSettings = async (env: Env): Promise<PublicSettingsDto> => {
   const stored = await loadSettings();
   const listing = resolveListingSettings(stored, env);
-  if (!stored) return { ...getDefaultSettings(), ogImageUrl: null, ...listing };
+  const chrome = await toPublicChrome(stored);
+  if (!stored) return { ...getDefaultSettings(), ogImageUrl: null, ...listing, ...chrome };
   const { siteName, seoTitle, seoDescription, ogImage } = stored;
-  return { siteName, seoTitle, seoDescription, ogImageUrl: ogImage ? createMediaUrlResolver(env)(ogImage.key) : null, ...listing };
+  const ogImageUrl = ogImage ? createMediaUrlResolver(env)(ogImage.key) : null;
+  return { siteName, seoTitle, seoDescription, ogImageUrl, ...listing, ...chrome };
 };
 
 export const updateSettings = async (input: SettingsInput, env: Env): Promise<AdminSettingsDto> => {

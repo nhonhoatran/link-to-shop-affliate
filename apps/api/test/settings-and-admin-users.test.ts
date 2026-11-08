@@ -1,3 +1,4 @@
+import { DEFAULT_COLLECTIONS_LABEL } from '@under30ss/shared';
 import supertest from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { SettingsModel } from '../src/models/settings-model';
@@ -45,6 +46,10 @@ describe('settings', () => {
       ogImageUrl: 'http://cdn.test/media/public/model/2026/11/og.webp',
       looksPageSize: testApp.env.PUBLIC_LOOKS_PAGE_SIZE,
       relatedOutfitsCount: testApp.env.PUBLIC_RELATED_OUTFITS_COUNT,
+      collectionsLabel: DEFAULT_COLLECTIONS_LABEL,
+      collectionsNavVisible: false,
+      footer: { columns: [], social: [] },
+      announcement: null,
     });
 
     const cleared = await agent

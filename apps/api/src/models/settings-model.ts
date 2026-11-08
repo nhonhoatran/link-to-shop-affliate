@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import type { ImageRef } from '@under30ss/shared';
+import type { AnnouncementInput, FooterInput, ImageRef } from '@under30ss/shared';
 
 export interface SettingsDoc {
   singleton: 'site';
@@ -10,6 +10,10 @@ export interface SettingsDoc {
   uploadMaxMb?: number;
   looksPageSize?: number;
   relatedOutfitsCount?: number;
+  collectionsNavEnabled?: boolean;
+  collectionsLabel?: string;
+  footer?: FooterInput;
+  announcement?: AnnouncementInput;
   updatedAt: Date;
 }
 
@@ -26,6 +30,11 @@ const settingsSchema = new Schema<SettingsDoc>(
     uploadMaxMb: Number,
     looksPageSize: Number,
     relatedOutfitsCount: Number,
+    collectionsNavEnabled: Boolean,
+    collectionsLabel: String,
+    // Validated by the shared zod schemas before every write.
+    footer: Schema.Types.Mixed,
+    announcement: Schema.Types.Mixed,
   },
   { timestamps: { createdAt: false, updatedAt: true } },
 );

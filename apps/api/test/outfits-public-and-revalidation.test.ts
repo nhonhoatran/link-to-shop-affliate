@@ -61,6 +61,7 @@ describe('revalidation', () => {
     expect(testApp.revalidateHits.at(-1)).toEqual({
       secret: 'revalidate-secret-1234',
       paths: ['/', '/looks', '/look/old-slug', '/sitemap.xml'],
+      tags: ['public-collections', 'public-home'],
     });
 
     await update(created.body.id, buildOutfitPayload({ slug: 'new-slug' }));

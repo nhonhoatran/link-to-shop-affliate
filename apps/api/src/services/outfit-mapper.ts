@@ -33,6 +33,7 @@ export const toOutfit = (record: OutfitRecord): Outfit => ({
   modelImage: toImage(record.modelImage),
   status: record.status,
   featured: record.featured,
+  collectionIds: (record.collectionIds ?? []).map(String),
   items: record.items.map(toItem),
   createdAt: record.createdAt.toISOString(),
   updatedAt: record.updatedAt.toISOString(),

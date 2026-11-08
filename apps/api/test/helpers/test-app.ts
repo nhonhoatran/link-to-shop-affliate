@@ -23,6 +23,7 @@ export const REVALIDATE_SECRET = 'revalidate-secret-1234';
 export interface RevalidateHit {
   secret: string | undefined;
   paths: string[];
+  tags: string[];
   scope?: 'all';
 }
 
@@ -41,15 +42,16 @@ const startWebStub = async (hits: RevalidateHit[], statusRef: { value: number })
     const chunks: Buffer[] = [];
     req.on('data', (chunk: Buffer) => chunks.push(chunk));
     req.on('end', () => {
-      const body = JSON.parse(Buffer.concat(chunks).toString('utf8')) as { paths?: string[]; scope?: 'all' };
+      const body = JSON.parse(Buffer.concat(chunks).toString('utf8')) as { paths?: string[]; tags?: string[]; scope?: 'all' };
       const paths = body.paths ?? [];
       hits.push({
         secret: req.headers['x-revalidate-secret'] as string | undefined,
         paths,
+        tags: body.tags ?? [],
         ...(body.scope ? { scope: body.scope } : {}),
       });
       res.writeHead(statusRef.value, { 'content-type': 'application/json' });
-      res.end(JSON.stringify({ revalidated: paths }));
+      res.end(JSON.stringify({ revalidated: [...paths, ...(body.tags ?? [])] }));
     });
   });
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));

@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { ensureOutfitIndexes } from '../src/db/mongo-connection';
+import { ensureContentIndexes } from '../src/db/mongo-connection';
 import { OutfitModel } from '../src/models/outfit-model';
 import { getFeaturedOutfit } from '../src/services/public-outfit-service';
 import { buildOutfitPayload } from './helpers/outfit-payloads';
@@ -30,7 +30,7 @@ const insertFeatured = (slug: string, updatedAt: string) =>
 
 describe('featured outfit index', () => {
   it('builds the partial unique index and then rejects a second featured outfit', async () => {
-    await ensureOutfitIndexes();
+    await ensureContentIndexes();
     await OutfitModel.create(buildOutfitPayload({ slug: 'one', status: 'published', featured: true }));
     await expect(OutfitModel.create(buildOutfitPayload({ slug: 'two', status: 'published', featured: true }))).rejects.toMatchObject({
       code: 11000,
@@ -40,7 +40,7 @@ describe('featured outfit index', () => {
   it('fails with a clear message when duplicate featured outfits already exist', async () => {
     await insertFeatured('one', '2026-11-01T00:00:00Z');
     await insertFeatured('two', '2026-11-02T00:00:00Z');
-    await expect(ensureOutfitIndexes()).rejects.toThrow(/Failed to build outfit indexes.*duplicate featured/);
+    await expect(ensureContentIndexes()).rejects.toThrow(/Failed to build content indexes.*duplicate featured/);
   });
 
   it('returns the most recently updated featured outfit when duplicates exist', async () => {

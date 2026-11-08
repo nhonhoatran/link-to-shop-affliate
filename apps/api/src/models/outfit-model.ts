@@ -20,6 +20,8 @@ export interface OutfitDoc {
   modelImage: ImageRef;
   status: OutfitStatus;
   featured: boolean;
+  // Absent on documents created before collections existed.
+  collectionIds?: Types.ObjectId[];
   items: OutfitItemDoc[];
   createdAt: Date;
   updatedAt: Date;
@@ -61,6 +63,7 @@ const outfitSchema = new Schema<OutfitDoc>(
     modelImage: { type: imageSchema, required: true },
     status: { type: String, enum: ['draft', 'published'], required: true, index: true },
     featured: { type: Boolean, default: false },
+    collectionIds: { type: [Schema.Types.ObjectId], default: [] },
     items: { type: [itemSchema], default: [] },
   },
   { timestamps: true },
@@ -71,5 +74,8 @@ outfitSchema.index({ featured: 1 }, { unique: true, partialFilterExpression: { f
 outfitSchema.index({ updatedAt: -1 });
 // Public list: filter on status, newest first, `_id` as the stable tie-breaker.
 outfitSchema.index({ status: 1, updatedAt: -1, _id: -1 });
+
+// Collection page and carousel tabs: published outfits of one collection, newest first.
+outfitSchema.index({ collectionIds: 1, status: 1, updatedAt: -1, _id: -1 });
 
 export const OutfitModel = model<OutfitDoc>('Outfit', outfitSchema);
