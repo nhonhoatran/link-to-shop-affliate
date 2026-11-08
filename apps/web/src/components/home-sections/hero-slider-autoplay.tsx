@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import { useEffect, useRef, useState, type FocusEvent, type ReactNode } from 'react';
+import buttons from '@/components/public/public-button.module.css';
 import { DecorativeIcon } from '@/components/ui/decorative-icon';
 import { HOME_SECTION_COPY } from './home-section-copy';
 import styles from './hero-slider.module.css';
@@ -89,7 +90,7 @@ export function HeroSliderAutoplay({ label, count, seconds, autoplay, children }
         <>
           <button
             type="button"
-            className={`${styles.arrow} ${styles.previous}`}
+            className={`${buttons.button} ${buttons.onDark} ${buttons.icon} ${styles.arrow} ${styles.previous}`}
             aria-label={HOME_SECTION_COPY.slider.previous}
             disabled={atStart}
             onClick={() => scrollPage(-1)}
@@ -98,7 +99,7 @@ export function HeroSliderAutoplay({ label, count, seconds, autoplay, children }
           </button>
           <button
             type="button"
-            className={`${styles.arrow} ${styles.next}`}
+            className={`${buttons.button} ${buttons.onDark} ${buttons.icon} ${styles.arrow} ${styles.next}`}
             aria-label={HOME_SECTION_COPY.slider.next}
             disabled={atEnd}
             onClick={() => scrollPage(1)}
@@ -109,7 +110,7 @@ export function HeroSliderAutoplay({ label, count, seconds, autoplay, children }
             {canAutoplay ? (
               <button
                 type="button"
-                className={styles.pause}
+                className={`${buttons.button} ${buttons.onDark} ${buttons.icon} ${styles.pause}`}
                 aria-label={HOME_SECTION_COPY.slider.pause}
                 aria-pressed={choice === 'paused'}
                 onClick={() => setChoice(choice === 'paused' ? 'playing' : 'paused')}
@@ -131,6 +132,9 @@ export function HeroSliderAutoplay({ label, count, seconds, autoplay, children }
                 </button>
               ))}
             </div>
+            <span className={styles.counter} aria-hidden="true">
+              {HOME_SECTION_COPY.slider.counter(active + 1, count)}
+            </span>
           </div>
         </>
       ) : null}

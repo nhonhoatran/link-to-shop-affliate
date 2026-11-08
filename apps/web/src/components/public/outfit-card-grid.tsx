@@ -31,7 +31,7 @@ export function OutfitCardGrid({
             outfit={outfit}
             headingLevel={headingLevel}
             firstRow={index < columnsDesktop}
-            highPriority={highPriorityFirstRow}
+            highPriority={highPriorityFirstRow && index === 0}
           />
         </li>
       ))}

@@ -1,4 +1,4 @@
-import type { AdminSettingsDto, ImageWithUrl, SettingsInput } from '@under30ss/shared';
+import { DEFAULT_NEWSLETTER_CONSENT, type AdminSettingsDto, type ImageWithUrl, type SettingsInput } from '@under30ss/shared';
 
 export interface LinkRow {
   key: number;
@@ -19,6 +19,14 @@ export interface AnnouncementValues {
   href: string;
 }
 
+export interface NewsletterConsentValues {
+  /** Off omits the sentence from the PUT, which hides the signup form on the homepage. */
+  enabled: boolean;
+  text: string;
+  privacyHref: string;
+  privacyLabel: string;
+}
+
 export interface SettingsFormState {
   siteName: string;
   seoTitle: string;
@@ -30,6 +38,7 @@ export interface SettingsFormState {
   collectionsNavEnabled: boolean;
   collectionsLabel: string;
   announcement: AnnouncementValues;
+  newsletterConsent: NewsletterConsentValues;
   columns: FooterColumnRow[];
   social: LinkRow[];
 }
@@ -60,6 +69,13 @@ export function fromAdminSettings(initial: AdminSettingsDto): SettingsFormState 
       linkLabel: initial.announcement?.linkLabel ?? '',
       href: initial.announcement?.href ?? '',
     },
+    // Pre-filled with the default sentence until one has been saved.
+    newsletterConsent: {
+      enabled: initial.newsletterConsent !== undefined,
+      text: initial.newsletterConsent?.text ?? DEFAULT_NEWSLETTER_CONSENT.text,
+      privacyHref: initial.newsletterConsent?.privacyHref ?? '',
+      privacyLabel: initial.newsletterConsent?.privacyLabel ?? '',
+    },
     columns: (initial.footer?.columns ?? []).map((column) => ({
       key: newRowKey(),
       title: column.title,
@@ -82,6 +98,9 @@ export function toSettingsInput(state: SettingsFormState): unknown {
   const collectionsLabel = state.collectionsLabel.trim();
   const linkLabel = announcement.linkLabel.trim();
   const href = announcement.href.trim();
+  const consent = state.newsletterConsent;
+  const privacyHref = consent.privacyHref.trim();
+  const privacyLabel = consent.privacyLabel.trim();
   const input: SettingsInput = {
     siteName: state.siteName,
     seoTitle: state.seoTitle,
@@ -98,6 +117,15 @@ export function toSettingsInput(state: SettingsFormState): unknown {
       columns: state.columns.map((column) => ({ title: column.title.trim(), links: column.links.map(link) })),
       social: state.social.map(link),
     },
+    ...(consent.enabled
+      ? {
+          newsletterConsent: {
+            text: consent.text,
+            ...(privacyHref === '' ? {} : { privacyHref }),
+            ...(privacyLabel === '' ? {} : { privacyLabel }),
+          },
+        }
+      : {}),
     announcement: {
       enabled: announcement.enabled,
       text: announcement.text,

@@ -1,6 +1,6 @@
 import { MAX_HERO_AUTOPLAY_SECONDS, MAX_HERO_SLIDES, MIN_HERO_AUTOPLAY_SECONDS } from '@under30ss/shared';
 import type { FieldSpec } from '../field-spec-types';
-import { altText, ctaHref, ctaLabel } from './common-fields';
+import { altText, ctaHref, ctaLabel, eyebrow } from './common-fields';
 
 export const HERO_SLIDER_FIELDS: readonly FieldSpec[] = [
     { kind: 'text', name: 'label', label: 'Tên banner', hint: 'Không bắt buộc. Dành cho người dùng trình đọc màn hình.', optional: true },
@@ -16,6 +16,7 @@ export const HERO_SLIDER_FIELDS: readonly FieldSpec[] = [
         { kind: 'image', name: 'image', label: 'Ảnh' },
         { kind: 'image', name: 'mobileImage', label: 'Ảnh riêng cho điện thoại (không bắt buộc)', optional: true },
         altText('Mô tả ngắn cho người khiếm thị và khi ảnh không tải được.'),
+        eyebrow,
         { kind: 'text', name: 'heading', label: 'Tiêu đề', optional: true },
         { kind: 'textarea', name: 'text', label: 'Dòng giới thiệu', optional: true },
         ctaLabel,

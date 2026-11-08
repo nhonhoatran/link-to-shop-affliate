@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   API_PATHS,
+  HOME_SECTION_META,
+  HOME_SECTION_TYPES,
   homeSectionSchema,
   type HomeSection,
   type HomeSectionType,
@@ -13,7 +15,9 @@ import { useRedirectOnUnauthorized } from '@/hooks/admin/use-redirect-on-unautho
 import { apiFetch } from '@/lib/api-client-browser';
 
 // Only these types need data the API resolves (outfits, collections); the rest render straight from what was typed.
-const DATA_TYPES: ReadonlySet<HomeSectionType> = new Set(['CollectionTiles', 'OutfitList', 'FeaturedLookbook']);
+const DATA_TYPES: ReadonlySet<HomeSectionType> = new Set(
+  HOME_SECTION_TYPES.filter((type) => HOME_SECTION_META[type].resolvesData),
+);
 
 // Technical constant: wait for a pause in editing before asking the API again.
 export const PREVIEW_DEBOUNCE_MS = 400;

@@ -21,9 +21,10 @@
   left: var(--space-2);
   z-index: 20;
   padding: var(--space-3) var(--space-4);
-  border-radius: var(--client-radius-pill);
-  background: var(--client-ink);
-  color: var(--client-on-ink);
+  border-radius: var(--client-radius-lg);
+  border: 1px solid var(--client-ink);
+  background: var(--client-surface);
+  color: var(--client-ink);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-medium);
   text-decoration: none;

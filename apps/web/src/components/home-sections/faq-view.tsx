@@ -4,9 +4,9 @@ import { SectionShell, type SectionViewProps } from './section-shell';
 import styles from './faq.module.css';
 
 export function FaqView({ section, headingId, mode }: SectionViewProps<HomeSectionOf<'Faq'>>) {
-  const { id, title, items } = section.props;
+  const { id, eyebrow, title, items } = section.props;
   return (
-    <SectionShell sectionId={id} headingId={headingId} title={title}>
+    <SectionShell sectionId={id} headingId={headingId} eyebrow={eyebrow} title={title}>
       {mode === 'public' ? <FaqJsonLdScript items={items} /> : null}
       <ul className={styles.list}>
         {items.map((item, index) => (

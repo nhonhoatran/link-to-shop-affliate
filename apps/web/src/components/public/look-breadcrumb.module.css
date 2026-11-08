@@ -1,7 +1,9 @@
 .nav {
   max-width: var(--lookbook-max-width);
   margin: 0 auto var(--space-4);
-  font-size: var(--text-sm);
+  font-size: var(--client-label-size);
+  letter-spacing: var(--client-label-tracking);
+  text-transform: uppercase;
   color: var(--client-ink-muted);
 }
 

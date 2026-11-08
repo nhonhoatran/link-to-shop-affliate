@@ -3,7 +3,7 @@ import { SHELL_COPY } from './public-copy';
 import { PublicSmartLink } from './public-smart-link';
 import styles from './site-footer.module.css';
 
-/** Text pills: lucide-react ships no brand icons. */
+/** Text links: lucide-react ships no brand icons. */
 export function SiteSocialLinks({ social }: { social: FooterInput['social'] }) {
   if (social.length === 0) return null;
   return (

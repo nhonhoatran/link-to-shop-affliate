@@ -16,8 +16,9 @@
 
 .siteName {
   margin: 0;
+  font-family: var(--font-display);
   text-align: center;
   font-size: var(--body-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-display);
   color: var(--admin-text-muted);
 }

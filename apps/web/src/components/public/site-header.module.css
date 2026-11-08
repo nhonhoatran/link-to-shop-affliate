@@ -7,69 +7,88 @@
 }
 
 .inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  column-gap: var(--space-3);
+  display: grid;
+  grid-template-areas:
+    'brand'
+    'nav';
+  justify-items: center;
   max-width: var(--client-container-max);
-  min-height: var(--client-header-height);
   margin-inline: auto;
   padding-inline: var(--space-4);
 }
 
 .brand {
+  grid-area: brand;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  font-size: var(--body-size);
-  font-weight: var(--font-weight-bold);
+  min-height: var(--client-header-height);
+  max-width: 100%;
+  font-family: var(--font-display);
+  font-size: var(--page-title-size);
+  font-weight: var(--font-weight-display);
+  line-height: var(--line-height-tight);
   color: var(--client-ink);
+  text-align: center;
   text-decoration: none;
   overflow-wrap: anywhere;
 }
 
+/* Wraps onto a second line on narrow phones so every link stays visible and the page never scrolls sideways. */
 .nav {
+  grid-area: nav;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-1);
-  margin-inline-start: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 100%;
+  padding: var(--space-1);
 }
 
 .navLink {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--client-tap-target);
   padding-inline: var(--space-3);
-  border-radius: var(--client-radius-pill);
-  font-size: var(--text-sm);
+  border-bottom: 1px solid transparent;
+  font-size: var(--client-label-size);
   font-weight: var(--font-weight-medium);
+  letter-spacing: var(--client-label-tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
   color: var(--client-ink-muted);
   text-decoration: none;
-  transition:
-    color var(--duration-fast) var(--easing-standard),
-    background-color var(--duration-fast) var(--easing-standard);
+  transition: color var(--duration-fast) var(--easing-standard);
 }
 
 .navLink:hover {
   color: var(--client-ink);
-  background: var(--client-surface-soft);
 }
 
 .navLink[aria-current='page'] {
-  color: var(--client-on-ink);
-  background: var(--client-ink);
+  color: var(--client-ink);
+  border-bottom-color: var(--client-ink);
 }
 
-/* Narrow phones: three links must fit one row without horizontal scroll. */
-@media (max-width: 479px) {
-  .navLink {
-    padding-inline: var(--space-2);
+/* 768px = --bp-md: nav on the left, wordmark centred, right column left empty to balance. */
+@media (min-width: 768px) {
+  .inner {
+    grid-template-areas: 'nav brand .';
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    justify-items: stretch;
+  }
+
+  .brand {
+    justify-self: center;
+  }
+
+  .nav {
+    justify-self: start;
   }
 }
 
-/* Matches --bp-lg: the page gutter widens at 1024px, same as PublicPage. */
+/* 1024px = --bp-lg: the page gutter widens, same as PublicPage. */
 @media (min-width: 1024px) {
   .inner {
     padding-inline: var(--space-6);

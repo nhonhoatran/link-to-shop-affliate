@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import buttonStyles from './public-button.module.css';
 import styles from './public-message.module.css';
 
 export interface PublicMessageProps {
@@ -13,7 +14,7 @@ export function PublicMessage({ title, message, link }: PublicMessageProps) {
       <h1 className={styles.title}>{title}</h1>
       <p className={styles.message}>{message}</p>
       {link ? (
-        <Link className={styles.link} href={link.href}>
+        <Link className={`${buttonStyles.button} ${buttonStyles.primary}`} href={link.href}>
           {link.label}
         </Link>
       ) : null}

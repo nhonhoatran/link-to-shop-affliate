@@ -9,6 +9,7 @@ type FeaturedLookbookSection = HomeSectionOf<'FeaturedLookbook'> & { data: { out
 export function FeaturedLookbookView({
   section,
   headingId,
+  priority,
   siteUrl,
   mode,
   fallbackDescription,
@@ -24,7 +25,7 @@ export function FeaturedLookbookView({
         />
       ) : null}
       <LookbookCard>
-        <LookbookLayout outfit={outfit} headingLevel="h2" />
+        <LookbookLayout outfit={outfit} headingLevel="h2" preload={priority} />
       </LookbookCard>
     </SectionShell>
   );

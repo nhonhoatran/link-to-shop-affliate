@@ -8,7 +8,6 @@
 .frame {
   aspect-ratio: var(--client-collection-card-ratio);
   overflow: hidden;
-  border-radius: var(--client-radius-lg);
   background: var(--client-surface-soft);
 }
 
@@ -29,7 +28,8 @@
 .title {
   margin: 0;
   font-size: var(--page-title-size);
-  font-weight: var(--font-weight-bold);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-display);
   line-height: var(--line-height-tight);
   color: var(--client-ink);
   overflow-wrap: anywhere;

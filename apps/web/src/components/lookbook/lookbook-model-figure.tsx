@@ -5,7 +5,7 @@ import { MODEL_IMAGE_SIZES } from './lookbook-image-sizes';
 import styles from './lookbook.module.css';
 import motion from '@/styles/motion-primitives.module.css';
 
-export function LookbookModelFigure({ outfit }: { outfit: PublicOutfitDto }) {
+export function LookbookModelFigure({ outfit, preload = true }: { outfit: PublicOutfitDto; preload?: boolean }) {
   const { modelImage } = outfit;
   return (
     <figure className={`${styles.model} ${motion.fadeIn}`}>
@@ -15,7 +15,7 @@ export function LookbookModelFigure({ outfit }: { outfit: PublicOutfitDto }) {
         width={modelImage.width}
         height={modelImage.height}
         sizes={MODEL_IMAGE_SIZES}
-        preload
+        {...(preload ? { preload: true } : { loading: 'lazy' as const })}
       />
       {outfit.items.map((item) => (
         <LookbookHotspot key={item.id} item={item} />

@@ -1,9 +1,9 @@
 import type { ComponentType } from 'react';
-import type { ResolvedHomeSection } from '@under30ss/shared';
+import { HOME_SECTION_META, type ResolvedHomeSection } from '@under30ss/shared';
 import { PublicMessage } from '@/components/public/public-message';
 import { EMPTY_HOME_COPY } from '@/components/public/public-copy';
 import { HOME_SECTION_VIEWS } from './home-section-views';
-import { srOnlyClass, type SectionMode, type SectionViewProps } from './section-shell';
+import { srOnlyClass, type NewsletterFormState, type SectionMode, type SectionViewProps } from './section-shell';
 
 interface HomeSectionListProps {
   sections: readonly ResolvedHomeSection[];
@@ -12,12 +12,10 @@ interface HomeSectionListProps {
   seoTitle: string;
   mode?: SectionMode;
   fallbackDescription?: string;
+  newsletter?: NewsletterFormState;
 }
 
-// Faq and Commitments carry no image, so they never hold the LCP.
-const TEXT_ONLY_TYPES: ReadonlySet<string> = new Set(['Faq', 'Commitments']);
-
-export function HomeSectionList({ sections, siteUrl, seoTitle, mode = 'public', fallbackDescription }: HomeSectionListProps) {
+export function HomeSectionList({ sections, siteUrl, seoTitle, mode = 'public', fallbackDescription, newsletter }: HomeSectionListProps) {
   // Unknown types can arrive from a newer API than this build; skip them instead of failing the page.
   const known = sections.filter((section) => {
     const isKnown = Object.hasOwn(HOME_SECTION_VIEWS, section.type);
@@ -27,7 +25,8 @@ export function HomeSectionList({ sections, siteUrl, seoTitle, mode = 'public', 
   if (known.length === 0 && mode === 'public') {
     return <PublicMessage title={EMPTY_HOME_COPY.title} message={EMPTY_HOME_COPY.message} />;
   }
-  const lcpIndex = known.findIndex((section) => !TEXT_ONLY_TYPES.has(section.type));
+  // The first section that shows an image holds the LCP; text-only sections above it never do.
+  const lcpIndex = known.findIndex((section) => HOME_SECTION_META[section.type].hasImage);
   return (
     <>
       {mode === 'public' ? <h1 className={srOnlyClass}>{seoTitle}</h1> : null}
@@ -43,6 +42,7 @@ export function HomeSectionList({ sections, siteUrl, seoTitle, mode = 'public', 
             siteUrl={siteUrl}
             mode={mode}
             fallbackDescription={fallbackDescription}
+            newsletter={newsletter}
           />
         );
       })}

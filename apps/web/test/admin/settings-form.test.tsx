@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { DEFAULT_NEWSLETTER_CONSENT } from '@under30ss/shared';
 import { AdminToastContext } from '@/components/admin/shell/use-admin-toast';
 import { SettingsForm } from '@/components/admin/settings-form';
 import { jsonResponse } from './admin-outfit-fixture';
@@ -177,9 +178,55 @@ describe('SettingsForm', () => {
     expect(body.collectionsLabel).toBe('Bộ sưu tập hè');
   });
 
+  it('starts with the switch off when never saved and omits newsletterConsent from the PUT', async () => {
+    const user = userEvent.setup();
+    fetchMock.mockResolvedValue(jsonResponse({}));
+    render(<SettingsForm initial={{ ...settings, newsletterConsentVersion: null }} />);
+    expect(screen.getByLabelText('Hiện form đăng ký trên trang chủ')).not.toBeChecked();
+    expect(screen.getByLabelText('Câu đồng ý')).toBeDisabled();
+    await user.click(screen.getByRole('button', { name: 'Lưu' }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    expect(JSON.parse(fetchMock.mock.calls[0]![1].body)).not.toHaveProperty('newsletterConsent');
+  });
+
+  it('sends the prefilled default sentence once the switch is turned on', async () => {
+    const user = userEvent.setup();
+    fetchMock.mockResolvedValue(jsonResponse({}));
+    render(<SettingsForm initial={{ ...settings, newsletterConsentVersion: null }} />);
+    await user.click(screen.getByLabelText('Hiện form đăng ký trên trang chủ'));
+    await user.click(screen.getByRole('button', { name: 'Lưu' }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    const body = JSON.parse(fetchMock.mock.calls[0]![1].body);
+    expect(body.newsletterConsent).toEqual({ text: DEFAULT_NEWSLETTER_CONSENT.text });
+  });
+
+  it('starts on when consent is saved, and turning it off omits it from the PUT', async () => {
+    const user = userEvent.setup();
+    fetchMock.mockResolvedValue(jsonResponse({}));
+    render(<SettingsForm initial={{ ...settings, newsletterConsent: { text: 'Dong y' }, newsletterConsentVersion: 2 }} />);
+    const toggle = screen.getByLabelText('Hiện form đăng ký trên trang chủ');
+    expect(toggle).toBeChecked();
+    await user.click(toggle);
+    await user.click(screen.getByRole('button', { name: 'Lưu' }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    expect(JSON.parse(fetchMock.mock.calls[0]![1].body)).not.toHaveProperty('newsletterConsent');
+  });
+
+  it('maps an empty consent sentence to its own field', async () => {
+    const user = userEvent.setup();
+    render(<SettingsForm initial={{ ...settings, newsletterConsent: { text: 'Dong y' }, newsletterConsentVersion: 1 }} />);
+    await user.clear(screen.getByLabelText('Câu đồng ý'));
+    await user.click(screen.getByRole('button', { name: 'Lưu' }));
+    expect(await screen.findByText('Không được để trống')).toBeInTheDocument();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('groups the fields into labelled sections', () => {
     render(<SettingsForm initial={settings} />);
     const names = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
-    expect(names).toEqual(['Thông tin site', 'Dải thông báo', 'Danh sách', 'Bộ sưu tập', 'Chân trang']);
+    expect(names).toEqual(['Thông tin site', 'Dải thông báo', 'Danh sách', 'Bộ sưu tập', 'Bản tin', 'Chân trang']);
   });
 });

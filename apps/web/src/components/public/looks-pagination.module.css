@@ -14,8 +14,9 @@
   min-width: 44px;
   min-height: 44px;
   padding-inline: var(--space-3);
-  border-radius: var(--client-radius-pill);
-  font-size: var(--text-sm);
+  font-size: var(--client-label-size);
+  letter-spacing: var(--client-label-tracking);
+  text-transform: uppercase;
   font-weight: var(--font-weight-medium);
   color: var(--client-ink);
   text-decoration: none;

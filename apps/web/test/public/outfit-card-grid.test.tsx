@@ -43,14 +43,14 @@ describe('OutfitCardGrid', () => {
     expect(grid(6)).toEqual(['6', '3']);
   });
 
-  it('treats the first row as the configured number of columns', () => {
+  it('keeps every image lazy unless the grid asks for priority', () => {
     const many = Array.from({ length: 5 }, (_, i) => ({ ...items[0]!, slug: `c${i}` }));
     const { container } = render(<OutfitCardGrid items={many} headingLevel="h2" columnsDesktop={2} />);
     const loading = [...container.querySelectorAll('img')].map((img) => img.getAttribute('loading'));
-    expect(loading).toEqual(['eager', 'eager', 'lazy', 'lazy', 'lazy']);
+    expect(loading).toEqual(['lazy', 'lazy', 'lazy', 'lazy', 'lazy']);
   });
 
-  it('loads only the first row eagerly and raises its priority on request', () => {
+  it('loads only the first image eagerly with high priority on request', () => {
     const many = Array.from({ length: OUTFIT_GRID_DESKTOP_COLUMNS + 2 }, (_, i) => ({
       slug: `s${i}`,
       title: `T${i}`,
@@ -60,7 +60,7 @@ describe('OutfitCardGrid', () => {
     const { container } = render(<OutfitCardGrid items={many} headingLevel="h2" highPriorityFirstRow />);
     const images = [...container.querySelectorAll('img')];
     images.forEach((img, i) => {
-      const first = i < OUTFIT_GRID_DESKTOP_COLUMNS;
+      const first = i === 0;
       expect(img.getAttribute('loading')).toBe(first ? 'eager' : 'lazy');
       expect(img.getAttribute('fetchpriority')).toBe(first ? 'high' : null);
     });

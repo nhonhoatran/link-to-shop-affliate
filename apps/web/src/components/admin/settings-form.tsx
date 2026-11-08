@@ -22,6 +22,7 @@ import { localizeSettingsErrors } from './settings/settings-form-errors';
 import { fromAdminSettings, toSettingsInput, type SettingsFormState } from './settings/settings-form-state';
 import { SettingsSocialLinksEditor } from './settings/settings-social-links-editor';
 import { useFocusFirstInvalid } from './settings/use-focus-first-invalid';
+import { SettingsNewsletterConsentFields } from './settings/settings-newsletter-consent-fields';
 import { SettingsListingFields } from './settings-listing-fields';
 
 export function SettingsForm({ initial }: { initial: AdminSettingsDto }) {
@@ -140,6 +141,14 @@ export function SettingsForm({ initial }: { initial: AdminSettingsDto }) {
           errors={errors}
           onEnabledChange={(collectionsNavEnabled) => change({ collectionsNavEnabled })}
           onLabelChange={(collectionsLabel) => change({ collectionsLabel })}
+        />
+      </AdminPanel>
+      <AdminPanel id="settings-newsletter" title="Bản tin">
+        <SettingsNewsletterConsentFields
+          values={state.newsletterConsent}
+          version={initial.newsletterConsentVersion ?? null}
+          errors={errors}
+          onChange={(patch) => change({ newsletterConsent: { ...state.newsletterConsent, ...patch } })}
         />
       </AdminPanel>
       <AdminPanel id="settings-footer" title="Chân trang">

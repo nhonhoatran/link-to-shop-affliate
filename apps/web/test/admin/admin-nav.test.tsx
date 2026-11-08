@@ -43,6 +43,15 @@ describe('AdminNav', () => {
     expect(screen.getAllByRole('link').map((link) => link.textContent).slice(0, 2)).toEqual(['Tổng quan', 'Trang chủ']);
   });
 
+  it('lists Đăng ký nhận tin after Bộ sưu tập and marks it on its route', () => {
+    pathname.mockReturnValue('/admin/newsletter');
+    render(<AdminNav />);
+    expect(current().map((link) => link.textContent)).toEqual(['Đăng ký nhận tin']);
+    const labels = screen.getAllByRole('link').map((link) => link.textContent);
+    expect(labels.indexOf('Đăng ký nhận tin')).toBe(labels.indexOf('Bộ sưu tập') + 1);
+    expect(screen.getByRole('link', { name: 'Đăng ký nhận tin' })).toHaveAttribute('href', '/admin/newsletter');
+  });
+
   it('marks settings and users by prefix', () => {
     pathname.mockReturnValue('/admin/settings');
     const { unmount } = render(<AdminNav />);

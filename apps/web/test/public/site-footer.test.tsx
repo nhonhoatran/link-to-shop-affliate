@@ -43,6 +43,13 @@ describe('SiteFooter', () => {
     expect(screen.getByText(`© ${new Date().getFullYear()} Shop`)).toBeInTheDocument();
   });
 
+  it('renders the site name as a decorative wordmark hidden from assistive tech', () => {
+    const { container } = renderFooter();
+    const wordmark = container.querySelector('[aria-hidden="true"]');
+    expect(wordmark).toHaveTextContent('Shop');
+    expect(screen.queryByRole('heading')).toBeNull();
+  });
+
   it('is unchanged when no columns or social links are configured', () => {
     const { container } = renderFooter({ footer: { columns: [], social: [] } });
     expect(screen.queryByRole('heading')).toBeNull();

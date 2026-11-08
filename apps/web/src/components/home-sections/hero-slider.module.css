@@ -2,7 +2,6 @@
   position: relative;
   min-width: 0;
   overflow: hidden;
-  border-radius: var(--client-radius-lg);
   background: var(--client-surface-soft);
 }
 
@@ -17,10 +16,16 @@
 
 .slide {
   position: relative;
+  display: flex;
   flex: 0 0 100%;
+  flex-direction: column;
   min-width: 0;
-  aspect-ratio: var(--client-hero-ratio-mobile);
   scroll-snap-align: start;
+}
+
+.media {
+  display: block;
+  aspect-ratio: var(--client-hero-ratio-mobile);
 }
 
 .image {
@@ -30,66 +35,11 @@
   object-fit: cover;
 }
 
-.caption {
-  position: absolute;
-  inset: auto 0 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-2);
-  padding: var(--space-5) var(--space-4) calc(var(--client-slider-button-size) + var(--space-4));
-  background: linear-gradient(to top, var(--client-hero-overlay), transparent);
-  color: var(--client-on-ink);
-}
-
-.heading {
-  margin: 0;
-  font-size: var(--page-title-size);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
-  overflow-wrap: anywhere;
-}
-
-.text {
-  margin: 0;
-  font-size: var(--body-size);
-  overflow-wrap: anywhere;
-}
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--client-tap-target);
-  padding-inline: var(--space-5);
-  border-radius: var(--client-radius-pill);
-  background: var(--client-surface);
-  font-size: var(--body-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--client-ink);
-  text-decoration: none;
-}
-
-.arrow {
+.root .arrow {
   position: absolute;
   top: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--client-slider-button-size);
-  height: var(--client-slider-button-size);
-  padding: 0;
+  display: none;
   transform: translateY(-50%);
-  border: 0;
-  border-radius: var(--client-radius-pill);
-  background: var(--client-surface);
-  box-shadow: var(--client-shadow-soft);
-  color: var(--client-ink);
-  cursor: pointer;
-}
-
-.arrow:disabled {
-  opacity: 0.4;
-  cursor: default;
 }
 
 .previous {
@@ -114,7 +64,6 @@
   pointer-events: auto;
 }
 
-.pause,
 .dotButton {
   display: inline-flex;
   align-items: center;
@@ -127,14 +76,20 @@
   cursor: pointer;
 }
 
-.pause {
-  border-radius: var(--client-radius-pill);
-  background: var(--client-surface);
-  color: var(--client-ink);
+.dots,
+.counter {
+  display: flex;
+  align-items: center;
+  min-height: var(--client-slider-button-size);
+  background: var(--client-ink);
+  color: var(--client-on-ink);
 }
 
-.dots {
-  display: flex;
+.counter {
+  padding-inline: var(--space-3);
+  font-size: var(--client-label-size);
+  letter-spacing: var(--client-label-tracking);
+  font-variant-numeric: tabular-nums;
 }
 
 .dot {
@@ -149,27 +104,25 @@
   background: var(--client-on-ink);
 }
 
-.pause:focus-visible,
-.dotButton:focus-visible,
-.arrow:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
+.dotButton:focus-visible {
+  outline: 2px solid var(--client-focus-on-ink);
+  outline-offset: -4px;
 }
 
 /* Autoplay never starts under reduced motion, so the pause button would do nothing. */
 @media (prefers-reduced-motion: reduce) {
-  .pause {
+  .controls .pause {
     display: none;
   }
 }
 
 /* Matches --bp-md. */
 @media (min-width: 768px) {
-  .slide {
+  .media {
     aspect-ratio: var(--client-hero-ratio);
   }
 
-  .caption {
-    padding-inline: var(--space-6);
+  .root .arrow {
+    display: inline-flex;
   }
 }

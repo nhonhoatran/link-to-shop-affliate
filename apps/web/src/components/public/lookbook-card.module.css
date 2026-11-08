@@ -3,7 +3,5 @@
   max-width: var(--lookbook-max-width);
   margin-inline: auto;
   padding: 0;
-  border-radius: var(--client-radius-lg);
   background: var(--client-surface);
-  box-shadow: var(--client-shadow-soft);
 }

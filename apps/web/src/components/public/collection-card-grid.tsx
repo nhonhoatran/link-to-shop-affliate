@@ -35,7 +35,7 @@ export function CollectionCardGrid({
             headingLevel={headingLevel}
             columnsDesktop={columnsDesktop}
             firstRow={index < columnsDesktop}
-            highPriority={highPriorityFirstRow}
+            highPriority={highPriorityFirstRow && index === 0}
           />
         </li>
       ))}

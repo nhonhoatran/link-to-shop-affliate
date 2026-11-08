@@ -8,6 +8,7 @@ export const ADMIN_PATHS = {
   collections: '/admin/collections',
   collectionNew: '/admin/collections/new',
   collectionEdit: (id: string) => `/admin/collections/${id}`,
+  newsletter: '/admin/newsletter',
   home: '/admin/home',
   homePreview: '/admin/home-preview',
   settings: '/admin/settings',

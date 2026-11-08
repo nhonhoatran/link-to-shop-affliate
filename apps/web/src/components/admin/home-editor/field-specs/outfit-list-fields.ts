@@ -1,9 +1,10 @@
 import { MAX_OUTFIT_LIST_TABS, MAX_SECTION_OUTFITS } from '@under30ss/shared';
 import type { FieldSpec } from '../field-spec-types';
-import { columns, viewAll } from './common-fields';
+import { columns, eyebrow, viewAll } from './common-fields';
 
 export const OUTFIT_LIST_FIELDS: readonly FieldSpec[] = [
     { kind: 'text', name: 'title', label: 'Tiêu đề' },
+    eyebrow,
     {
       kind: 'select',
       name: 'source',

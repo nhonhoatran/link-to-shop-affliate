@@ -37,12 +37,12 @@ describe('CollectionCardGrid', () => {
     expect(container.querySelector('ul')!.style.getPropertyValue('--collection-columns')).toBe('3');
   });
 
-  it('loads only the first row eagerly and raises its priority on request', () => {
+  it('loads only the first image eagerly with high priority on request', () => {
     const { container } = render(
       <CollectionCardGrid items={many(5)} headingLevel="h2" columnsDesktop={3} highPriorityFirstRow />,
     );
     [...container.querySelectorAll('img')].forEach((img, i) => {
-      const first = i < 3;
+      const first = i === 0;
       expect(img.getAttribute('loading')).toBe(first ? 'eager' : 'lazy');
       expect(img.getAttribute('fetchpriority')).toBe(first ? 'high' : null);
     });

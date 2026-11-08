@@ -4,11 +4,13 @@ import { HOME_SECTION_COPY } from './home-section-copy';
 import { getHeroPictureProps } from './hero-image-props';
 import { HeroSliderAutoplay } from './hero-slider-autoplay';
 import { SectionShell, type SectionViewProps } from './section-shell';
+import buttons from '@/components/public/public-button.module.css';
+import captionStyles from './hero-slider-caption.module.css';
 import styles from './hero-slider.module.css';
 
 function HeroSlideItem({ slide, index, total, isLcp }: { slide: HeroSlide; index: number; total: number; isLcp: boolean }) {
   const { img, mobileSrcSet } = getHeroPictureProps(slide, isLcp);
-  const hasCaption = slide.heading || slide.text || (slide.ctaLabel && slide.ctaHref);
+  const hasCaption = slide.eyebrow || slide.heading || slide.text || (slide.ctaLabel && slide.ctaHref);
   return (
     <div
       className={styles.slide}
@@ -16,17 +18,18 @@ function HeroSlideItem({ slide, index, total, isLcp }: { slide: HeroSlide; index
       aria-roledescription="slide"
       aria-label={HOME_SECTION_COPY.slider.slideLabel(index + 1, total)}
     >
-      <picture>
+      <picture className={styles.media}>
         {mobileSrcSet ? <source media="(max-width: 767px)" srcSet={mobileSrcSet} /> : null}
         {/* getImageProps output: next/image cannot render <picture> sources itself. */}
         <img {...img} className={styles.image} />
       </picture>
       {hasCaption ? (
-        <div className={styles.caption}>
-          {slide.heading ? <h2 className={styles.heading}>{slide.heading}</h2> : null}
-          {slide.text ? <p className={styles.text}>{slide.text}</p> : null}
+        <div className={captionStyles.caption}>
+          {slide.eyebrow ? <p className={captionStyles.eyebrow}>{slide.eyebrow}</p> : null}
+          {slide.heading ? <h2 className={captionStyles.heading}>{slide.heading}</h2> : null}
+          {slide.text ? <p className={captionStyles.text}>{slide.text}</p> : null}
           {slide.ctaLabel && slide.ctaHref ? (
-            <PublicSmartLink href={slide.ctaHref} className={styles.pill}>
+            <PublicSmartLink href={slide.ctaHref} className={`${buttons.button} ${buttons.onDark} ${captionStyles.cta}`}>
               {slide.ctaLabel}
             </PublicSmartLink>
           ) : null}

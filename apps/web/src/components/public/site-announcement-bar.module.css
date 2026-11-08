@@ -1,4 +1,5 @@
 .bar {
+  --color-focus: var(--client-focus-on-ink);
   background: var(--client-announcement-bg);
   color: var(--client-announcement-fg);
 }
@@ -13,8 +14,10 @@
   min-height: var(--client-announcement-min-height);
   margin-inline: auto;
   padding-inline: var(--space-4);
-  font-size: var(--text-sm);
+  font-size: var(--client-label-size);
+  letter-spacing: var(--client-label-tracking);
   text-align: center;
+  text-transform: uppercase;
 }
 
 .text {
@@ -32,7 +35,7 @@
   text-underline-offset: var(--space-1);
 }
 
-/* Matches --bp-lg: the page gutter widens at 1024px, same as PublicPage. */
+/* 1024px = --bp-lg: the page gutter widens, same as PublicPage. */
 @media (min-width: 1024px) {
   .inner {
     padding-inline: var(--space-6);

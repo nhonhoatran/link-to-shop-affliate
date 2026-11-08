@@ -1,8 +1,8 @@
 import { type AdminHomeLayoutDto, type HomeSection, type HomeSectionType } from '@under30ss/shared';
-import { sampleHomeSections } from '@under30ss/shared/fixtures';
+import { sampleEditorialHomeSections, sampleHomeSections } from '@under30ss/shared/fixtures';
 
 export const sampleSection = (type: HomeSectionType): HomeSection => {
-  const found = sampleHomeSections.find((section) => section.type === type);
+  const found = [...sampleHomeSections, ...sampleEditorialHomeSections].find((section) => section.type === type);
   if (!found) throw new Error(`No sample for ${type}`);
   return structuredClone(found);
 };

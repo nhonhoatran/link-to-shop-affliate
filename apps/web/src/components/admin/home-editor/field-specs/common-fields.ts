@@ -24,3 +24,10 @@ export const ctaHref: FieldSpec = {
   optional: true,
 };
 export const altText = (hint: string): TextSpec => ({ kind: 'text', name: 'alt', label: 'Mô tả ảnh', hint });
+export const eyebrow: TextSpec = {
+  kind: 'text',
+  name: 'eyebrow',
+  label: 'Dòng nhãn nhỏ phía trên tiêu đề',
+  hint: 'Không bắt buộc. Một cụm từ ngắn, ví dụ "Mới về".',
+  optional: true,
+};

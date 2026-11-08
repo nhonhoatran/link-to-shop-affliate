@@ -22,6 +22,7 @@ a.kpi:hover {
 }
 
 .kpiValue {
+  font-family: var(--font-display);
   font-size: var(--page-title-size);
   line-height: var(--line-height-tight);
 }

@@ -62,9 +62,7 @@
 
 .itemName {
   margin: 0;
-  font-size: var(--lookbook-title-size);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--lookbook-line-height);
+  font: var(--font-weight-bold) var(--lookbook-title-size) / var(--lookbook-line-height) var(--lookbook-item-name-font);
   text-transform: uppercase;
   color: var(--color-ink);
 }

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import type { HomeSectionOf } from '@under30ss/shared';
 import { PublicSmartLink } from '@/components/public/public-smart-link';
+import buttons from '@/components/public/public-button.module.css';
 import { SectionShell, type SectionViewProps } from './section-shell';
 import { splitParagraphs } from './split-paragraphs';
 import styles from './text-with-image.module.css';
@@ -9,10 +10,10 @@ import styles from './text-with-image.module.css';
 const IMAGE_SIZES = '(min-width: 768px) 50vw, 100vw';
 
 export function TextWithImageView({ section, headingId, priority }: SectionViewProps<HomeSectionOf<'TextWithImage'>>) {
-  const { id, heading, body, image, alt, imagePosition, ctaLabel, ctaHref } = section.props;
+  const { id, eyebrow, heading, body, image, alt, imagePosition, ctaLabel, ctaHref } = section.props;
   const imageUrl = image?.url;
   return (
-    <SectionShell sectionId={id} headingId={headingId} title={heading}>
+    <SectionShell sectionId={id} headingId={headingId} eyebrow={eyebrow} title={heading}>
       <div className={`${styles.layout} ${imagePosition === 'left' ? styles.imageLeft : ''}`}>
         <div className={styles.text}>
           {splitParagraphs(body).map((paragraph, index) => (
@@ -22,7 +23,7 @@ export function TextWithImageView({ section, headingId, priority }: SectionViewP
           ))}
           {ctaLabel && ctaHref ? (
             <div className={styles.actions}>
-              <PublicSmartLink href={ctaHref} className={styles.pill}>
+              <PublicSmartLink href={ctaHref} className={`${buttons.button} ${buttons.primary}`}>
                 {ctaLabel}
               </PublicSmartLink>
             </div>

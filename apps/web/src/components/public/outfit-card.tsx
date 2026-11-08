@@ -27,7 +27,7 @@ export function OutfitCard({ outfit, headingLevel, firstRow = false, highPriorit
           height={modelImage.height}
           sizes={OUTFIT_CARD_IMAGE_SIZES}
           className={styles.image}
-          {...(firstRow ? { loading: 'eager' as const, ...(highPriority ? { fetchPriority: 'high' as const } : {}) } : {})}
+          {...(firstRow && highPriority ? { loading: 'eager' as const, fetchPriority: 'high' as const } : {})}
         />
       </span>
       <Heading className={styles.title}>{title}</Heading>

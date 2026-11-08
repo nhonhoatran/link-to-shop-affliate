@@ -1,0 +1,57 @@
+/* Below 768px the text sits on a solid ink panel under the photo; from 768px it sits on a scrim over the photo. */
+.caption {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-4) calc(var(--client-slider-button-size) + var(--space-4));
+  background: var(--client-ink);
+  color: var(--client-on-ink);
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: var(--client-label-size);
+  letter-spacing: var(--client-label-tracking);
+  text-transform: uppercase;
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--display-title-size);
+  font-weight: var(--font-weight-display);
+  line-height: var(--line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+.text {
+  margin: 0;
+  max-width: var(--client-prose-max-width);
+  font-size: var(--body-size);
+  overflow-wrap: anywhere;
+}
+
+.cta {
+  margin-top: var(--space-2);
+}
+
+@media (min-width: 768px) {
+  .caption {
+    position: absolute;
+    inset: auto 0 0;
+    padding: var(--space-5) var(--space-6) calc(var(--client-slider-button-size) + var(--space-4));
+    isolation: isolate;
+    background: transparent;
+  }
+
+  /* Taller than the caption so all text lies in the bottom 55% of the scrim, where alpha is at least 0.6. */
+  .caption::before {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    z-index: -1;
+    height: 190%;
+    background: var(--client-hero-scrim);
+  }
+}

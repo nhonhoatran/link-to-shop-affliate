@@ -11,6 +11,14 @@
   border-collapse: collapse;
 }
 
+.table th {
+  font-size: var(--text-label);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+  color: var(--admin-text-muted);
+}
+
 .table th,
 .table td {
   padding: var(--space-3);
@@ -44,6 +52,8 @@
   border-radius: var(--admin-radius-sm);
   background: var(--admin-bg);
   font-size: var(--text-xs);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
 }
 
 .badgeOk {

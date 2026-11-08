@@ -7,9 +7,10 @@ import styles from './lookbook.module.css';
 export interface LookbookLayoutProps {
   outfit: PublicOutfitDto;
   headingLevel?: 'h1' | 'h2';
+  preload?: boolean;
 }
 
-export function LookbookLayout({ outfit, headingLevel = 'h1' }: LookbookLayoutProps) {
+export function LookbookLayout({ outfit, headingLevel = 'h1', preload = true }: LookbookLayoutProps) {
   const Title = headingLevel;
   const itemHeading = headingLevel === 'h1' ? 'h2' : 'h3';
   const sorted = [...outfit.items].sort(compareOutfitItems);
@@ -19,7 +20,7 @@ export function LookbookLayout({ outfit, headingLevel = 'h1' }: LookbookLayoutPr
     <section className={styles.root} data-lookbook>
       <Title className={styles.title}>{outfit.title}</Title>
       <LookbookItemColumn side="left" items={left} itemHeading={itemHeading} />
-      <LookbookModelFigure outfit={{ ...outfit, items: sorted }} />
+      <LookbookModelFigure outfit={{ ...outfit, items: sorted }} preload={preload} />
       <LookbookItemColumn side="right" items={right} itemHeading={itemHeading} indexOffset={left.length} />
       <LookbookInteractions />
     </section>

@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { DEFAULT_HOME_CONTENT, type ResolvedHomeSection } from '@under30ss/shared';
-import { sampleOutfitCards, samplePublicOutfit } from '@under30ss/shared/fixtures';
+import { sampleOutfitCards, samplePublicOutfit, sampleResolvedEditorialSections } from '@under30ss/shared/fixtures';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import HomePage, { generateMetadata } from '@/app/(public)/page';
 
@@ -23,13 +23,16 @@ const settings = {
 
 // What the API resolves for the built-in default layout when the database has no published layout.
 const defaultSections = (): ResolvedHomeSection[] => {
-  const [lookbook, outfits] = DEFAULT_HOME_CONTENT;
+  const lookbook = DEFAULT_HOME_CONTENT.find((section) => section.type === 'FeaturedLookbook');
+  const outfits = DEFAULT_HOME_CONTENT.find((section) => section.type === 'OutfitList');
   if (lookbook?.type !== 'FeaturedLookbook' || outfits?.type !== 'OutfitList') throw new Error('unexpected default layout');
   return [
     { ...lookbook, data: { outfit: samplePublicOutfit } },
     { ...outfits, data: { tabs: [{ key: 'latest', href: '/looks', items: sampleOutfitCards }] } },
   ];
 };
+
+const pageProps = (query: Record<string, string> = {}) => ({ searchParams: Promise.resolve(query) });
 
 beforeAll(() => {
   vi.stubEnv('API_INTERNAL_URL', 'http://api.test:4000');
@@ -46,7 +49,7 @@ beforeEach(() => {
 describe('/', () => {
   it('renders the default layout as the featured lookbook, then "Outfit khác" with a link to all looks', async () => {
     getHomePage.mockResolvedValue({ source: 'default', sections: defaultSections() });
-    const { container } = render(await HomePage());
+    const { container } = render(await HomePage(pageProps()));
     expect(container.querySelectorAll('h1')).toHaveLength(1);
     expect(container.querySelector('h1')).toHaveTextContent('Shop title');
     expect(container.querySelector('[data-lookbook]')).not.toBeNull();
@@ -57,16 +60,27 @@ describe('/', () => {
     expect(container.querySelector('script[type="application/ld+json"]')).not.toBeNull();
   });
 
+  it('shows the newsletter result from the query and ignores unknown values', async () => {
+    const signup = sampleResolvedEditorialSections.filter((section) => section.type === 'NewsletterSignup');
+    getHomePage.mockResolvedValue({ source: 'published', sections: signup });
+    const shown = render(await HomePage(pageProps({ newsletter: 'rate' })));
+    expect(shown.container.querySelector('[role="status"]')).toHaveTextContent('quá nhanh');
+    shown.unmount();
+    const ignored = render(await HomePage(pageProps({ newsletter: '<script>' })));
+    expect(ignored.container.querySelector('[role="status"]')).toBeEmptyDOMElement();
+    expect(ignored.container.querySelector('form')).toHaveAttribute('action');
+  });
+
   it('keeps the empty message when the API returns no sections', async () => {
     getHomePage.mockResolvedValue({ source: 'default', sections: [] });
-    const { container } = render(await HomePage());
+    const { container } = render(await HomePage(pageProps()));
     expect(container.querySelector('[data-lookbook]')).toBeNull();
     expect(container.querySelector('h1')).toHaveTextContent('Chưa có outfit nào');
   });
 
   it('lets a loader failure propagate to the error boundary', async () => {
     getHomePage.mockRejectedValue(new Error('down'));
-    await expect(HomePage()).rejects.toThrow('down');
+    await expect(HomePage(pageProps())).rejects.toThrow('down');
   });
 
   it('uses the site metadata', async () => {

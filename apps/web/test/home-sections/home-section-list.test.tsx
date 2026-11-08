@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { sampleResolvedHomeSections } from '@under30ss/shared/fixtures';
+import { sampleResolvedEditorialSections, sampleResolvedHomeSections } from '@under30ss/shared/fixtures';
 import type { ResolvedHomeSection } from '@under30ss/shared';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { HomeSectionList } from '@/components/home-sections/home-section-list';
@@ -55,5 +55,27 @@ describe('HomeSectionList', () => {
     const preview = renderList(sampleResolvedHomeSections, 'preview').container;
     expect(preview.querySelector('script[type="application/ld+json"]')).toBeNull();
     expect(preview.querySelector('h1')).toBeNull();
+  });
+
+  it('gives the priority image to the first section that shows one, not to a text-only section above it', () => {
+    const find = (type: string) => {
+      const found = sampleResolvedEditorialSections.find((section) => section.type === type);
+      if (!found) throw new Error(`fixture missing ${type}`);
+      return found;
+    };
+    const { container } = renderList([find('Marquee'), find('NewsletterSignup'), find('Gallery'), find('CampaignBanner')]);
+    const eager = [...container.querySelectorAll('img')].filter((img) => img.getAttribute('loading') !== 'lazy');
+    expect(eager).toHaveLength(1);
+    expect(eager[0]?.closest('[data-section-id]')).toHaveAttribute('data-section-id', 'sample-gallery');
+  });
+
+  it('hands the newsletter form state to the signup view', () => {
+    const action = vi.fn();
+    const sections = sampleResolvedEditorialSections.filter((section) => section.type === 'NewsletterSignup');
+    const { container } = render(
+      <HomeSectionList sections={sections} siteUrl={SITE_URL} seoTitle="Shop title" newsletter={{ action, result: 'invalid' }} />,
+    );
+    expect(container.querySelector('[role="status"]')).toHaveTextContent('chưa hợp lệ');
+    expect(container.querySelector('button[type="submit"]')).toBeEnabled();
   });
 });

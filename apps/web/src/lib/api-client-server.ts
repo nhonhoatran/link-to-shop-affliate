@@ -39,4 +39,27 @@ export const apiGet = async <T>(path: string, options: ApiGetOptions = {}): Prom
   return readApiResponse<T>(response);
 };
 
+export interface ApiPostOptions {
+  /** Extra request headers, e.g. the visitor IP forwarded from the proxy. */
+  headers?: Record<string, string>;
+  signal?: AbortSignal;
+}
+
+export const apiPost = async <T>(path: string, body: unknown, options: ApiPostOptions = {}): Promise<T> => {
+  const { headers, signal } = options;
+  let response: Response;
+  try {
+    response = await fetch(`${getWebEnv().API_INTERNAL_URL.replace(/\/+$/, '')}${path}`, {
+      method: 'POST',
+      headers: { accept: 'application/json', 'content-type': 'application/json', ...headers },
+      body: JSON.stringify(body),
+      cache: 'no-store',
+      ...(signal ? { signal } : {}),
+    });
+  } catch (error) {
+    throw networkError(error);
+  }
+  return readApiResponse<T>(response);
+};
+
 export { ApiError };

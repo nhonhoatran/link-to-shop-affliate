@@ -17,23 +17,23 @@ export function SiteFooter({ siteName, description, navItems, footer }: SiteFoot
   return (
     <footer className={styles.footer}>
       <div className={styles.inner}>
-        <div className={styles.about}>
-          <p className={styles.name}>{siteName}</p>
-          {description ? <p className={styles.description}>{description}</p> : null}
-        </div>
+        {description ? <p className={styles.description}>{description}</p> : null}
         <PublicNavLinks
           items={navItems}
           label={SHELL_COPY.footerNav}
           className={styles.nav}
           linkClassName={styles.navLink}
         />
+        {footer ? (
+          <div className={styles.extra}>
+            <SiteFooterColumns columns={footer.columns} />
+            <SiteSocialLinks social={footer.social} />
+          </div>
+        ) : null}
       </div>
-      {footer && (footer.columns.length > 0 || footer.social.length > 0) ? (
-        <div className={styles.extra}>
-          <SiteFooterColumns columns={footer.columns} />
-          <SiteSocialLinks social={footer.social} />
-        </div>
-      ) : null}
+      <p aria-hidden="true" className={styles.wordmark}>
+        {siteName}
+      </p>
       <p className={styles.copyright}>{footerCopyright(new Date().getFullYear(), siteName)}</p>
     </footer>
   );

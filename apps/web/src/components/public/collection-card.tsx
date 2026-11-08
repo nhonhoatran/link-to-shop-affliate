@@ -33,7 +33,7 @@ export function CollectionCard({
           height={coverImage.height}
           sizes={collectionCardImageSizes(columnsDesktop)}
           className={styles.image}
-          {...(firstRow ? { loading: 'eager' as const, ...(highPriority ? { fetchPriority: 'high' as const } : {}) } : {})}
+          {...(firstRow && highPriority ? { loading: 'eager' as const, fetchPriority: 'high' as const } : {})}
         />
       </span>
       <Heading className={styles.title}>{name}</Heading>

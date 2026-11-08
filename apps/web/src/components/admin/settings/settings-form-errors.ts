@@ -7,6 +7,7 @@ export const INTERNAL_OR_HTTP_MESSAGE = 'Nhập đường dẫn trong site (bắ
 export const HTTP_ONLY_MESSAGE = 'Nhập link bắt đầu bằng https://';
 export const ANNOUNCEMENT_TEXT_REQUIRED = 'Nhập nội dung thông báo';
 export const ANNOUNCEMENT_HREF_REQUIRED = 'Nhập đường dẫn cho link';
+export const CONSENT_LABEL_INVALID = 'Nhập nhãn link, tối đa 40 ký tự';
 
 /**
  * The shared validation messages are generic; replace only those (server messages pass through)
@@ -25,6 +26,8 @@ function specificMessage(key: string, state: SettingsFormState): string {
   if (key === 'announcement.href') {
     return state.announcement.href.trim() === '' ? ANNOUNCEMENT_HREF_REQUIRED : INTERNAL_OR_HTTP_MESSAGE;
   }
+  if (key === 'newsletterConsent.privacyHref') return INTERNAL_OR_HTTP_MESSAGE;
+  if (key === 'newsletterConsent.privacyLabel') return CONSENT_LABEL_INVALID;
   const columnLink = /^footer\.columns\.(\d+)\.links\.(\d+)\.href$/.exec(key);
   if (columnLink) {
     const row = state.columns[Number(columnLink[1])]?.links[Number(columnLink[2])];

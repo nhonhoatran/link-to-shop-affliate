@@ -32,8 +32,9 @@
 
 .title {
   margin: 0;
+  font-family: var(--font-display);
   font-size: var(--page-title-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-display);
   line-height: var(--line-height-tight);
 }
 

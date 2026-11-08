@@ -3,6 +3,7 @@ import { LOOKS_PAGE_PATH, type PublicOutfitCardDto } from '@under30ss/shared';
 import { getRelatedOutfits } from '@/lib/seo/public-data-loaders';
 import { OutfitCardGrid } from './outfit-card-grid';
 import { RELATED_COPY } from './public-copy';
+import buttonStyles from './public-button.module.css';
 import styles from './related-outfits-section.module.css';
 
 interface RelatedOutfitsSectionProps {
@@ -30,7 +31,7 @@ export async function RelatedOutfitsSection({ count, excludeSlug = '' }: Related
       </h2>
       <OutfitCardGrid items={items} headingLevel="h3" />
       <div className={styles.actions}>
-        <Link href={LOOKS_PAGE_PATH} className={styles.pill}>
+        <Link href={LOOKS_PAGE_PATH} className={`${buttonStyles.button} ${buttonStyles.outline}`}>
           {RELATED_COPY.viewAll}
         </Link>
       </div>

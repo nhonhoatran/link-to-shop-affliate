@@ -4,6 +4,7 @@ import { HOME_SECTION_COPY } from './home-section-copy';
 import { OutfitCardRail } from './outfit-card-rail';
 import { OutfitListTabs } from './outfit-list-tabs';
 import { SectionShell, SectionViewAll, type SectionViewProps } from './section-shell';
+import styles from './outfit-list.module.css';
 
 type OutfitListSection = HomeSectionOf<'OutfitList'> & { data: { tabs: OutfitListTabData[] } };
 
@@ -18,18 +19,22 @@ function TabPanel({ tab, section, priority }: { tab: OutfitListTabData; section:
       ) : (
         <OutfitCardRail items={tab.items} label={tab.label ?? title} />
       )}
-      {showViewAll && href ? <SectionViewAll href={href} /> : null}
+      {showViewAll && href ? (
+        <div className={styles.viewAllRow}>
+          <SectionViewAll href={href} />
+        </div>
+      ) : null}
     </>
   );
 }
 
 export function OutfitListView({ section, headingId, priority }: SectionViewProps<OutfitListSection>) {
-  const { id, title } = section.props;
+  const { id, eyebrow, title } = section.props;
   const tabs = section.data.tabs.filter((tab) => tab.items.length > 0);
   if (tabs.length === 0) return null;
   const firstTab = tabs[0];
   return (
-    <SectionShell sectionId={id} headingId={headingId} title={title}>
+    <SectionShell sectionId={id} headingId={headingId} eyebrow={eyebrow} title={title}>
       {tabs.length === 1 && firstTab ? (
         <TabPanel tab={firstTab} section={section} priority={priority} />
       ) : (

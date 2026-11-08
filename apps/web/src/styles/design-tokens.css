@@ -16,13 +16,18 @@
 
   /* Typography */
   --font-sans: var(--font-be-vietnam-pro), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-playfair-display), Georgia, serif;
   --font-weight-regular: 400;
+  --font-weight-display: 400;
   --font-weight-bold: 700;
   --lookbook-title-size: clamp(11px, 1.9vw, 18px);
   --lookbook-subtitle-size: clamp(11px, 2vw, 19px);
   --lookbook-description-size: clamp(11px, 1.8vw, 17px);
   --lookbook-line-height: 1.38;
   --page-title-size: clamp(22px, 4vw, 36px);
+  --display-title-size: clamp(32px, 6vw, 64px);
+  --text-label: 12px;
+  --letter-spacing-label: 0.14em;
   --body-size: 16px;
   --text-sm: 14px;
   --text-xs: 12px;
@@ -94,8 +99,8 @@
   --lookbook-compact-below: 640px;
 
   /* Admin base set (colors live in admin-theme-tokens.css) */
-  --admin-radius: 8px;
-  --admin-radius-sm: 4px;
+  --admin-radius: 2px;
+  --admin-radius-sm: 2px;
   --admin-dim-opacity: 0.35;
   --admin-width-page: 896px;
   --admin-width-narrow: 512px;

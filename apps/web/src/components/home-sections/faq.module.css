@@ -1,17 +1,18 @@
 .list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
   max-width: var(--client-prose-max-width);
   margin: 0;
   padding: 0;
+  border-top: 1px solid var(--client-border);
   list-style: none;
 }
 
+.list > li {
+  border-bottom: 1px solid var(--client-border);
+}
+
 .item {
-  border-radius: var(--client-radius-lg);
-  background: var(--client-surface);
-  box-shadow: var(--client-shadow-soft);
   color: var(--client-ink);
 }
 
@@ -21,9 +22,10 @@
   justify-content: space-between;
   gap: var(--space-3);
   min-height: var(--client-tap-target);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3) 0;
+  font-family: var(--font-display);
   font-size: var(--body-size);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-display);
   cursor: pointer;
   list-style: none;
 }
@@ -37,7 +39,7 @@
   flex: none;
   font-size: var(--page-title-size);
   line-height: 1;
-  color: var(--client-accent);
+  color: var(--client-ink);
 }
 
 .item[open] .question::after {
@@ -46,7 +48,7 @@
 
 .answer {
   margin: 0;
-  padding: 0 var(--space-4) var(--space-4);
+  padding: 0 0 var(--space-4);
   font-size: var(--body-size);
   line-height: 1.6;
   color: var(--client-ink-muted);

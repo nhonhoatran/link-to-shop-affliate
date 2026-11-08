@@ -22,25 +22,20 @@
   scroll-snap-align: start;
 }
 
-.button {
+.rail .button {
   position: absolute;
   top: 40%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: var(--client-rail-button-size);
   height: var(--client-rail-button-size);
-  padding: 0;
-  border: 1px solid var(--client-border);
-  border-radius: var(--client-radius-pill);
   background: var(--client-surface);
-  box-shadow: var(--client-shadow-soft);
-  color: var(--client-ink);
-  cursor: pointer;
   transition: opacity var(--duration-fast) var(--easing-standard);
 }
 
-.button:disabled {
+.rail .button:hover:not(:disabled) {
+  background: var(--client-ink);
+}
+
+.rail .button:disabled {
   opacity: 0;
   pointer-events: none;
 }
@@ -55,13 +50,13 @@
 
 /* Touch screens swipe; the buttons are for pointer and keyboard users. */
 @media (hover: none) and (pointer: coarse) {
-  .button {
+  .rail .button {
     display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .button {
+  .rail .button {
     transition: none;
   }
 }

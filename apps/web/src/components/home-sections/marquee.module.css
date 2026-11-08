@@ -1,0 +1,121 @@
+.marquee {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: var(--client-marquee-height);
+  border-block: 1px solid var(--client-border);
+  color: var(--client-ink);
+}
+
+.toggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  min-width: 200%;
+  height: 100%;
+  animation: marquee var(--marquee-duration, 30s) linear infinite;
+}
+
+.group {
+  display: flex;
+  flex: 1 0 auto;
+  align-items: center;
+  justify-content: space-around;
+  gap: var(--client-marquee-gap);
+  margin: 0;
+  padding: 0 var(--client-marquee-gap) 0 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--client-marquee-gap);
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: var(--body-size);
+  font-style: italic;
+}
+
+.item::after {
+  content: '';
+  width: var(--space-2);
+  height: var(--space-2);
+  background: var(--client-ink);
+}
+
+.control {
+  order: 2;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  min-height: var(--client-tap-target);
+  padding-inline: var(--space-4);
+  border-inline-start: 1px solid var(--client-border);
+  background: var(--client-bg);
+  font-size: var(--client-label-size);
+  letter-spacing: var(--client-label-tracking);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.playText {
+  display: none;
+}
+
+.toggle:checked ~ .control .pauseText {
+  display: none;
+}
+
+.toggle:checked ~ .control .playText {
+  display: inline;
+}
+
+.toggle:checked ~ .viewport .track {
+  animation-play-state: paused;
+}
+
+.toggle:focus-visible ~ .control {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: calc(var(--focus-ring-offset) * -1);
+}
+
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* The global reduced-motion rule only shortens durations, which makes an infinite loop flicker; stop it outright. */
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    width: auto;
+    min-width: 0;
+    flex-wrap: wrap;
+    animation: none;
+  }
+
+  .group {
+    padding-block: var(--space-3);
+  }
+
+  .group[aria-hidden='true'],
+  .control,
+  .toggle {
+    display: none;
+  }
+}

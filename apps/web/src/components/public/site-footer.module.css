@@ -1,91 +1,27 @@
 .footer {
+  --color-focus: var(--client-focus-on-ink);
   margin-top: var(--space-7);
-  background: var(--client-surface-soft);
-  color: var(--client-ink);
+  overflow: hidden;
+  background: var(--client-footer-bg);
+  color: var(--client-footer-fg);
 }
 
 .inner {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-4);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--client-footer-column-min), 1fr));
+  gap: var(--space-5);
   max-width: var(--client-container-max);
   margin-inline: auto;
-  padding: var(--space-6) var(--space-4) var(--space-4);
-}
-
-.about {
-  flex: 1 1 calc(var(--space-8) * 4);
-  max-width: calc(var(--space-8) * 8);
-}
-
-.name {
-  margin: 0 0 var(--space-2);
-  font-weight: var(--font-weight-bold);
+  padding: var(--space-7) var(--space-4) var(--space-5);
 }
 
 .description {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--client-ink-muted);
+  color: var(--client-footer-muted);
 }
 
-.nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: var(--space-1);
-}
-
-.navLink {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding-inline: var(--space-3);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--client-ink);
-  text-decoration: underline;
-  text-underline-offset: var(--space-1);
-}
-
-.copyright {
-  max-width: var(--client-container-max);
-  margin: 0 auto;
-  padding: 0 var(--space-4) var(--space-5);
-  font-size: var(--text-xs);
-  color: var(--client-ink-muted);
-}
-
-/* Matches --bp-lg: the page gutter widens at 1024px, same as PublicPage. */
-@media (min-width: 1024px) {
-  .inner,
-  .copyright {
-    padding-inline: var(--space-6);
-  }
-}
-
-.extra {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  max-width: var(--client-container-max);
-  margin-inline: auto;
-  padding: 0 var(--space-4) var(--space-4);
-}
-
-.columns {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.columnTitle {
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-bold);
-}
-
+.nav,
 .linkList,
 .social {
   display: flex;
@@ -95,44 +31,63 @@
   list-style: none;
 }
 
-.linkList .navLink {
-  padding-inline: 0;
+.columns,
+.extra {
+  display: contents;
 }
 
-.social {
-  flex-flow: row wrap;
-  gap: var(--space-2);
+.columnTitle {
+  margin: 0 0 var(--space-2);
+  font-size: var(--client-label-size);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--client-label-tracking);
+  text-transform: uppercase;
+  color: var(--client-footer-muted);
 }
 
+.navLink,
 .socialLink {
   display: inline-flex;
   align-items: center;
   min-height: var(--client-tap-target);
-  padding-inline: var(--space-4);
-  border: 1px solid var(--client-border);
-  border-radius: var(--client-radius-pill);
   font-size: var(--text-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--client-ink);
+  color: var(--client-footer-fg);
   text-decoration: none;
+  text-underline-offset: var(--space-1);
 }
 
+.navLink:hover,
 .socialLink:hover {
-  background: var(--client-bg);
+  text-decoration: underline;
 }
 
-/* Matches --bp-md: columns sit side by side from tablet width. */
-@media (min-width: 768px) {
-  .columns {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(var(--client-footer-column-min), 1fr));
-    gap: var(--space-5);
-  }
+.wordmark {
+  margin: 0;
+  padding-inline: var(--space-4);
+  font-family: var(--font-display);
+  font-size: calc(var(--display-title-size) * 2);
+  font-weight: var(--font-weight-display);
+  line-height: var(--line-height-tight);
+  color: var(--client-footer-wordmark);
+  text-align: center;
+  overflow-wrap: anywhere;
+  user-select: none;
 }
 
-/* Matches --bp-lg: the page gutter widens at 1024px, same as PublicPage. */
+.copyright {
+  max-width: var(--client-container-max);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-4) var(--space-5);
+  font-size: var(--client-label-size);
+  letter-spacing: var(--client-label-tracking);
+  text-transform: uppercase;
+  color: var(--client-footer-muted);
+}
+
+/* 1024px = --bp-lg: the page gutter widens, same as PublicPage. */
 @media (min-width: 1024px) {
-  .extra {
+  .inner,
+  .copyright {
     padding-inline: var(--space-6);
   }
 }

@@ -8,7 +8,11 @@ import {
 } from '@under30ss/shared';
 import { COMMITMENT_ICON_OPTIONS } from './home-editor-copy';
 import type { FieldSpec } from './field-spec-types';
-import { altText, columns, ctaHref, ctaLabel, viewAll } from './field-specs/common-fields';
+import { CAMPAIGN_BANNER_FIELDS } from './field-specs/campaign-banner-fields';
+import { altText, columns, ctaHref, ctaLabel, eyebrow, viewAll } from './field-specs/common-fields';
+import { GALLERY_FIELDS } from './field-specs/gallery-fields';
+import { MARQUEE_FIELDS } from './field-specs/marquee-fields';
+import { NEWSLETTER_SIGNUP_FIELDS } from './field-specs/newsletter-signup-fields';
 import { HERO_SLIDER_FIELDS } from './field-specs/hero-slider-fields';
 import { OUTFIT_LIST_FIELDS } from './field-specs/outfit-list-fields';
 
@@ -19,6 +23,7 @@ export const HOME_SECTION_FIELD_SPECS: Record<HomeSectionType, readonly FieldSpe
   HeroSlider: HERO_SLIDER_FIELDS,
   CollectionTiles: [
     { kind: 'text', name: 'title', label: 'Tiêu đề' },
+    eyebrow,
     {
       kind: 'select',
       name: 'mode',
@@ -54,6 +59,7 @@ export const HOME_SECTION_FIELD_SPECS: Record<HomeSectionType, readonly FieldSpe
   ],
   TextWithImage: [
     { kind: 'text', name: 'heading', label: 'Tiêu đề' },
+    eyebrow,
     { kind: 'textarea', name: 'body', label: 'Nội dung', hint: 'Cách đoạn bằng một dòng trống.' },
     { kind: 'image', name: 'image', label: 'Ảnh (không bắt buộc)', optional: true },
     { ...altText('Mô tả ngắn cho người khiếm thị.'), optional: true, showIf: (v) => v.image !== undefined },
@@ -71,6 +77,7 @@ export const HOME_SECTION_FIELD_SPECS: Record<HomeSectionType, readonly FieldSpe
   ],
   Faq: [
     { kind: 'text', name: 'title', label: 'Tiêu đề' },
+    eyebrow,
     {
       kind: 'array',
       name: 'items',
@@ -101,4 +108,8 @@ export const HOME_SECTION_FIELD_SPECS: Record<HomeSectionType, readonly FieldSpe
       ],
     },
   ],
+  CampaignBanner: CAMPAIGN_BANNER_FIELDS,
+  Marquee: MARQUEE_FIELDS,
+  Gallery: GALLERY_FIELDS,
+  NewsletterSignup: NEWSLETTER_SIGNUP_FIELDS,
 };

@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRef, type ReactNode } from 'react';
+import buttons from '@/components/public/public-button.module.css';
 import { DecorativeIcon } from '@/components/ui/decorative-icon';
 import { HOME_SECTION_COPY } from './home-section-copy';
 import styles from './scroll-rail.module.css';
@@ -24,7 +25,7 @@ export function ScrollRail({ label, children }: ScrollRailProps) {
       </ul>
       <button
         type="button"
-        className={`${styles.button} ${styles.previous}`}
+        className={`${buttons.button} ${buttons.outline} ${buttons.icon} ${styles.button} ${styles.previous}`}
         aria-label={HOME_SECTION_COPY.rail.previous}
         disabled={atStart}
         onClick={() => scrollPage(-1)}
@@ -33,7 +34,7 @@ export function ScrollRail({ label, children }: ScrollRailProps) {
       </button>
       <button
         type="button"
-        className={`${styles.button} ${styles.next}`}
+        className={`${buttons.button} ${buttons.outline} ${buttons.icon} ${styles.button} ${styles.next}`}
         aria-label={HOME_SECTION_COPY.rail.next}
         disabled={atEnd}
         onClick={() => scrollPage(1)}
