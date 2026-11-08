@@ -18,8 +18,11 @@ export default async function AdminLoginPage() {
   const siteName = await loadSiteName();
   return (
     <main className={styles.page}>
-      <div className={styles.box}>
-        {siteName ? <p className={styles.siteName}>{siteName}</p> : null}
+      <div className={styles.brand}>
+        <p className={styles.eyebrow}>Khu quản trị</p>
+        <p className={styles.wordmark}>{siteName ?? 'Quản trị'}</p>
+      </div>
+      <div className={styles.formSide}>
         <LoginForm />
       </div>
     </main>

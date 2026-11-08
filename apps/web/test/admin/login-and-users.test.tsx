@@ -32,6 +32,21 @@ describe('LoginForm', () => {
     expect(router.replace).not.toHaveBeenCalled();
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
   });
+
+  it('toggles password visibility without submitting the form', async () => {
+    const user = userEvent.setup();
+    render(<LoginForm />);
+    const password = screen.getByLabelText('Mật khẩu');
+    const reveal = screen.getByRole('button', { name: 'Hiện mật khẩu' });
+
+    expect(password).toHaveAttribute('type', 'password');
+    await user.click(reveal);
+    expect(password).toHaveAttribute('type', 'text');
+    expect(reveal).toHaveAttribute('aria-pressed', 'true');
+    await user.click(reveal);
+    expect(password).toHaveAttribute('type', 'password');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });
 
 describe('UserCreateForm', () => {

@@ -1,0 +1,66 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: var(--admin-width-narrow);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--page-title-size);
+  font-weight: var(--font-weight-display);
+  line-height: var(--line-height-tight);
+}
+
+.lead {
+  margin: 0;
+  color: var(--admin-text-muted);
+}
+
+.passwordWrap {
+  position: relative;
+}
+
+.passwordInput {
+  padding-right: var(--admin-control-height);
+}
+
+.reveal {
+  position: absolute;
+  inset-block: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--admin-control-height);
+  border: 0;
+  background: transparent;
+  color: var(--admin-text-muted);
+  cursor: pointer;
+}
+
+.reveal:hover {
+  color: var(--admin-text);
+}
+
+.reveal:focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: -4px;
+}
+
+.submit {
+  width: 100%;
+  margin-top: var(--space-2);
+  font-size: var(--text-label);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+}
