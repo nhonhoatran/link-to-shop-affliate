@@ -57,3 +57,23 @@ describe('parseLooksPageParam', () => {
     expect(parseLooksPageParam(raw)).toBe(expected);
   });
 });
+
+describe('LooksPagination pathForPage', () => {
+  it('builds every link with the given path function', () => {
+    const pathForPage = (page: number) => `/collections/x?p=${page}`;
+    render(<LooksPagination page={2} totalPages={3} pathForPage={pathForPage} />);
+    expect(screen.getByRole('link', { name: 'Trước' })).toHaveAttribute('href', '/collections/x?p=1');
+    expect(screen.getByRole('link', { name: 'Sau' })).toHaveAttribute('href', '/collections/x?p=3');
+    expect(screen.getByRole('link', { name: 'Trang 3' })).toHaveAttribute('href', '/collections/x?p=3');
+  });
+});
+
+describe('LooksPagination pathForPage', () => {
+  it('builds every link with the given path function', () => {
+    const pathForPage = (page: number) => `/collections/x?p=${page}`;
+    render(<LooksPagination page={2} totalPages={3} pathForPage={pathForPage} />);
+    expect(screen.getByRole('link', { name: 'Trước' })).toHaveAttribute('href', '/collections/x?p=1');
+    expect(screen.getByRole('link', { name: 'Sau' })).toHaveAttribute('href', '/collections/x?p=3');
+    expect(screen.getByRole('link', { name: 'Trang 3' })).toHaveAttribute('href', '/collections/x?p=3');
+  });
+});

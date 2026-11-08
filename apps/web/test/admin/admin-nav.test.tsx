@@ -23,6 +23,26 @@ describe('AdminNav', () => {
     }
   });
 
+  it('marks Bộ sưu tập for the list, new and edit routes and keeps Outfit unmarked', () => {
+    for (const path of ['/admin/collections', '/admin/collections/new', '/admin/collections/abc123']) {
+      pathname.mockReturnValue(path);
+      const { unmount } = render(<AdminNav />);
+      expect(current().map((link) => link.textContent)).toEqual(['Bộ sưu tập']);
+      unmount();
+    }
+    pathname.mockReturnValue('/admin');
+    render(<AdminNav />);
+    expect(screen.getByRole('link', { name: 'Bộ sưu tập' })).toHaveAttribute('href', '/admin/collections');
+  });
+
+  it('marks Trang chủ for the home editor and lists it right after Tổng quan', () => {
+    pathname.mockReturnValue('/admin/home');
+    render(<AdminNav />);
+    expect(current().map((link) => link.textContent)).toEqual(['Trang chủ']);
+    expect(screen.getByRole('link', { name: 'Trang chủ' })).toHaveAttribute('href', '/admin/home');
+    expect(screen.getAllByRole('link').map((link) => link.textContent).slice(0, 2)).toEqual(['Tổng quan', 'Trang chủ']);
+  });
+
   it('marks settings and users by prefix', () => {
     pathname.mockReturnValue('/admin/settings');
     const { unmount } = render(<AdminNav />);

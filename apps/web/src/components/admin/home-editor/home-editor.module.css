@@ -1,0 +1,205 @@
+/* Wider than the confirm dialogs: pickers hold a search box and a scrollable list. */
+.pickerDialog {
+  width: calc(100% - var(--space-4) * 2);
+}
+
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.sectionForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--admin-control-height);
+  margin-bottom: var(--space-2);
+  cursor: pointer;
+}
+
+.checkRow input {
+  flex: none;
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.arrayGroup {
+  min-width: 0;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  border: 0;
+}
+
+.arrayList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.arrayItem {
+  padding: var(--space-3);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-bg);
+}
+
+.arrayItemHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.entityRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-bg);
+}
+
+.entityName {
+  flex: 1 1 8rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.typeList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.typeButton {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  width: 100%;
+  min-height: var(--admin-control-height);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--admin-border-strong);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-surface);
+  color: var(--admin-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.typeButton:hover {
+  border-color: var(--admin-primary);
+}
+
+.typeName {
+  font-weight: var(--font-weight-medium);
+}
+
+.menuRoot {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 6;
+  min-width: calc(var(--admin-width-dialog) * 0.75);
+  margin: var(--space-1) 0 0;
+  padding: var(--space-1);
+  list-style: none;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  background: var(--admin-surface);
+  box-shadow: var(--admin-shadow);
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: var(--admin-control-height);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--admin-radius-sm);
+  background: transparent;
+  color: var(--admin-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menuItem:hover:not(:disabled),
+.menuItem:focus-visible {
+  background: var(--admin-bg);
+}
+
+.menuItem:disabled {
+  opacity: var(--admin-dim-opacity);
+  cursor: not-allowed;
+}
+
+/* 768px = --bp-md. Narrow toolbars keep only "Đăng" and "Khác"; the rest live in the menu. */
+@media (max-width: 767.98px) {
+  .wideOnly {
+    display: none;
+  }
+
+  /* The button sits mid-bar on a phone, so the menu hangs from the whole bar instead of from the button. */
+  .menuRoot {
+    position: static;
+  }
+
+  .menu {
+    max-width: calc(100vw - var(--space-4) * 2);
+  }
+}
+
+@media (min-width: 768px) {
+  .narrowOnly {
+    display: none;
+  }
+}
+
+.previewBanner {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  background: var(--admin-warning-bg);
+  color: var(--admin-warning);
+}
+
+.previewBanner a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--admin-control-height);
+  color: inherit;
+  text-decoration: underline;
+}

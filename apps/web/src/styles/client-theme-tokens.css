@@ -16,4 +16,24 @@
   --client-card-hover-scale: 1.03;
   --client-container-max: 1200px;
   --client-card-image-ratio: 2 / 5;
+
+  /* Home sections: vertical rhythm, rails, slider, footer, notice bar */
+  --client-section-gap: var(--space-7);
+  --client-section-heading-gap: var(--space-4);
+  --client-tap-target: 44px;
+  --client-rail-gap: var(--space-4);
+  --client-rail-card-width: 200px;
+  --client-rail-peek: var(--space-6);
+  --client-rail-button-size: var(--client-tap-target);
+  --client-slider-button-size: var(--client-tap-target);
+  --client-slider-dot-size: 12px;
+  --client-hero-ratio: 21 / 9;
+  --client-hero-ratio-mobile: 4 / 5;
+  --client-hero-overlay: rgba(59, 47, 42, 0.45);
+  --client-collection-card-ratio: 4 / 5;
+  --client-prose-max-width: 680px;
+  --client-footer-column-min: 180px;
+  --client-announcement-bg: var(--client-ink);
+  --client-announcement-fg: var(--client-on-ink);
+  --client-announcement-min-height: var(--client-tap-target);
 }

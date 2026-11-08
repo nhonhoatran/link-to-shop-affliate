@@ -115,7 +115,7 @@ describe('SettingsForm', () => {
     const user = userEvent.setup();
     fetchMock.mockResolvedValue(jsonResponse({}));
     render(<SettingsForm initial={settings} />);
-    const pageSize = screen.getByLabelText('Số outfit mỗi trang (trang Tất cả outfit)');
+    const pageSize = screen.getByLabelText('Số mục mỗi trang (Tất cả outfit và Bộ sưu tập)');
     expect(pageSize).toHaveAttribute('type', 'number');
     expect(pageSize).toHaveAttribute('min', '1');
 
@@ -158,5 +158,28 @@ describe('SettingsForm', () => {
     await user.click(screen.getByRole('button', { name: 'Lưu' }));
 
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Đã lưu cài đặt'));
+  });
+  it('defaults the collections menu link to on and sends a custom label only when typed', async () => {
+    const user = userEvent.setup();
+    fetchMock.mockResolvedValue(jsonResponse({}));
+    render(<SettingsForm initial={settings} />);
+    const toggle = screen.getByRole('checkbox', { name: 'Hiện link Bộ sưu tập trên menu' });
+    expect(toggle).toBeChecked();
+    expect(screen.getByLabelText('Tên hiển thị')).toHaveAttribute('placeholder', 'Bộ sưu tập');
+
+    await user.click(toggle);
+    await user.type(screen.getByLabelText('Tên hiển thị'), 'Bộ sưu tập hè');
+    await user.click(screen.getByRole('button', { name: 'Lưu' }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    const body = JSON.parse(fetchMock.mock.calls[0]![1].body);
+    expect(body.collectionsNavEnabled).toBe(false);
+    expect(body.collectionsLabel).toBe('Bộ sưu tập hè');
+  });
+
+  it('groups the fields into labelled sections', () => {
+    render(<SettingsForm initial={settings} />);
+    const names = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
+    expect(names).toEqual(['Thông tin site', 'Dải thông báo', 'Danh sách', 'Bộ sưu tập', 'Chân trang']);
   });
 });

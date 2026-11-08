@@ -1,11 +1,16 @@
 import Link from 'next/link';
 import { HideOnScrollHeader } from './hide-on-scroll-header';
 import { SHELL_COPY } from './public-copy';
-import { HOME_PATH, PUBLIC_NAV_ITEMS } from './public-nav-items';
+import { HOME_PATH, type PublicNavItem } from './public-nav-items';
 import { PublicNavLinks } from './public-nav-links';
 import styles from './site-header.module.css';
 
-export function SiteHeader({ siteName }: { siteName: string }) {
+interface SiteHeaderProps {
+  siteName: string;
+  navItems: readonly PublicNavItem[];
+}
+
+export function SiteHeader({ siteName, navItems }: SiteHeaderProps) {
   return (
     <HideOnScrollHeader className={styles.header}>
       <div className={styles.inner}>
@@ -13,7 +18,7 @@ export function SiteHeader({ siteName }: { siteName: string }) {
           {siteName}
         </Link>
         <PublicNavLinks
-          items={PUBLIC_NAV_ITEMS}
+          items={navItems}
           label={SHELL_COPY.mainNav}
           className={styles.nav}
           linkClassName={styles.navLink}

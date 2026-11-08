@@ -1,0 +1,4 @@
+/* Wider than the confirm dialogs: it holds a search box and a scrollable list. */
+.pickerDialog {
+  width: calc(100% - var(--space-4) * 2);
+}

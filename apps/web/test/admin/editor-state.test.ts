@@ -64,4 +64,51 @@ describe('editor state', () => {
     });
     expect(toOutfitInput(cleared).items[0]).not.toHaveProperty('subtitle');
   });
+
+  describe('collection memberships', () => {
+    const withCollections = (ids: string[]) =>
+      fromAdminOutfit(makeAdminOutfit((outfit) => (outfit.collectionIds = ids)));
+
+    it('loads the memberships and starts clean', () => {
+      const state = withCollections(['c1', 'c2']);
+      expect(state.collectionIds).toEqual(['c1', 'c2']);
+      expect(isDirty(state)).toBe(false);
+      expect(fromAdminOutfit(makeAdminOutfit()).collectionIds).toEqual([]);
+    });
+
+    it('leaves collectionIds out of the input until they change, so a stale editor cannot overwrite them', () => {
+      const state = withCollections(['c1']);
+      expect(toOutfitInput(state)).not.toHaveProperty('collectionIds');
+      const changed = editorReducer(state, { type: 'collections', ids: ['c1', 'c2'] });
+      expect(toOutfitInput(changed).collectionIds).toEqual(['c1', 'c2']);
+    });
+
+    it('sends an empty list when every membership was removed', () => {
+      const cleared = editorReducer(withCollections(['c1']), { type: 'collections', ids: [] });
+      expect(toOutfitInput(cleared).collectionIds).toEqual([]);
+    });
+
+    it('treats a reorder of the same ids as no change', () => {
+      const state = editorReducer(withCollections(['c1', 'c2']), { type: 'collections', ids: ['c2', 'c1'] });
+      expect(isDirty(state)).toBe(false);
+      expect(toOutfitInput(state)).not.toHaveProperty('collectionIds');
+    });
+
+    it('becomes dirty on a change and clean again after saved', () => {
+      let state = editorReducer(withCollections([]), { type: 'collections', ids: ['c1'] });
+      expect(isDirty(state)).toBe(true);
+      state = editorReducer(state, { type: 'saved', status: state.status, snapshot: snapshotOf(state) });
+      expect(isDirty(state)).toBe(false);
+      expect(toOutfitInput(state)).not.toHaveProperty('collectionIds');
+    });
+
+    it('keeps a change made while the save was in flight unsaved and still sendable', () => {
+      const sent = editorReducer(withCollections([]), { type: 'collections', ids: ['c1'] });
+      const snapshot = snapshotOf(sent);
+      const later = editorReducer(sent, { type: 'collections', ids: ['c1', 'c2'] });
+      const state = editorReducer(later, { type: 'saved', status: later.status, snapshot });
+      expect(isDirty(state)).toBe(true);
+      expect(toOutfitInput(state).collectionIds).toEqual(['c1', 'c2']);
+    });
+  });
 });

@@ -19,7 +19,7 @@ export function SettingsListingFields({ values, errors, onChange }: SettingsList
     <>
       <AdminFormField
         id="settings-looks-page-size"
-        label="Số outfit mỗi trang (trang Tất cả outfit)"
+        label="Số mục mỗi trang (Tất cả outfit và Bộ sưu tập)"
         hint={DEFAULT_HINT}
         error={errors.looksPageSize}
       >

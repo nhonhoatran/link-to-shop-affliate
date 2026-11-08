@@ -24,6 +24,12 @@ export const SHELL_COPY = {
   skipLink: 'Bỏ qua tới nội dung',
   mainNav: 'Điều hướng chính',
   footerNav: 'Điều hướng chân trang',
+  announcement: 'Thông báo',
+  socialLinks: 'Mạng xã hội',
+} as const;
+
+export const SITE_META_COPY = {
+  fallbackDescription: (siteName: string) => `Gợi ý phối đồ và outfit mới từ ${siteName}.`,
 } as const;
 
 export const LOOKS_PAGE_COPY = {

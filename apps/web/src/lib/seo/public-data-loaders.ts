@@ -17,10 +17,10 @@ import { getWebEnv } from '@/lib/web-env';
  * Safety net only: pages are refreshed on demand through /api/revalidate (revalidatePath);
  * this bounds staleness if that call is ever lost. Set with PUBLIC_REVALIDATE_SECONDS.
  */
-const safetyRevalidate = () => ({ revalidate: getWebEnv().PUBLIC_REVALIDATE_SECONDS });
+export const safetyRevalidate = () => ({ revalidate: getWebEnv().PUBLIC_REVALIDATE_SECONDS });
 
 /** Returns null only for an API 404; every other failure propagates to the error boundary. */
-const nullOnNotFound = async <T>(request: Promise<T>): Promise<T | null> => {
+export const nullOnNotFound = async <T>(request: Promise<T>): Promise<T | null> => {
   try {
     return await request;
   } catch (error) {

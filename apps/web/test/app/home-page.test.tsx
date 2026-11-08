@@ -1,19 +1,16 @@
 import { render } from '@testing-library/react';
-import { samplePublicOutfit } from '@under30ss/shared/fixtures';
+import { DEFAULT_HOME_CONTENT, type ResolvedHomeSection } from '@under30ss/shared';
+import { sampleOutfitCards, samplePublicOutfit } from '@under30ss/shared/fixtures';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import HomePage from '@/app/(public)/page';
+import HomePage, { generateMetadata } from '@/app/(public)/page';
 
-const { getFeaturedOutfit, getPublicSettings } = vi.hoisted(() => ({
-  getFeaturedOutfit: vi.fn(),
+const { getHomePage, getPublicSettings } = vi.hoisted(() => ({
+  getHomePage: vi.fn(),
   getPublicSettings: vi.fn(),
 }));
 
-vi.mock('@/components/public/related-outfits-section', () => ({
-  RelatedOutfitsSection: ({ count, excludeSlug }: { count: number; excludeSlug?: string }) => (
-    <div data-testid="related" data-count={count} data-exclude={excludeSlug ?? ''} />
-  ),
-}));
-vi.mock('@/lib/seo/public-data-loaders', () => ({ getFeaturedOutfit, getPublicSettings }));
+vi.mock('@/lib/seo/public-data-loaders', () => ({ getPublicSettings }));
+vi.mock('@/lib/seo/public-home-loaders', () => ({ getHomePage }));
 
 const settings = {
   siteName: 'Shop',
@@ -24,6 +21,16 @@ const settings = {
   relatedOutfitsCount: 5,
 };
 
+// What the API resolves for the built-in default layout when the database has no published layout.
+const defaultSections = (): ResolvedHomeSection[] => {
+  const [lookbook, outfits] = DEFAULT_HOME_CONTENT;
+  if (lookbook?.type !== 'FeaturedLookbook' || outfits?.type !== 'OutfitList') throw new Error('unexpected default layout');
+  return [
+    { ...lookbook, data: { outfit: samplePublicOutfit } },
+    { ...outfits, data: { tabs: [{ key: 'latest', href: '/looks', items: sampleOutfitCards }] } },
+  ];
+};
+
 beforeAll(() => {
   vi.stubEnv('API_INTERNAL_URL', 'http://api.test:4000');
   vi.stubEnv('SITE_URL', 'https://shop.example.test');
@@ -32,26 +39,39 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  getFeaturedOutfit.mockReset();
+  getHomePage.mockReset();
   getPublicSettings.mockReset().mockResolvedValue(settings);
 });
 
 describe('/', () => {
-  it('renders the featured lookbook with the related section that excludes it', async () => {
-    getFeaturedOutfit.mockResolvedValue(samplePublicOutfit);
+  it('renders the default layout as the featured lookbook, then "Outfit khác" with a link to all looks', async () => {
+    getHomePage.mockResolvedValue({ source: 'default', sections: defaultSections() });
     const { container } = render(await HomePage());
     expect(container.querySelectorAll('h1')).toHaveLength(1);
+    expect(container.querySelector('h1')).toHaveTextContent('Shop title');
     expect(container.querySelector('[data-lookbook]')).not.toBeNull();
-    const related = container.querySelector('[data-testid="related"]');
-    expect(related).toHaveAttribute('data-count', '5');
-    expect(related).toHaveAttribute('data-exclude', samplePublicOutfit.slug);
+    expect(container.querySelector('[data-lookbook] h2')).toHaveTextContent(samplePublicOutfit.title);
+    const heading = [...container.querySelectorAll('h2')].find((h) => h.textContent === 'Outfit khác');
+    expect(heading).toBeDefined();
+    expect(container.querySelector('a[href="/looks"]')).toHaveTextContent('Xem tất cả');
+    expect(container.querySelector('script[type="application/ld+json"]')).not.toBeNull();
   });
 
-  it('keeps the empty message and still offers the outfit list when nothing is featured', async () => {
-    getFeaturedOutfit.mockResolvedValue(null);
+  it('keeps the empty message when the API returns no sections', async () => {
+    getHomePage.mockResolvedValue({ source: 'default', sections: [] });
     const { container } = render(await HomePage());
     expect(container.querySelector('[data-lookbook]')).toBeNull();
     expect(container.querySelector('h1')).toHaveTextContent('Chưa có outfit nào');
-    expect(container.querySelector('[data-testid="related"]')).toHaveAttribute('data-exclude', '');
+  });
+
+  it('lets a loader failure propagate to the error boundary', async () => {
+    getHomePage.mockRejectedValue(new Error('down'));
+    await expect(HomePage()).rejects.toThrow('down');
+  });
+
+  it('uses the site metadata', async () => {
+    const metadata = await generateMetadata();
+    expect(metadata.title).toBe('Shop title');
+    expect(metadata.alternates?.canonical).toBe('https://shop.example.test/');
   });
 });

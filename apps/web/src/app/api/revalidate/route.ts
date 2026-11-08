@@ -1,7 +1,7 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import {
-  PUBLIC_SETTINGS_CACHE_TAG,
+  PUBLIC_CACHE_TAGS,
   REVALIDATE_SECRET_HEADER,
   revalidateRequestSchema,
   type RevalidateResponse,
@@ -38,18 +38,20 @@ export async function POST(request: Request): Promise<Response> {
   }
   const parsed = revalidateRequestSchema.safeParse(body);
   if (!parsed.success) {
-    return errorResponse(400, 'VALIDATION_ERROR', 'Body must be { paths: string[] } (each starting with "/") or { scope: "all" }');
+    return errorResponse(400, 'VALIDATION_ERROR', 'Body must be { paths?: string[] (each starting with "/"), tags?: known cache tags[] } with at least one entry, or { scope: "all" }');
   }
 
   if ('scope' in parsed.data) {
     // Site-wide change (e.g. settings): the root layout covers every page beneath it.
     revalidatePath('/', 'layout');
-    revalidateTag(PUBLIC_SETTINGS_CACHE_TAG, { expire: 0 });
+    for (const tag of Object.values(PUBLIC_CACHE_TAGS)) revalidateTag(tag, { expire: 0 });
     const result: RevalidateResponse = { revalidated: ['/'] };
     return Response.json(result);
   }
 
-  for (const path of parsed.data.paths) revalidatePath(path);
-  const result: RevalidateResponse = { revalidated: parsed.data.paths };
+  const { paths = [], tags = [] } = parsed.data;
+  for (const path of paths) revalidatePath(path);
+  for (const tag of tags) revalidateTag(tag, { expire: 0 });
+  const result: RevalidateResponse = { revalidated: [...paths, ...tags] };
   return Response.json(result);
 }

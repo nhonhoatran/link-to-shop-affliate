@@ -55,7 +55,7 @@
 /* Matches --bp-md. */
 @media (min-width: 768px) {
   .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--outfit-columns-md, 3), minmax(0, 1fr));
     gap: var(--space-5);
   }
 }
@@ -63,7 +63,7 @@
 /* Matches --bp-lg. */
 @media (min-width: 1024px) {
   .grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--outfit-columns, 4), minmax(0, 1fr));
   }
 }
 

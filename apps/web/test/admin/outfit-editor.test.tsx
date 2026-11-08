@@ -165,3 +165,51 @@ describe('OutfitEditor: error tabs', () => {
     expect(screen.getByLabelText('Tên outfit')).toHaveFocus();
   });
 });
+
+describe('OutfitEditor: collections', () => {
+  const inCollections = (ids: string[]) => makeAdminOutfit((outfit) => (outfit.collectionIds = ids));
+  const collectionBody = (name: string) => jsonResponse({ id: 'c1', slug: 'c1', name, status: 'published', order: 0, usage: {} });
+
+  it('shows the current collections by name and does not send them when untouched', async () => {
+    const user = userEvent.setup();
+    fetchMock.mockResolvedValueOnce(collectionBody('Streetwear')).mockResolvedValue(jsonResponse({}));
+    render(<OutfitEditor initial={inCollections(['c1'])} />);
+
+    const chips = await screen.findByRole('list', { name: 'Bộ sưu tập đã chọn' });
+    await waitFor(() => expect(chips).toHaveTextContent('Streetwear'));
+    expect(fetchMock.mock.calls[0]![0]).toBe('/api/admin/collections/c1');
+
+    await user.click(screen.getByRole('button', { name: 'Lưu' }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    expect(JSON.parse(fetchMock.mock.calls[1]![1].body)).not.toHaveProperty('collectionIds');
+  });
+
+  it('marks the editor unsaved after removing a collection and saves the new list', async () => {
+    const user = userEvent.setup();
+    fetchMock.mockResolvedValueOnce(collectionBody('Streetwear')).mockResolvedValue(jsonResponse({}));
+    render(<OutfitEditor initial={inCollections(['c1'])} />);
+
+    await user.click(await screen.findByRole('button', { name: 'Bỏ Streetwear' }));
+    expect(screen.getByText('Có thay đổi chưa lưu')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Lưu' }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    expect(fetchMock.mock.calls[1]![1].method).toBe('PUT');
+    expect(JSON.parse(fetchMock.mock.calls[1]![1].body).collectionIds).toEqual([]);
+    await waitFor(() => expect(screen.queryByText('Có thay đổi chưa lưu')).not.toBeInTheDocument());
+  });
+
+  it('does not call the collections API for an outfit without collections until the field is used', async () => {
+    const user = userEvent.setup();
+    fetchMock.mockResolvedValue(
+      jsonResponse({ items: [{ id: 'c9', name: 'Mùa hè', status: 'published', slug: 'm', order: 0, outfitCount: 0, coverImageUrl: null, updatedAt: '' }], total: 1, page: 1, size: 20 }),
+    );
+    render(<OutfitEditor initial={inCollections([])} />);
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    await user.click(screen.getByLabelText('Bộ sưu tập'));
+    await user.click(await screen.findByRole('checkbox', { name: /Mùa hè/ }));
+    expect(fetchMock.mock.calls[0]![0]).toBe('/api/admin/collections?page=1&size=20');
+    expect(screen.getByText('Có thay đổi chưa lưu')).toBeInTheDocument();
+  });
+});

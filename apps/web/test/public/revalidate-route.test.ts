@@ -1,4 +1,4 @@
-import { PUBLIC_SETTINGS_CACHE_TAG, REVALIDATE_SECRET_HEADER } from '@under30ss/shared';
+import { PUBLIC_CACHE_TAGS, REVALIDATE_SECRET_HEADER } from '@under30ss/shared';
 
 const { revalidatePath, revalidateTag } = vi.hoisted(() => ({ revalidatePath: vi.fn(), revalidateTag: vi.fn() }));
 vi.mock('next/cache', () => ({ revalidatePath, revalidateTag }));
@@ -46,7 +46,25 @@ describe('POST /api/revalidate', () => {
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ revalidated: ['/'] });
     expect(revalidatePath.mock.calls).toEqual([['/', 'layout']]);
-    expect(revalidateTag.mock.calls).toEqual([[PUBLIC_SETTINGS_CACHE_TAG, { expire: 0 }]]);
+    expect(revalidateTag.mock.calls).toEqual(
+      Object.values(PUBLIC_CACHE_TAGS).map((tag) => [tag, { expire: 0 }]),
+    );
+    expect(revalidateTag).toHaveBeenCalledTimes(3);
+  });
+
+  it('expires only the requested tags and touches no path', async () => {
+    const res = await call({ secret: SECRET, body: { tags: ['public-home'] } });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ revalidated: ['public-home'] });
+    expect(revalidateTag.mock.calls).toEqual([['public-home', { expire: 0 }]]);
+    expect(revalidatePath).not.toHaveBeenCalled();
+  });
+
+  it('handles paths and tags in one request', async () => {
+    const res = await call({ secret: SECRET, body: { paths: ['/collections'], tags: ['public-collections', 'public-home'] } });
+    expect(res.status).toBe(200);
+    expect(revalidatePath.mock.calls).toEqual([['/collections']]);
+    expect(revalidateTag.mock.calls.map(([tag]) => tag)).toEqual(['public-collections', 'public-home']);
   });
 
   it("rejects scope 'all' with the wrong secret and does not revalidate", async () => {
@@ -84,9 +102,13 @@ describe('POST /api/revalidate', () => {
     ['empty paths', { body: { paths: [] } }],
     ['relative path', { body: { paths: ['look/a'] } }],
     ['unknown scope', { body: { scope: 'some' } }],
+    ['unknown tag', { body: { tags: ['x'] } }],
+    ['known tag mixed with an unknown one', { body: { tags: ['public-home', 'x'] } }],
+    ['empty paths and tags', { body: { paths: [], tags: [] } }],
   ])('rejects %s with 400', async (_name, payload) => {
     const res = await call({ secret: SECRET, ...payload });
     expect(res.status).toBe(400);
     expect(revalidatePath).not.toHaveBeenCalled();
+    expect(revalidateTag).not.toHaveBeenCalled();
   });
 });

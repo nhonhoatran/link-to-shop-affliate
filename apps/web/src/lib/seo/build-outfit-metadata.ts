@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { PublicOutfitDto, PublicSettingsDto } from '@under30ss/shared';
+import { SITE_META_COPY } from '@/components/public/public-copy';
 import { absoluteUrl, outfitPath } from './absolute-url';
 
 interface SiteMetadataInput {
@@ -58,11 +59,14 @@ export const buildOutfitMetadata = ({ outfit, settings, siteUrl }: OutfitMetadat
     },
   );
 
-/** Used on `/` when no outfit is featured. */
+export const siteDescription = (settings: PublicSettingsDto): string =>
+  settings.seoDescription.trim() || SITE_META_COPY.fallbackDescription(settings.siteName);
+
+/** Used on `/`. */
 export const buildSiteMetadata = ({ settings, siteUrl }: SiteMetadataInput): Metadata =>
   buildCommon(
     settings.seoTitle,
-    settings.seoDescription,
+    siteDescription(settings),
     absoluteUrl(siteUrl, '/'),
     settings.siteName,
     settings.ogImageUrl ? { url: absoluteUrl(siteUrl, settings.ogImageUrl), alt: settings.siteName } : null,

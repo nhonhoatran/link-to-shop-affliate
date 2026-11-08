@@ -1,6 +1,6 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MotionProvider } from '@/components/motion/motion-provider';
 import { AdminToastProvider } from '@/components/admin/shell/admin-toast-provider';
 import { useAdminToast } from '@/components/admin/shell/use-admin-toast';
@@ -19,11 +19,23 @@ function Trigger() {
   );
 }
 
+const onUndo = vi.fn();
+
+function ActionTrigger() {
+  const toast = useAdminToast();
+  return (
+    <button type="button" onClick={() => toast.success('Đã đăng', { action: { label: 'Hoàn tác', onClick: onUndo } })}>
+      publish
+    </button>
+  );
+}
+
 const renderWithProvider = () =>
   render(
     <MotionProvider>
       <AdminToastProvider>
         <Trigger />
+        <ActionTrigger />
       </AdminToastProvider>
     </MotionProvider>,
   );
@@ -63,5 +75,42 @@ describe('admin toast', () => {
     render(<Trigger />);
     await user.click(screen.getByRole('button', { name: 'ok' }));
     expect(screen.queryByText('Đã lưu outfit')).not.toBeInTheDocument();
+  });
+
+  describe('with an action', () => {
+    beforeEach(() => onUndo.mockReset());
+
+    it('runs the action once and closes the toast', async () => {
+      const user = userEvent.setup();
+      renderWithProvider();
+      await user.click(screen.getByRole('button', { name: 'publish' }));
+      expect(screen.getByRole('status')).toHaveTextContent('Đã đăng');
+      await user.click(within(screen.getByRole('status')).getByRole('button', { name: 'Hoàn tác' }));
+      expect(onUndo).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(screen.getByRole('status')).toBeEmptyDOMElement());
+    });
+
+    it('outlives a plain toast and stays while the pointer is on it', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      renderWithProvider();
+      await user.click(screen.getByRole('button', { name: 'publish' }));
+      await act(async () => {
+        vi.advanceTimersByTime(5000);
+      });
+      expect(screen.getByRole('status')).toHaveTextContent('Đã đăng');
+
+      await user.hover(within(screen.getByRole('status')).getByRole('button', { name: 'Hoàn tác' }));
+      await act(async () => {
+        vi.advanceTimersByTime(30000);
+      });
+      expect(screen.getByRole('status')).toHaveTextContent('Đã đăng');
+
+      await user.unhover(within(screen.getByRole('status')).getByRole('button', { name: 'Hoàn tác' }));
+      await act(async () => {
+        vi.advanceTimersByTime(10100);
+      });
+      await waitFor(() => expect(screen.getByRole('status')).not.toHaveTextContent('Đã đăng'));
+    });
   });
 });

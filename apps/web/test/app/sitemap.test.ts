@@ -2,8 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import sitemap from '@/app/sitemap';
 import type * as WebEnvModule from '@/lib/web-env';
 
-const { getOutfitSlugs } = vi.hoisted(() => ({ getOutfitSlugs: vi.fn() }));
+const { getOutfitSlugs, getCollectionSlugs } = vi.hoisted(() => ({ getOutfitSlugs: vi.fn(), getCollectionSlugs: vi.fn() }));
 vi.mock('@/lib/seo/public-data-loaders', () => ({ getOutfitSlugs }));
+vi.mock('@/lib/seo/public-collection-loaders', () => ({ getCollectionSlugs }));
 // getWebEnv memoises process.env for the life of the module. Passing a copy skips that cache but still runs the real
 // schema, so each test sees the env it stubbed without resetting modules.
 vi.mock('@/lib/web-env', async (importOriginal) => {
@@ -13,6 +14,7 @@ vi.mock('@/lib/web-env', async (importOriginal) => {
 
 beforeEach(() => {
   getOutfitSlugs.mockReset();
+  getCollectionSlugs.mockReset().mockResolvedValue({ items: [] });
   vi.stubEnv('API_INTERNAL_URL', 'http://api.test:4000');
   vi.stubEnv('MEDIA_PUBLIC_BASE_URL', '/media');
   vi.stubEnv('REVALIDATE_SECRET', 'test-secret-0123456789');
@@ -51,5 +53,32 @@ describe('sitemap', () => {
       'https://shop.example.test/',
       'https://shop.example.test/looks',
     ]);
+  });
+});
+
+describe('sitemap collections', () => {
+  it('adds the index and every published collection, encoding slugs', async () => {
+    vi.stubEnv('SITE_URL', 'https://shop.example.test');
+    getOutfitSlugs.mockResolvedValue({ items: [] });
+    getCollectionSlugs.mockResolvedValue({
+      items: [
+        { slug: 'streetwear', updatedAt: '2026-11-03T00:00:00.000Z' },
+        { slug: 'mùa hè', updatedAt: '2026-11-04T00:00:00.000Z' },
+      ],
+    });
+    expect(await sitemap()).toEqual([
+      { url: 'https://shop.example.test/' },
+      { url: 'https://shop.example.test/looks' },
+      { url: 'https://shop.example.test/collections' },
+      { url: 'https://shop.example.test/collections/streetwear', lastModified: '2026-11-03T00:00:00.000Z' },
+      { url: 'https://shop.example.test/collections/m%C3%B9a%20h%C3%A8', lastModified: '2026-11-04T00:00:00.000Z' },
+    ]);
+  });
+
+  it('lets a collections API failure reach the caller', async () => {
+    vi.stubEnv('SITE_URL', 'https://shop.example.test');
+    getOutfitSlugs.mockResolvedValue({ items: [] });
+    getCollectionSlugs.mockRejectedValue(new Error('boom'));
+    await expect(sitemap()).rejects.toThrow('boom');
   });
 });

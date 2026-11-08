@@ -1,0 +1,67 @@
+.rail {
+  position: relative;
+  min-width: 0;
+}
+
+.track {
+  position: relative;
+  display: flex;
+  gap: var(--client-rail-gap);
+  margin: 0;
+  padding: 0 var(--client-rail-peek) var(--space-2) 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  list-style: none;
+}
+
+.track > * {
+  flex: 0 0 var(--client-rail-card-width);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.button {
+  position: absolute;
+  top: 40%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--client-rail-button-size);
+  height: var(--client-rail-button-size);
+  padding: 0;
+  border: 1px solid var(--client-border);
+  border-radius: var(--client-radius-pill);
+  background: var(--client-surface);
+  box-shadow: var(--client-shadow-soft);
+  color: var(--client-ink);
+  cursor: pointer;
+  transition: opacity var(--duration-fast) var(--easing-standard);
+}
+
+.button:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.previous {
+  inset-inline-start: var(--space-2);
+}
+
+.next {
+  inset-inline-end: var(--space-2);
+}
+
+/* Touch screens swipe; the buttons are for pointer and keyboard users. */
+@media (hover: none) and (pointer: coarse) {
+  .button {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+}

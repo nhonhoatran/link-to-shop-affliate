@@ -5,6 +5,7 @@ import type { EditorAction, EditorState } from '@/hooks/admin/editor-state';
 import { AdminFormField } from './admin-form-field';
 import { AdminPanel } from './admin-panel';
 import { MediaDropzone } from './media-dropzone';
+import { CollectionPicker } from './pickers/collection-picker';
 import type { FieldErrors } from './validation-messages';
 
 interface OutfitDetailsFormProps {
@@ -45,6 +46,11 @@ export function OutfitDetailsForm({ state, errors, dispatch }: OutfitDetailsForm
           />
         )}
       </AdminFormField>
+      <CollectionPicker
+        value={state.collectionIds}
+        error={errors.collectionIds}
+        onChange={(ids) => dispatch({ type: 'collections', ids })}
+      />
       <MediaDropzone
         id="outfit-model-image"
         kind="model"

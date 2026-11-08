@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { HOME_PATH } from './home-path';
 import type { PublicNavItem } from './public-nav-items';
 
 interface PublicNavLinksProps {
@@ -10,6 +11,10 @@ interface PublicNavLinksProps {
   className?: string;
   linkClassName?: string;
 }
+
+/** Sections such as /collections/<slug> keep their parent link highlighted; "/" only matches itself. */
+const isCurrent = (pathname: string, href: string): boolean =>
+  pathname === href || (href !== HOME_PATH && pathname.startsWith(`${href}/`));
 
 export function PublicNavLinks({ items, label, className, linkClassName }: PublicNavLinksProps) {
   const pathname = usePathname();
@@ -20,7 +25,7 @@ export function PublicNavLinks({ items, label, className, linkClassName }: Publi
           key={item.href}
           href={item.href}
           className={linkClassName}
-          aria-current={pathname === item.href ? 'page' : undefined}
+          aria-current={isCurrent(pathname, item.href) ? 'page' : undefined}
         >
           {item.label}
         </Link>

@@ -30,6 +30,26 @@ describe('OutfitCardGrid', () => {
     expect(images.every((img) => img.getAttribute('alt') === '')).toBe(true);
   });
 
+  it('sets the desktop column count, capped for the medium layout, and defaults to four', () => {
+    const grid = (columns?: number) => {
+      const { container, unmount } = render(<OutfitCardGrid items={items} headingLevel="h2" columnsDesktop={columns} />);
+      const list = container.querySelector('ul') as HTMLElement;
+      const values = [list.style.getPropertyValue('--outfit-columns'), list.style.getPropertyValue('--outfit-columns-md')];
+      unmount();
+      return values;
+    };
+    expect(grid()).toEqual([String(OUTFIT_GRID_DESKTOP_COLUMNS), '3']);
+    expect(grid(2)).toEqual(['2', '2']);
+    expect(grid(6)).toEqual(['6', '3']);
+  });
+
+  it('treats the first row as the configured number of columns', () => {
+    const many = Array.from({ length: 5 }, (_, i) => ({ ...items[0]!, slug: `c${i}` }));
+    const { container } = render(<OutfitCardGrid items={many} headingLevel="h2" columnsDesktop={2} />);
+    const loading = [...container.querySelectorAll('img')].map((img) => img.getAttribute('loading'));
+    expect(loading).toEqual(['eager', 'eager', 'lazy', 'lazy', 'lazy']);
+  });
+
   it('loads only the first row eagerly and raises its priority on request', () => {
     const many = Array.from({ length: OUTFIT_GRID_DESKTOP_COLUMNS + 2 }, (_, i) => ({
       slug: `s${i}`,

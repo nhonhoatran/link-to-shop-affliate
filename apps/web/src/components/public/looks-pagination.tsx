@@ -7,14 +7,16 @@ import styles from './looks-pagination.module.css';
 interface LooksPaginationProps {
   page: number;
   totalPages: number;
+  /** Defaults to the /looks URLs. */
+  pathForPage?: (page: number) => string;
 }
 
-export function LooksPagination({ page, totalPages }: LooksPaginationProps) {
+export function LooksPagination({ page, totalPages, pathForPage = looksPagePath }: LooksPaginationProps) {
   if (totalPages <= 1) return null;
   return (
     <nav aria-label={LOOKS_PAGE_COPY.pagination} className={styles.nav}>
       {page > 1 ? (
-        <Link href={looksPagePath(page - 1)} rel="prev" className={`${styles.link} ${styles.edge}`}>
+        <Link href={pathForPage(page - 1)} rel="prev" className={`${styles.link} ${styles.edge}`}>
           {LOOKS_PAGE_COPY.previous}
         </Link>
       ) : null}
@@ -26,7 +28,7 @@ export function LooksPagination({ page, totalPages }: LooksPaginationProps) {
         ) : (
           <Link
             key={entry}
-            href={looksPagePath(entry)}
+            href={pathForPage(entry)}
             className={styles.link}
             aria-current={entry === page ? 'page' : undefined}
             aria-label={LOOKS_PAGE_COPY.pageLabel(entry)}
@@ -36,7 +38,7 @@ export function LooksPagination({ page, totalPages }: LooksPaginationProps) {
         ),
       )}
       {page < totalPages ? (
-        <Link href={looksPagePath(page + 1)} rel="next" className={`${styles.link} ${styles.edge}`}>
+        <Link href={pathForPage(page + 1)} rel="next" className={`${styles.link} ${styles.edge}`}>
           {LOOKS_PAGE_COPY.next}
         </Link>
       ) : null}

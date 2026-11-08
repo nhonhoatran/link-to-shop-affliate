@@ -22,6 +22,9 @@ export interface EditorState {
   modelImage: ImageWithUrl;
   status: OutfitStatus;
   featured: boolean;
+  collectionIds: string[];
+  /** Memberships as loaded or last saved; sent on save only when they differ. */
+  initialCollectionIds: string[];
   items: EditorItem[];
   selectedId: string | null;
   /** Snapshot of the last saved content (see snapshotOf), compared to detect unsaved changes. */
@@ -39,6 +42,7 @@ export type EditorAction =
   | { type: 'removeItem'; id: string }
   | { type: 'moveItem'; id: string; side: Side; index: number }
   | { type: 'select'; id: string | null }
+  | { type: 'collections'; ids: string[] }
   | { type: 'featured'; value: boolean }
   | { type: 'saved'; status: OutfitStatus; snapshot: string };
 
@@ -52,9 +56,14 @@ const imageRef = ({ key, width, height }: ImageWithUrl) => ({ key, width, height
 export const itemsOnSide = (items: readonly EditorItem[], side: Side): EditorItem[] =>
   items.filter((item) => item.side === side).sort((a, b) => a.order - b.order);
 
+const sameIds = (a: readonly string[], b: readonly string[]): boolean =>
+  a.length === b.length && a.every((id) => b.includes(id));
+
 /**
  * `featured` is always false here: the API ignores it on update (only the /featured endpoint changes it),
  * and the shared input schema still requires the field.
+ * `collectionIds` is sent only when changed here: absent means "keep", so a stale editor cannot overwrite
+ * memberships edited from a collection page in the meantime.
  */
 export const toOutfitInput = (state: EditorState, status: OutfitStatus = state.status): OutfitInput => ({
   slug: state.slug,
@@ -63,6 +72,7 @@ export const toOutfitInput = (state: EditorState, status: OutfitStatus = state.s
   modelImage: imageRef(state.modelImage),
   status,
   featured: false,
+  ...(sameIds(state.collectionIds, state.initialCollectionIds) ? {} : { collectionIds: state.collectionIds }),
   items: state.items.map((item) => ({
     id: item.id,
     name: item.name,
@@ -77,8 +87,15 @@ export const toOutfitInput = (state: EditorState, status: OutfitStatus = state.s
 });
 
 /** Featured is saved through its own endpoint, so it is not part of the snapshot and never makes the editor dirty. */
-export const snapshotOf = (state: EditorState, status: OutfitStatus = state.status): string =>
-  JSON.stringify(toOutfitInput(state, status));
+export const snapshotOf = (state: EditorState, status: OutfitStatus = state.status): string => {
+  // Memberships are always part of the snapshot (sorted, last) even when toOutfitInput leaves them out.
+  const { collectionIds: _sent, ...input } = toOutfitInput(state, status);
+  return JSON.stringify({ ...input, collectionIds: [...state.collectionIds].sort() });
+};
+
+/** Memberships that were part of a saved snapshot, so edits made while the request was in flight stay unsaved. */
+const collectionIdsOfSnapshot = (snapshot: string): string[] =>
+  (JSON.parse(snapshot) as { collectionIds: string[] }).collectionIds;
 
 export const isDirty = (state: EditorState): boolean => snapshotOf(state) !== state.saved;
 
@@ -91,6 +108,8 @@ export const fromAdminOutfit = (dto: AdminOutfitDto): EditorState => {
     modelImage: dto.modelImage,
     status: dto.status,
     featured: dto.featured,
+    collectionIds: dto.collectionIds ?? [],
+    initialCollectionIds: dto.collectionIds ?? [],
     items: dto.items.map((item) => ({
       id: item.id,
       name: item.name,
@@ -164,9 +183,16 @@ export const editorReducer = (state: EditorState, action: EditorAction): EditorS
       return { ...state, items: moveItem(state.items, action.id, action.side, action.index) };
     case 'select':
       return { ...state, selectedId: action.id };
+    case 'collections':
+      return { ...state, collectionIds: action.ids };
     case 'featured':
       return { ...state, featured: action.value };
     case 'saved':
-      return { ...state, status: action.status, saved: action.snapshot };
+      return {
+        ...state,
+        status: action.status,
+        saved: action.snapshot,
+        initialCollectionIds: collectionIdsOfSnapshot(action.snapshot),
+      };
   }
 };

@@ -52,4 +52,9 @@ describe('buildSiteMetadata', () => {
     expect(meta.openGraph).not.toHaveProperty('images');
     expect(meta.twitter).toMatchObject({ card: 'summary' });
   });
+
+  it('falls back to a generated description when the site one is blank', () => {
+    const meta = buildSiteMetadata({ settings: { ...settings, seoDescription: '  ' }, siteUrl: SITE });
+    expect(meta.description).toContain('Site X');
+  });
 });

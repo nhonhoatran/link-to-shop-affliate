@@ -64,3 +64,75 @@
     padding-inline: var(--space-6);
   }
 }
+
+.extra {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: var(--client-container-max);
+  margin-inline: auto;
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+.columns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.columnTitle {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.linkList,
+.social {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.linkList .navLink {
+  padding-inline: 0;
+}
+
+.social {
+  flex-flow: row wrap;
+  gap: var(--space-2);
+}
+
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--client-tap-target);
+  padding-inline: var(--space-4);
+  border: 1px solid var(--client-border);
+  border-radius: var(--client-radius-pill);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--client-ink);
+  text-decoration: none;
+}
+
+.socialLink:hover {
+  background: var(--client-bg);
+}
+
+/* Matches --bp-md: columns sit side by side from tablet width. */
+@media (min-width: 768px) {
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--client-footer-column-min), 1fr));
+    gap: var(--space-5);
+  }
+}
+
+/* Matches --bp-lg: the page gutter widens at 1024px, same as PublicPage. */
+@media (min-width: 1024px) {
+  .extra {
+    padding-inline: var(--space-6);
+  }
+}

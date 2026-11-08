@@ -1,0 +1,43 @@
+.shell {
+  min-width: 0;
+}
+
+.shell + .shell {
+  margin-top: var(--client-section-gap);
+}
+
+.title {
+  margin: 0 0 var(--client-section-heading-gap);
+  font-size: var(--page-title-size);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--client-ink);
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-5);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--client-tap-target);
+  padding-inline: var(--space-5);
+  border-radius: var(--client-radius-pill);
+  background: var(--client-ink);
+  font-size: var(--body-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--client-on-ink);
+  text-decoration: none;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

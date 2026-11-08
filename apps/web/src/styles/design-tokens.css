@@ -73,6 +73,8 @@
   --easing-out: cubic-bezier(0.22, 1, 0.36, 1);
   --motion-distance: 16px;
   --toast-duration: 4000ms;
+  /* Toasts with an action (e.g. "Hoàn tác") stay longer so the action can be reached. */
+  --toast-action-duration: 10000ms;
   --duration-shimmer: 1400ms;
 
   /*
@@ -99,5 +101,7 @@
   --admin-width-narrow: 512px;
   --admin-width-dialog: 384px;
   --admin-preview-mobile-width: 384px;
+  /* Virtual viewport width of the home editor preview pane (scaled down to fit). */
+  --admin-preview-desktop-width: 1280px;
   --admin-control-height: 44px;
 }

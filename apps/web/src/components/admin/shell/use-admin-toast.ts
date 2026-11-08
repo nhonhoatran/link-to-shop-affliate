@@ -2,8 +2,18 @@
 
 import { createContext, useContext } from 'react';
 
+export interface AdminToastAction {
+  label: string;
+  onClick: () => void;
+}
+
+export interface AdminToastOptions {
+  /** A toast with an action stays longer and pauses while hovered or focused. */
+  action?: AdminToastAction;
+}
+
 export interface AdminToastApi {
-  success: (text: string) => void;
+  success: (text: string, options?: AdminToastOptions) => void;
   error: (text: string) => void;
 }
 

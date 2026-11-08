@@ -1,0 +1,16 @@
+/* The frame always shows the public look, so it uses --client-* tokens and ignores the admin theme. */
+.frame {
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  background: var(--client-bg);
+  color: var(--client-ink);
+}
+
+.desktop {
+  width: var(--admin-preview-desktop-width);
+}
+
+.mobile {
+  max-width: var(--admin-preview-mobile-width);
+}

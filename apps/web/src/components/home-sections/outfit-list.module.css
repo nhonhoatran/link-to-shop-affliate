@@ -1,0 +1,60 @@
+.tabList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.tabItem {
+  position: relative;
+}
+
+.tabInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.tabLabel {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--client-tap-target);
+  padding-inline: var(--space-4);
+  border: 1px solid var(--client-border);
+  border-radius: var(--client-radius-pill);
+  background: var(--client-surface);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--client-ink);
+  cursor: pointer;
+}
+
+.tabInput:checked + .tabLabel {
+  border-color: var(--client-ink);
+  background: var(--client-ink);
+  color: var(--client-on-ink);
+}
+
+.tabInput:focus-visible + .tabLabel {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/*
+ * Panels other than the checked tab are hidden. One pair of rules per tab, up to MAX_OUTFIT_LIST_TABS (6).
+ * A browser without :has() drops these rules and shows every panel.
+ */
+.tabs:has(.tabInput) .panel {
+  display: none;
+}
+
+.tabs:has(.tabItem:nth-child(1) > .tabInput:checked) .panel:nth-child(1),
+.tabs:has(.tabItem:nth-child(2) > .tabInput:checked) .panel:nth-child(2),
+.tabs:has(.tabItem:nth-child(3) > .tabInput:checked) .panel:nth-child(3),
+.tabs:has(.tabItem:nth-child(4) > .tabInput:checked) .panel:nth-child(4),
+.tabs:has(.tabItem:nth-child(5) > .tabInput:checked) .panel:nth-child(5),
+.tabs:has(.tabItem:nth-child(6) > .tabInput:checked) .panel:nth-child(6) {
+  display: block;
+}

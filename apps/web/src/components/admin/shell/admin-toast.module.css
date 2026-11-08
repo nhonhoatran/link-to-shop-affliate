@@ -70,3 +70,16 @@
     align-items: stretch;
   }
 }
+
+.action {
+  flex: none;
+  min-height: var(--admin-control-height);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--admin-border-strong);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-surface);
+  color: var(--admin-text);
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
