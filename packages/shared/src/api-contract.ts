@@ -23,6 +23,7 @@ export const API_PATHS = {
     collectionSlugs: '/api/public/collections/slugs',
     collectionBySlug: '/api/public/collections/:slug',
     home: '/api/public/home',
+    newsletter: '/api/public/newsletter',
   },
   admin: {
     outfits: '/api/admin/outfits',
@@ -45,6 +46,8 @@ export const API_PATHS = {
     homePreview: '/api/admin/home/preview',
     homeRevertDraft: '/api/admin/home/revert-draft',
     homeReset: '/api/admin/home/reset',
+    newsletter: '/api/admin/newsletter',
+    newsletterExport: '/api/admin/newsletter/export',
   },
 } as const;
 
@@ -57,6 +60,8 @@ export const apiUrl = {
   adminCollection: (id: string) => `/api/admin/collections/${encodeURIComponent(id)}`,
   adminCollectionMove: (id: string) => `/api/admin/collections/${encodeURIComponent(id)}/move`,
   adminCollectionOutfits: (id: string) => `/api/admin/collections/${encodeURIComponent(id)}/outfits`,
+  adminNewsletterSubscriber: (id: string) => `/api/admin/newsletter/${encodeURIComponent(id)}`,
+  adminNewsletterUnsubscribe: (id: string) => `/api/admin/newsletter/${encodeURIComponent(id)}/unsubscribe`,
   adminCollectionOutfit: (id: string, outfitId: string) =>
     `/api/admin/collections/${encodeURIComponent(id)}/outfits/${encodeURIComponent(outfitId)}`,
 };

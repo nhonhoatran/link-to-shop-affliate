@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { safeHrefSchema } from '../safe-href';
-import { sectionImageSchema, sectionPropsShape } from './section-common-schemas';
+import { eyebrowSchema, sectionImageSchema, sectionPropsShape } from './section-common-schemas';
 
 export const MAX_HERO_SLIDES = 10;
 export const MIN_HERO_AUTOPLAY_SECONDS = 3;
@@ -9,6 +9,7 @@ export const MAX_HERO_AUTOPLAY_SECONDS = 30;
 export const heroSlideSchema = z.object({
   image: sectionImageSchema,
   mobileImage: sectionImageSchema.optional(),
+  eyebrow: eyebrowSchema,
   alt: z.string().max(160),
   heading: z.string().max(80).optional(),
   text: z.string().max(200).optional(),

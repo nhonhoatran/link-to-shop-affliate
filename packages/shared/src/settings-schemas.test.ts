@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { sampleAnnouncementInput } from './fixtures';
-import { DEFAULT_ANNOUNCEMENT, publicSettingsSchema, settingsInputSchema } from './settings-schemas';
+import { sampleAnnouncementInput, sampleNewsletterConsentInput } from './fixtures';
+import {
+  adminSettingsSchema,
+  DEFAULT_ANNOUNCEMENT,
+  DEFAULT_NEWSLETTER_CONSENT,
+  publicSettingsSchema,
+  settingsInputSchema,
+} from './settings-schemas';
 
 const base = { siteName: 'Shop', seoTitle: 'Shop', seoDescription: '' };
 
@@ -86,5 +92,30 @@ describe('publicSettingsSchema', () => {
   it('keeps the chrome fields optional and allows a null announcement', () => {
     expect(publicSettingsSchema.safeParse(publicBase).success).toBe(true);
     expect(publicSettingsSchema.safeParse({ ...publicBase, announcement: null, collectionsNavVisible: true }).success).toBe(true);
+  });
+});
+
+describe('settingsInputSchema newsletterConsent', () => {
+  it('is optional so settings saved before it existed still parse', () => {
+    expect(settingsInputSchema.safeParse(base).success).toBe(true);
+    expect(settingsInputSchema.safeParse({ ...base, newsletterConsent: sampleNewsletterConsentInput }).success).toBe(true);
+    expect(settingsInputSchema.safeParse({ ...base, newsletterConsent: DEFAULT_NEWSLETTER_CONSENT }).success).toBe(true);
+  });
+
+  it.each([
+    [{ text: '' }, 'newsletterConsent.text'],
+    [{ text: '   ' }, 'newsletterConsent.text'],
+    [{ text: 'x'.repeat(1001) }, 'newsletterConsent.text'],
+    [{ text: 'ok', privacyHref: 'javascript:alert(1)' }, 'newsletterConsent.privacyHref'],
+    [{ text: 'ok', privacyLabel: '' }, 'newsletterConsent.privacyLabel'],
+  ])('rejects %j at %s', (newsletterConsent, path) => {
+    const result = settingsInputSchema.safeParse({ ...base, newsletterConsent });
+    expect(result.success ? [] : result.error.issues.map((issue) => issue.path.join('.'))).toEqual([path]);
+  });
+
+  it('reads the version only on the admin DTO', () => {
+    expect(adminSettingsSchema.parse({ ...base, newsletterConsentVersion: null }).newsletterConsentVersion).toBeNull();
+    expect(adminSettingsSchema.parse({ ...base, newsletterConsentVersion: 3 }).newsletterConsentVersion).toBe(3);
+    expect(settingsInputSchema.parse({ ...base, newsletterConsentVersion: 3 })).not.toHaveProperty('newsletterConsentVersion');
   });
 });

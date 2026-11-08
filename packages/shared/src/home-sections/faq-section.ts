@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sectionPropsShape } from './section-common-schemas';
+import { eyebrowSchema, sectionPropsShape } from './section-common-schemas';
 
 export const MAX_FAQ_ITEMS = 30;
 
@@ -12,6 +12,7 @@ export const faqSectionSchema = z.object({
   type: z.literal('Faq'),
   props: z.object({
     ...sectionPropsShape,
+    eyebrow: eyebrowSchema,
     title: z.string().min(1).max(60),
     items: z.array(faqItemSchema).min(1).max(MAX_FAQ_ITEMS),
   }),

@@ -1,9 +1,13 @@
 import { z } from 'zod';
+import { campaignBannerSectionSchema } from './campaign-banner-section';
 import { collectionTilesSectionSchema } from './collection-tiles-section';
 import { commitmentsSectionSchema } from './commitments-section';
 import { faqSectionSchema } from './faq-section';
 import { featuredLookbookSectionSchema } from './featured-lookbook-section';
+import { gallerySectionSchema } from './gallery-section';
 import { heroSliderSectionSchema } from './hero-slider-section';
+import { marqueeSectionSchema } from './marquee-section';
+import { newsletterSignupSectionSchema } from './newsletter-signup-section';
 import { outfitListSectionSchema } from './outfit-list-section';
 import { MAX_HOME_SECTIONS } from './section-common-schemas';
 import { textWithImageSectionSchema } from './text-with-image-section';
@@ -16,6 +20,10 @@ export const homeSectionSchema = z.discriminatedUnion('type', [
   textWithImageSectionSchema,
   faqSectionSchema,
   commitmentsSectionSchema,
+  campaignBannerSectionSchema,
+  marqueeSectionSchema,
+  gallerySectionSchema,
+  newsletterSignupSectionSchema,
 ]);
 
 export type HomeSection = z.infer<typeof homeSectionSchema>;
@@ -30,6 +38,10 @@ export const HOME_SECTION_TYPES = [
   'TextWithImage',
   'Faq',
   'Commitments',
+  'CampaignBanner',
+  'Marquee',
+  'Gallery',
+  'NewsletterSignup',
 ] as const satisfies readonly HomeSectionType[];
 
 export const homeLayoutContentSchema = z

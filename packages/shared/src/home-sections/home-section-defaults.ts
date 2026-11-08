@@ -1,6 +1,9 @@
 import type { HomeSectionOf, HomeSectionType } from './home-section-union';
 
-export type HomeSectionDefaultProps<T extends HomeSectionType> = Omit<HomeSectionOf<T>['props'], 'id'>;
+// CampaignBanner has no default image: the block is invalid until one is uploaded, like empty slides in HeroSlider.
+export type HomeSectionDefaultProps<T extends HomeSectionType> = T extends 'CampaignBanner'
+  ? Omit<HomeSectionOf<T>['props'], 'id' | 'image'>
+  : Omit<HomeSectionOf<T>['props'], 'id'>;
 
 // Starting props for a block added in the editor. These are defaults the admin edits per section, not constants.
 // Content fields (slides, FAQ text, commitments text) start empty, so the block fails validation until filled in.
@@ -36,4 +39,15 @@ export const HOME_SECTION_DEFAULTS: { [T in HomeSectionType]: HomeSectionDefault
       { icon: 'shield-check', title: '', text: '' },
     ],
   },
+  CampaignBanner: { visible: true, heading: '', alt: '', imagePosition: 'right' },
+  Marquee: { visible: true, items: [{ text: '' }], durationSeconds: 30 },
+  Gallery: {
+    visible: true,
+    title: 'Thư viện ảnh',
+    source: 'latest',
+    collectionIds: [],
+    outfitIds: [],
+    count: 6,
+  },
+  NewsletterSignup: { visible: true, heading: 'Nhận tin mới', buttonLabel: 'Đăng ký' },
 };

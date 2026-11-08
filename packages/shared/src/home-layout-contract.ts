@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { PublicCollectionCardDto } from './collection-contract';
 import { homeLayoutContentSchema, type HomeSection, type HomeSectionOf } from './home-sections';
+import type { NewsletterConsentDto } from './newsletter-contract';
 import type { PublicOutfitDto } from './public-outfit-dto';
 import type { PublicOutfitCardDto } from './public-outfit-list-contract';
 
@@ -58,9 +59,13 @@ export type ResolvedHomeSection =
   | HomeSectionOf<'TextWithImage'>
   | HomeSectionOf<'Faq'>
   | HomeSectionOf<'Commitments'>
+  | HomeSectionOf<'CampaignBanner'>
+  | HomeSectionOf<'Marquee'>
   | (HomeSectionOf<'CollectionTiles'> & { data: { items: PublicCollectionCardDto[] } })
   | (HomeSectionOf<'OutfitList'> & { data: { tabs: OutfitListTabData[] } })
-  | (HomeSectionOf<'FeaturedLookbook'> & { data: { outfit: PublicOutfitDto } });
+  | (HomeSectionOf<'FeaturedLookbook'> & { data: { outfit: PublicOutfitDto } })
+  | (HomeSectionOf<'Gallery'> & { data: { items: PublicOutfitCardDto[] } })
+  | (HomeSectionOf<'NewsletterSignup'> & { data: { consent: NewsletterConsentDto } });
 
 /** Only visible sections that have data to show. */
 export interface PublicHomeResponse {

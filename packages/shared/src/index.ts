@@ -12,5 +12,6 @@ export * from './object-id-schema';
 export * from './safe-href';
 export * from './collection-schemas';
 export * from './collection-contract';
+export * from './newsletter-contract';
 export * from './home-sections';
 export * from './home-layout-contract';

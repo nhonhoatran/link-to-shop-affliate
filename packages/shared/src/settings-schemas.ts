@@ -7,6 +7,8 @@ export const MAX_FOOTER_COLUMNS = 4;
 export const MAX_FOOTER_LINKS_PER_COLUMN = 8;
 export const MAX_FOOTER_SOCIAL_LINKS = 8;
 export const MAX_ANNOUNCEMENT_TEXT = 160;
+export const MAX_NEWSLETTER_CONSENT_TEXT = 1000;
+export const MAX_PRIVACY_LABEL_LENGTH = 40;
 
 export const footerLinkSchema = z.object({
   label: z.string().min(1).max(40),
@@ -52,6 +54,20 @@ export const publicAnnouncementSchema = z.object({
   href: z.string().optional(),
 });
 
+// Consent sentence next to the newsletter checkbox. Saving a changed text or link bumps the version stored with each
+// subscription, so the API owns the version and the input never carries it.
+export const newsletterConsentSchema = z.object({
+  text: z.string().trim().min(1).max(MAX_NEWSLETTER_CONSENT_TEXT),
+  privacyHref: safeHrefSchema.optional(),
+  privacyLabel: z.string().trim().min(1).max(MAX_PRIVACY_LABEL_LENGTH).optional(),
+});
+
+// Pre-filled in the settings form only; the signup form stays hidden until the admin saves a consent sentence.
+export const DEFAULT_NEWSLETTER_CONSENT: z.infer<typeof newsletterConsentSchema> = {
+  text: 'Tôi đồng ý nhận email giới thiệu outfit mới và ưu đãi. Tôi có thể huỷ đăng ký bất cứ lúc nào.',
+};
+export const DEFAULT_PRIVACY_LABEL = 'Chính sách bảo mật';
+
 export const settingsInputSchema = z.object({
   siteName: z.string().min(1).max(80),
   seoTitle: z.string().min(1).max(120),
@@ -67,11 +83,17 @@ export const settingsInputSchema = z.object({
   collectionsLabel: z.string().min(1).max(40).optional(),
   footer: footerSchema.optional(),
   announcement: announcementSchema.optional(),
+  newsletterConsent: newsletterConsentSchema.optional(),
 });
 
 export const adminSettingsSchema = settingsInputSchema
   .omit({ ogImage: true })
-  .extend({ ogImage: imageWithUrlSchema.optional(), updatedAt: z.string().optional() });
+  .extend({
+    ogImage: imageWithUrlSchema.optional(),
+    updatedAt: z.string().optional(),
+    // Read-only: null until a consent sentence has been saved.
+    newsletterConsentVersion: z.number().int().min(1).nullable().optional(),
+  });
 
 // The chrome fields are optional only so the type can land before the API fills them; the API always sets them.
 export const publicSettingsSchema = z.object({
@@ -88,6 +110,7 @@ export const publicSettingsSchema = z.object({
 });
 
 export type FooterInput = z.infer<typeof footerSchema>;
+export type NewsletterConsentInput = z.infer<typeof newsletterConsentSchema>;
 export type AnnouncementInput = z.infer<typeof announcementSchema>;
 export type PublicAnnouncementDto = z.infer<typeof publicAnnouncementSchema>;
 export type SettingsInput = z.infer<typeof settingsInputSchema>;
