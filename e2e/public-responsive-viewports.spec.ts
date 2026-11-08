@@ -24,8 +24,11 @@ for (const width of VIEWPORTS) {
   test(`header links stay inside the viewport at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/looks');
+    // Exact count is not asserted: the "Bộ sưu tập" nav link appears whenever a collection is published
+    // (settings absent = shown), so the number depends on the data. Every link must still fit the viewport.
     const links = page.getByRole('banner').getByRole('link');
-    await expect(links).toHaveCount(3);
+    await expect(links.first()).toBeVisible();
+    expect(await links.count()).toBeGreaterThanOrEqual(3);
     const boxes = await links.evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
     for (const box of boxes) {
       expect(box.x, "link left edge").toBeGreaterThanOrEqual(0);
@@ -38,8 +41,10 @@ for (const width of PHONE_WIDTHS) {
   test(`header navigation links are at least ${MIN_TAP_PX}px tall at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/looks');
+    // The fixed items are always there; the collections link is optional (see the header test above).
     const navLinks = page.getByRole('navigation', { name: 'Điều hướng chính' }).getByRole('link');
-    await expect(navLinks).toHaveCount(2);
+    await expect(navLinks.filter({ hasText: 'Trang chủ' })).toHaveCount(1);
+    await expect(navLinks.filter({ hasText: 'Tất cả outfit' })).toHaveCount(1);
     const heights = await navLinks.evaluateAll((els) => els.map((el) => el.getBoundingClientRect().height));
     for (const height of heights) expect(height).toBeGreaterThanOrEqual(MIN_TAP_PX);
   });

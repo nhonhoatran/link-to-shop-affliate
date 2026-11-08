@@ -5,7 +5,8 @@ import { REPO_ROOT } from './env';
 import type { SettingsDocument } from './admin-settings';
 import { readHome, resetHome, type HomeLayoutDto } from './home-layout';
 
-export const SNAPSHOT_FILE = path.join(REPO_ROOT, 'test-results', 'content-snapshot.json');
+// Outside test-results/: Playwright wipes that folder at the start of every run.
+export const SNAPSHOT_FILE = path.join(REPO_ROOT, 'e2e', '.state', 'content-snapshot.json');
 export const ALLOW_RESET_ENV = 'E2E_ALLOW_CONTENT_RESET';
 
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1']);

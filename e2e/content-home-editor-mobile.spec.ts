@@ -5,7 +5,8 @@ import { resetHome } from './support/home-layout';
 test.use({ viewport: { width: 390, height: 844 } });
 test.describe.configure({ mode: 'serial' });
 
-const DEFAULT_CARD_COUNT = 3;
+// Default layout has 5 sections since the editorial redesign (Q3); was 3 before.
+const DEFAULT_CARD_COUNT = 5;
 const MIN_TOUCH_TARGET_PX = 44;
 
 let api: APIRequestContext;
@@ -56,21 +57,25 @@ test('up and down buttons reorder, and the keyboard drag works with an announcem
   await expect(cards(page).first().locator('[data-move="up"]')).toBeDisabled();
   await expect(cards(page).last().locator('[data-move="down"]')).toBeDisabled();
 
-  // Default order: Lookbook, "Outfit khác", Bộ sưu tập. Moving the lookbook down puts "Outfit khác" first.
+  // Default order: Lookbook, Bộ sưu tập, Outfit khác, Thư viện, Đăng ký. Moving the lookbook down puts Bộ sưu tập first.
   await cards(page).first().locator('[data-move="down"]').click();
-  await expect(cards(page).first()).toContainText('Outfit khác');
-  await expect(page.getByRole('status').filter({ hasText: 'Đã chuyển Lookbook nổi bật tới vị trí 2/3' })).toHaveCount(1);
+  await expect(cards(page).first()).toContainText('Bộ sưu tập');
+  await expect(page.getByRole('status').filter({ hasText: 'Đã chuyển Lookbook nổi bật tới vị trí 2/5' })).toHaveCount(1);
 
-  // Keyboard only: Space lifts the handle, arrows move it, Space drops it. dnd-kit needs a short pause after Space.
+  // Keyboard only: Space lifts the handle, arrows move it, Space drops it. Each key waits for the previous
+  // announcement, because dnd-kit measures the drop targets asynchronously and swallows keys sent too early.
+  const announced = (text: RegExp) => expect(page.getByRole('status').filter({ hasText: text })).toHaveCount(1);
   const handle = cards(page).nth(2).getByRole('button', { name: /^Kéo để sắp xếp/ });
   await handle.focus();
   await page.keyboard.press('Space');
-  await page.waitForTimeout(100);
+  await announced(/Đã nhấc|đang ở vị trí 3\/5/);
   await page.keyboard.press('ArrowUp');
+  await announced(/đang ở vị trí 2\/5/);
   await page.keyboard.press('ArrowUp');
+  await announced(/đang ở vị trí 1\/5/);
   await page.keyboard.press('Space');
-  await expect(page.getByRole('status').filter({ hasText: /Đã thả .* tại vị trí 1\/3/ })).toHaveCount(1);
-  await expect(cards(page).first()).toContainText('Bộ sưu tập');
+  await expect(page.getByRole('status').filter({ hasText: /Đã thả .* tại vị trí 1\/5/ })).toHaveCount(1);
+  await expect(cards(page).first()).toContainText('Outfit khác');
   await expectNoHorizontalScroll(page);
 });
 

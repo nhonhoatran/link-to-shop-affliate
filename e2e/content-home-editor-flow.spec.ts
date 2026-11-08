@@ -9,7 +9,8 @@ test.describe.configure({ mode: 'serial' });
 const stamp = Date.now().toString(36);
 const listTitle = `E2E ${stamp} danh sách`;
 const tilesTitle = `E2E ${stamp} bộ sưu tập`;
-const ORIGINAL_CARD_COUNT = 3;
+// Default layout has 5 sections since the editorial redesign (Q3); was 3 before.
+const ORIGINAL_CARD_COUNT = 5;
 
 let api: APIRequestContext;
 

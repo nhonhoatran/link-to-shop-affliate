@@ -26,6 +26,9 @@ export interface SettingsDocument {
   collectionsLabel?: string;
   footer?: FooterDocument;
   announcement?: AnnouncementDocument;
+  /** Absent until a consent sentence is saved; saving without it (a PUT that omits the key) clears it. */
+  newsletterConsent?: { text: string; privacyHref?: string; privacyLabel?: string };
+  newsletterConsentVersion?: number | null;
 }
 
 /** Fields a settings PUT can carry. ogImageUrl is read-only here: the PUT would unset the image. */
@@ -40,6 +43,7 @@ const WRITABLE_KEYS: (keyof SettingsDocument)[] = [
   'collectionsLabel',
   'footer',
   'announcement',
+  'newsletterConsent',
 ];
 
 /** Settings are a full-document PUT, so every writable field must be sent back or it is erased. */
@@ -84,7 +88,13 @@ export async function restoreSettings(previous: SettingsDocument): Promise<void>
     const read = await api.get('/api/admin/settings');
     expect(read.ok(), 'read admin settings').toBe(true);
     const current = (await read.json()) as SettingsDocument;
-    const chrome = { footer: undefined, announcement: undefined, collectionsNavEnabled: undefined, collectionsLabel: undefined };
+    const chrome = {
+      footer: undefined,
+      announcement: undefined,
+      collectionsNavEnabled: undefined,
+      collectionsLabel: undefined,
+      newsletterConsent: undefined,
+    };
     const saved = await api.put('/api/admin/settings', { data: toPutBody({ ...current, ...chrome, ...previous }) });
     expect(saved.ok(), 'restore admin settings').toBe(true);
   } finally {

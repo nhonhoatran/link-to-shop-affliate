@@ -50,9 +50,16 @@ export default defineConfig({
       dependencies: ['content-home-editor-mobile'],
     },
     {
+      name: 'content-editorial-sections-render',
+      testMatch: /content-editorial-sections-render\.spec\.ts/,
+      dependencies: ['content-home-sections-render'],
+    },
+    { name: 'content-newsletter-signup', testMatch: /content-newsletter-signup\.spec\.ts/, dependencies: ['content-editorial-sections-render'] },
+    { name: 'content-newsletter-admin', testMatch: /content-newsletter-admin\.spec\.ts/, dependencies: ['content-newsletter-signup'] },
+    {
       name: 'content-footer-and-nav',
       testMatch: /content-footer-and-nav\.spec\.ts/,
-      dependencies: ['content-home-sections-render'],
+      dependencies: ['content-newsletter-admin'],
       teardown: 'content-cleanup',
     },
     { name: 'content-cleanup', testMatch: /content\.teardown\.ts/ },
