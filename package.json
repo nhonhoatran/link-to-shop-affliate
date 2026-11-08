@@ -15,7 +15,8 @@
     "test": "pnpm -r test",
     "e2e": "playwright test",
     "seed:samples": "pnpm --filter @under30ss/api seed:samples",
-    "create-admin": "pnpm --filter @under30ss/api create-admin"
+    "create-admin": "pnpm --filter @under30ss/api create-admin",
+    "seed:demo": "pnpm --filter @under30ss/api seed:demo"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

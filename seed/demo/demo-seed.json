@@ -1,0 +1,2145 @@
+{
+  "version": 1,
+  "settings": {
+    "siteName": "Under30ss",
+    "seoTitle": "Under30ss - Shop the look, phối đồ dưới 30 giây",
+    "seoDescription": "Lookbook phối đồ sẵn cho người dưới 30: một ảnh, từng món đồ nối thẳng tới link mua. Streetwear, tối giản đi làm, cuối tuần cà phê, thể thao và monochrome.",
+    "ogImage": {
+      "file": "../../assets-source/demo/section/og-silhouette.jpg"
+    },
+    "uploadMaxMb": 10,
+    "looksPageSize": 12,
+    "relatedOutfitsCount": 8,
+    "collectionsNavEnabled": true,
+    "collectionsLabel": "Bộ sưu tập",
+    "footer": {
+      "columns": [
+        {
+          "title": "Khám phá",
+          "links": [
+            {
+              "label": "Tất cả outfit",
+              "href": "/looks"
+            },
+            {
+              "label": "Bộ sưu tập",
+              "href": "/collections"
+            },
+            {
+              "label": "Outfit nổi bật",
+              "href": "/look/dramatic"
+            }
+          ]
+        },
+        {
+          "title": "Phong cách",
+          "links": [
+            {
+              "label": "Streetwear mùa hè",
+              "href": "/collections/streetwear-he"
+            },
+            {
+              "label": "Tối giản đi làm",
+              "href": "/collections/toi-gian-di-lam"
+            },
+            {
+              "label": "Cuối tuần cà phê",
+              "href": "/collections/cuoi-tuan-ca-phe"
+            },
+            {
+              "label": "Thể thao năng động",
+              "href": "/collections/the-thao-nang-dong"
+            },
+            {
+              "label": "Đen trắng monochrome",
+              "href": "/collections/den-trang-monochrome"
+            }
+          ]
+        }
+      ],
+      "social": [
+        {
+          "label": "Instagram",
+          "href": "https://www.instagram.com/under30ss"
+        },
+        {
+          "label": "TikTok",
+          "href": "https://www.tiktok.com/@under30ss"
+        },
+        {
+          "label": "Facebook",
+          "href": "https://www.facebook.com/under30ss"
+        }
+      ]
+    },
+    "announcement": {
+      "enabled": true,
+      "text": "Bộ sưu tập Đen trắng monochrome vừa lên kệ, 5 outfit mới cho tuần này",
+      "linkLabel": "Xem ngay",
+      "href": "/collections/den-trang-monochrome"
+    },
+    "newsletterConsent": {
+      "text": "Tôi đồng ý nhận email giới thiệu outfit mới và ưu đãi từ Under30ss, mỗi tuần một lần. Tôi có thể huỷ đăng ký bất cứ lúc nào."
+    }
+  },
+  "collections": [
+    {
+      "slug": "streetwear-he",
+      "name": "Streetwear mùa hè",
+      "description": "Áo thun in, short jean, sneaker và phụ kiện bạc. Những bộ đồ mặc ra đường là thấy mát, chụp hình là thấy chất.",
+      "seoDescription": "Outfit streetwear mùa hè: áo thun in, short jean, sneaker và phụ kiện. Bấm từng món để mua.",
+      "status": "published",
+      "coverImage": {
+        "file": "../../assets-source/demo/cover/streetwear-he.jpg"
+      }
+    },
+    {
+      "slug": "toi-gian-di-lam",
+      "name": "Tối giản đi làm",
+      "description": "Sơ mi, quần ống đứng, loafer và một chiếc đồng hồ. Đi làm gọn gàng mà vẫn có gu, không cần nghĩ nhiều mỗi sáng.",
+      "seoDescription": "Outfit tối giản đi làm: sơ mi, quần tây, loafer, đồng hồ. Phối sẵn, bấm mua từng món.",
+      "status": "published",
+      "coverImage": {
+        "file": "../../assets-source/demo/cover/toi-gian-di-lam.jpg"
+      }
+    },
+    {
+      "slug": "cuoi-tuan-ca-phe",
+      "name": "Cuối tuần cà phê",
+      "description": "Thoải mái nhưng không xuề xoà: polo, denim, áo thun rộng và một chiếc túi nhỏ cho buổi sáng chậm rãi.",
+      "seoDescription": "Outfit cuối tuần đi cà phê: polo, denim, áo thun rộng và túi nhỏ. Phối sẵn, bấm mua từng món.",
+      "status": "published",
+      "coverImage": {
+        "file": "../../assets-source/demo/cover/cuoi-tuan-ca-phe.jpg"
+      }
+    },
+    {
+      "slug": "the-thao-nang-dong",
+      "name": "Thể thao năng động",
+      "description": "Đồ tập mặc ra phố được: áo mesh, giày chạy, kính thể thao và túi bao tử. Nhẹ, thoáng, di chuyển cả ngày.",
+      "seoDescription": "Outfit thể thao năng động: áo mesh, giày chạy bộ, kính thể thao, túi bao tử. Bấm mua từng món.",
+      "status": "published",
+      "coverImage": {
+        "file": "../../assets-source/demo/cover/the-thao-nang-dong.jpg"
+      }
+    },
+    {
+      "slug": "den-trang-monochrome",
+      "name": "Đen trắng monochrome",
+      "description": "Chỉ hai màu nhưng không bao giờ lỗi mốt. Blazer đen, áo thun trắng, quần tây và giày da cho mọi dịp.",
+      "seoDescription": "Outfit đen trắng monochrome: blazer, áo thun, quần tây, giày da. Phối sẵn, bấm mua từng món.",
+      "status": "published",
+      "coverImage": {
+        "file": "../../assets-source/demo/cover/den-trang-monochrome.jpg"
+      }
+    }
+  ],
+  "outfits": [
+    {
+      "slug": "dramatic",
+      "title": "Dramatic Liberty streetwear",
+      "seoDescription": "Phối đồ streetwear với áo thun Dramatic Liberty, quần short jean rách, sneaker trắng xám và phụ kiện.",
+      "modelImage": {
+        "file": "../../assets-source/cut/dramatic/model.png"
+      },
+      "status": "published",
+      "featured": true,
+      "collections": [
+        "streetwear-he"
+      ],
+      "items": [
+        {
+          "id": "ao-thun-in-chu",
+          "name": "Áo thun in chữ",
+          "subtitle": "GRAPHIC T-SHIRT",
+          "description": "Cotton mềm, form rộng, hoạ tiết chữ tạo điểm nhấn trẻ trung cho phong cách streetwear, vintage.",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/ao-thun-in-chu.png"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 26.5,
+            "y": 19.8
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20thun%20in%20chu%20form%20rong"
+        },
+        {
+          "id": "quan-short-jean-rach",
+          "name": "Quần short jean rách",
+          "subtitle": "DENIM SHORTS",
+          "description": "Denim dày dặn, form rộng, màu wash nâu, chi tiết rách tạo nét bụi bặm.",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/quan-short-jean-rach.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 36.1,
+            "y": 58.0
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20short%20jean%20rach%20nam"
+        },
+        {
+          "id": "giay-sneaker-trang-xam",
+          "name": "Giày sneaker trắng xám",
+          "subtitle": "SNEAKERS",
+          "description": "Kiểu dáng thể thao, dễ phối, đi cả ngày vẫn êm.",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/giay-sneaker-trang-xam.png"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 38.6,
+            "y": 93.9
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20trang%20xam"
+        },
+        {
+          "id": "tui-deo-cheo",
+          "name": "Túi đeo chéo",
+          "subtitle": "CROSSBODY BAG",
+          "description": "Túi nhỏ đeo chéo, vừa điện thoại, ví và chìa khoá.",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/tui-deo-cheo.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 81.9,
+            "y": 45.8
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=tui%20deo%20cheo%20nam"
+        },
+        {
+          "id": "day-chuyen-bac",
+          "name": "Dây chuyền bạc",
+          "subtitle": "SILVER CHAIN",
+          "description": "Dây chuyền bạc bản nhỏ, điểm nhấn cho áo thun cổ tròn.",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/day-chuyen-bac.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 49.4,
+            "y": 22.5
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=day%20chuyen%20bac%20nam"
+        },
+        {
+          "id": "moc-khoa-phu-kien",
+          "name": "Móc khoá phụ kiện",
+          "subtitle": "KEYCHAIN",
+          "description": "Móc khoá kim loại gắn thắt lưng hoặc túi.",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/moc-khoa-phu-kien.png"
+          },
+          "side": "right",
+          "order": 2,
+          "anchor": {
+            "x": 39.8,
+            "y": 50.8
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=moc%20khoa%20phu%20kien%20streetwear"
+        },
+        {
+          "id": "that-lung-da-nau",
+          "name": "Thắt lưng da nâu",
+          "subtitle": "LEATHER BELT",
+          "description": "Da nâu bản vừa, khoá kim loại tối màu.",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/that-lung-da-nau.png"
+          },
+          "side": "right",
+          "order": 3,
+          "anchor": {
+            "x": 50.6,
+            "y": 43.3
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=that%20lung%20da%20nau%20nam"
+        },
+        {
+          "id": "khan-bandana-do",
+          "name": "Khăn bandana đỏ",
+          "subtitle": "BANDANA",
+          "description": "Khăn bandana đỏ, buộc cổ tay hoặc túi quần.",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/khan-bandana-do.png"
+          },
+          "side": "right",
+          "order": 4,
+          "anchor": {
+            "x": 20.5,
+            "y": 49.6
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=khan%20bandana%20do"
+        }
+      ]
+    },
+    {
+      "slug": "mesh-84",
+      "title": "Mesh 84 sporty streetwear",
+      "seoDescription": "Phối đồ thể thao đường phố với áo mesh, áo thun trắng, short jean rộng, sneaker đen và kính mát.",
+      "modelImage": {
+        "file": "../../assets-source/cut/mesh-84/model.png"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "the-thao-nang-dong",
+        "streetwear-he"
+      ],
+      "items": [
+        {
+          "id": "ao-mesh-the-thao",
+          "name": "Áo mesh thể thao",
+          "subtitle": "MESH JERSEY",
+          "description": "Vải lưới thoáng khí, mặc ngoài áo thun trắng cho lớp layer thể thao.",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/ao-mesh-the-thao.png"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 17.2,
+            "y": 23.9
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20mesh%20the%20thao%20nam"
+        },
+        {
+          "id": "ao-thun-trang",
+          "name": "Áo thun trắng",
+          "subtitle": "WHITE TEE",
+          "description": "Cotton trắng cơ bản, lớp nền cho mọi outfit.",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/ao-thun-trang.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 53.9,
+            "y": 36.6
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20thun%20trang%20tron%20nam"
+        },
+        {
+          "id": "quan-short-jean-rong",
+          "name": "Quần short jean rộng",
+          "subtitle": "BAGGY DENIM SHORTS",
+          "description": "Short jean ống rộng, dài qua gối, màu wash sáng.",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/quan-short-jean-rong.png"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 24.1,
+            "y": 59.8
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20short%20jean%20rong%20nam"
+        },
+        {
+          "id": "giay-sneaker-den",
+          "name": "Giày sneaker đen",
+          "subtitle": "BLACK SNEAKERS",
+          "description": "Sneaker đen đế trắng, phối được với mọi màu quần.",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/giay-sneaker-den.png"
+          },
+          "side": "left",
+          "order": 3,
+          "anchor": {
+            "x": 40.1,
+            "y": 93.4
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20den%20nam"
+        },
+        {
+          "id": "kinh-mat-den",
+          "name": "Kính mát đen",
+          "subtitle": "SUNGLASSES",
+          "description": "Gọng đen vuông, tròng tối, hợp mặt dài và mặt vuông.",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/kinh-mat-den.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 44.7,
+            "y": 3.0
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=kinh%20mat%20den%20nam"
+        },
+        {
+          "id": "day-chuyen-bac",
+          "name": "Dây chuyền bạc",
+          "subtitle": "SILVER CHAIN",
+          "description": "Dây chuyền bạc bản nhỏ, điểm nhấn cho cổ áo.",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/day-chuyen-bac.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 52.8,
+            "y": 19.4
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=day%20chuyen%20bac%20nam"
+        },
+        {
+          "id": "that-lung-da",
+          "name": "Thắt lưng da",
+          "subtitle": "LEATHER BELT",
+          "description": "Thắt lưng da đen bản nhỏ, khoá bạc.",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/that-lung-da.png"
+          },
+          "side": "right",
+          "order": 2,
+          "anchor": {
+            "x": 65.4,
+            "y": 40.4
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=that%20lung%20da%20den%20nam"
+        },
+        {
+          "id": "moc-khoa-phu-kien",
+          "name": "Móc khoá phụ kiện",
+          "subtitle": "KEYCHAIN",
+          "description": "Móc khoá kim loại gắn thắt lưng.",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/moc-khoa-phu-kien.png"
+          },
+          "side": "right",
+          "order": 3,
+          "anchor": {
+            "x": 67.2,
+            "y": 51.6
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=moc%20khoa%20phu%20kien"
+        },
+        {
+          "id": "tat-trang-dai",
+          "name": "Tất trắng dài",
+          "subtitle": "CREW SOCKS",
+          "description": "Tất cổ cao màu trắng, lộ trên cổ giày.",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/tat-trang-dai.png"
+          },
+          "side": "right",
+          "order": 4,
+          "anchor": {
+            "x": 65.4,
+            "y": 85.2
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=tat%20trang%20co%20cao"
+        }
+      ]
+    },
+    {
+      "slug": "so-mi-trang-dao-pho",
+      "title": "Sơ mi trắng dạo phố",
+      "seoDescription": "Sơ mi linen trắng, jean xanh, sneaker trắng, kính gọng tròn và đồng hồ dây da cho buổi chiều dạo phố.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/so-mi-trang-dao-pho.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "toi-gian-di-lam",
+        "cuoi-tuan-ca-phe"
+      ],
+      "items": [
+        {
+          "id": "ao-so-mi-linen-trang",
+          "name": "Áo sơ mi linen trắng",
+          "subtitle": "LINEN SHIRT",
+          "description": "Linen mỏng, mát, mặc bỏ ngoài hoặc sơ vin đều hợp.",
+          "detect": "white shirt",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-so-mi-linen-trang.jpg"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 50.1,
+            "y": 41.0
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20so%20mi%20linen%20trang%20nam"
+        },
+        {
+          "id": "quan-jean-xanh",
+          "name": "Quần jean xanh",
+          "subtitle": "SLIM JEANS",
+          "description": "Jean xanh wash nhẹ, ống đứng hơi ôm.",
+          "detect": "jeans",
+          "image": {
+            "file": "../../assets-source/demo/item/quan-jean-xanh-xep.jpg"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 46.7,
+            "y": 68.3
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20jean%20xanh%20nam%20slim"
+        },
+        {
+          "id": "giay-sneaker-trang",
+          "name": "Giày sneaker trắng",
+          "subtitle": "WHITE SNEAKERS",
+          "description": "Sneaker trắng trơn, đế thấp, dễ vệ sinh.",
+          "detect": "sneakers",
+          "image": {
+            "file": "../../assets-source/demo/item/giay-sneaker-trang.png"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 37.9,
+            "y": 85.5
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20trang%20tron"
+        },
+        {
+          "id": "kinh-mat-gong-tron",
+          "name": "Kính mát gọng tròn",
+          "subtitle": "ROUND SUNGLASSES",
+          "description": "Gọng kim loại mảnh, tròng xanh rêu.",
+          "detect": "sunglasses",
+          "image": {
+            "file": "../../assets-source/demo/item/kinh-mat-gong-tron.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 52.0,
+            "y": 24.4
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=kinh%20mat%20gong%20tron"
+        },
+        {
+          "id": "dong-ho-day-da-nau",
+          "name": "Đồng hồ dây da nâu",
+          "subtitle": "LEATHER WATCH",
+          "description": "Mặt tròn đen, dây da nâu, hợp cả sơ mi lẫn áo thun.",
+          "detect": "wristwatch",
+          "image": {
+            "file": "../../assets-source/demo/item/dong-ho-day-da-nau.jpg"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 34,
+            "y": 50
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=dong%20ho%20day%20da%20nau%20nam"
+        },
+        {
+          "id": "that-lung-da-nau",
+          "name": "Thắt lưng da nâu",
+          "subtitle": "LEATHER BELT",
+          "description": "Da nâu bản vừa, khoá kim loại tối màu.",
+          "detect": "belt",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/that-lung-da-nau.png"
+          },
+          "side": "right",
+          "order": 2,
+          "anchor": {
+            "x": 50,
+            "y": 47
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=that%20lung%20da%20nau%20nam"
+        }
+      ]
+    },
+    {
+      "slug": "linen-xanh-di-lam",
+      "title": "Linen xanh đi làm",
+      "seoDescription": "Sơ mi linen xanh nhạt, quần ống đứng, loafer da lộn và đồng hồ thép cho ngày đi làm mát mẻ.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/linen-xanh-di-lam.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "toi-gian-di-lam"
+      ],
+      "items": [
+        {
+          "id": "ao-so-mi-xanh-nhat",
+          "name": "Áo sơ mi xanh nhạt",
+          "subtitle": "LIGHT BLUE SHIRT",
+          "description": "Linen pha cotton, màu xanh nhạt dịu mắt, mặc cả ngày không bí.",
+          "detect": "blue shirt",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-so-mi-xanh-nhat.jpg"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 53.2,
+            "y": 53.4
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20so%20mi%20linen%20xanh%20nhat"
+        },
+        {
+          "id": "quan-tay-ong-dung",
+          "name": "Quần tây ống đứng",
+          "subtitle": "STRAIGHT TROUSERS",
+          "description": "Ống đứng, lưng vừa, vải đứng form, không nhăn khi ngồi lâu.",
+          "detect": "trousers",
+          "image": {
+            "file": "../../assets-source/demo/item/quan-tay-den.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 45.8,
+            "y": 83.9
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20tay%20ong%20dung%20nam"
+        },
+        {
+          "id": "giay-loafer-da-lon",
+          "name": "Giày loafer da lộn",
+          "subtitle": "SUEDE LOAFERS",
+          "description": "Loafer da lộn màu bò, đi làm hay đi chơi đều hợp.",
+          "detect": "shoes",
+          "image": {
+            "file": "../../assets-source/demo/item/giay-loafer-da-lon.png"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 50,
+            "y": 94
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20loafer%20da%20lon%20nam"
+        },
+        {
+          "id": "dong-ho-thep-bac",
+          "name": "Đồng hồ thép bạc",
+          "subtitle": "STEEL WATCH",
+          "description": "Dây thép bạc, mặt xanh navy, điểm nhấn cho cổ tay.",
+          "detect": "wristwatch",
+          "image": {
+            "file": "../../assets-source/demo/item/dong-ho-thep-bac.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 36,
+            "y": 52
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=dong%20ho%20day%20thep%20nam"
+        },
+        {
+          "id": "that-lung-da",
+          "name": "Thắt lưng da đen",
+          "subtitle": "LEATHER BELT",
+          "description": "Thắt lưng da đen bản nhỏ, khoá bạc.",
+          "detect": "belt",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/that-lung-da.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 50,
+            "y": 48
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=that%20lung%20da%20den%20nam"
+        }
+      ]
+    },
+    {
+      "slug": "hoodie-den-streetwear",
+      "title": "Hoodie đen tối giản",
+      "seoDescription": "Hoodie đen in chữ, quần jean đen, sneaker đen và túi bao tử cho một ngày lang thang.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/hoodie-den.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "streetwear-he",
+        "den-trang-monochrome"
+      ],
+      "items": [
+        {
+          "id": "hoodie-den-in-chu",
+          "name": "Hoodie đen in chữ",
+          "subtitle": "GRAPHIC HOODIE",
+          "description": "Nỉ bông dày vừa, form rộng, in chữ sau lưng.",
+          "detect": "hoodie",
+          "image": {
+            "file": "../../assets-source/demo/item/hoodie-den-in-chu.jpg"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 51.5,
+            "y": 44.1
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=hoodie%20den%20in%20chu%20form%20rong"
+        },
+        {
+          "id": "quan-jean-den",
+          "name": "Quần jean đen",
+          "subtitle": "BLACK JEANS",
+          "description": "Jean đen ống đứng, không phai sau nhiều lần giặt.",
+          "detect": "pants",
+          "image": {
+            "file": "../../assets-source/demo/item/quan-jean-den.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 52.6,
+            "y": 68.7
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20jean%20den%20nam"
+        },
+        {
+          "id": "giay-sneaker-den",
+          "name": "Giày sneaker đen",
+          "subtitle": "BLACK SNEAKERS",
+          "description": "Sneaker đen đế trắng, đi cả ngày vẫn êm.",
+          "detect": "sneakers",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/giay-sneaker-den.png"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 45.5,
+            "y": 83.5
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20den%20nam"
+        },
+        {
+          "id": "tui-bao-tu-den",
+          "name": "Túi bao tử đen",
+          "subtitle": "BELT BAG",
+          "description": "Túi bao tử da đen, đeo chéo ngực hoặc quanh hông.",
+          "detect": "bag",
+          "image": {
+            "file": "../../assets-source/demo/item/tui-bao-tu-den.jpg"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 62,
+            "y": 48
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=tui%20bao%20tu%20den%20nam"
+        }
+      ]
+    },
+    {
+      "slug": "bomber-varsity-nau",
+      "title": "Varsity nâu đường phố",
+      "seoDescription": "Áo bomber nâu, áo thun trắng, quần jean đen, sneaker trắng và đồng hồ thép cho buổi tối ra phố.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/varsity-nau.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "streetwear-he"
+      ],
+      "items": [
+        {
+          "id": "ao-bomber-nau",
+          "name": "Áo bomber nâu",
+          "subtitle": "BOMBER JACKET",
+          "description": "Bomber nâu đất, cổ bo, khoá kéo, lớp lót mỏng cho tối mát.",
+          "detect": "jacket",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-bomber-nau.png"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 50,
+            "y": 30
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20bomber%20nau%20nam"
+        },
+        {
+          "id": "ao-thun-trang-tron",
+          "name": "Áo thun trắng trơn",
+          "subtitle": "WHITE TEE",
+          "description": "Cotton trắng cơ bản, lớp nền cho áo khoác.",
+          "detect": "t-shirt",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-thun-trang-tron.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 50,
+            "y": 40
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20thun%20trang%20tron%20nam"
+        },
+        {
+          "id": "quan-jean-den",
+          "name": "Quần jean đen",
+          "subtitle": "BLACK JEANS",
+          "description": "Jean đen ống đứng, dễ phối với áo khoác màu.",
+          "detect": "pants",
+          "image": {
+            "file": "../../assets-source/demo/item/quan-jean-den.png"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 50,
+            "y": 66
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20jean%20den%20nam"
+        },
+        {
+          "id": "giay-sneaker-trang",
+          "name": "Giày sneaker trắng",
+          "subtitle": "WHITE SNEAKERS",
+          "description": "Sneaker trắng trơn, đế thấp.",
+          "detect": "sneakers",
+          "image": {
+            "file": "../../assets-source/demo/item/giay-sneaker-trang.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 50,
+            "y": 94
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20trang%20tron"
+        },
+        {
+          "id": "dong-ho-thep-bac",
+          "name": "Đồng hồ thép bạc",
+          "subtitle": "STEEL WATCH",
+          "description": "Dây thép bạc, mặt xanh navy.",
+          "detect": "wristwatch",
+          "image": {
+            "file": "../../assets-source/demo/item/dong-ho-thep-bac.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 66,
+            "y": 52
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=dong%20ho%20day%20thep%20nam"
+        }
+      ]
+    },
+    {
+      "slug": "set-the-thao-den",
+      "title": "Set thể thao đen",
+      "seoDescription": "Áo mesh thể thao, giày chạy bộ đen, kính thể thao, tất trắng và túi bao tử cho buổi tập ngoài trời.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/the-thao-den.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "the-thao-nang-dong"
+      ],
+      "items": [
+        {
+          "id": "ao-mesh-the-thao",
+          "name": "Áo mesh thể thao",
+          "subtitle": "MESH JERSEY",
+          "description": "Vải lưới thoáng khí, khô nhanh.",
+          "detect": "long sleeve shirt",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/ao-mesh-the-thao.png"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 47.8,
+            "y": 39.3
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20the%20thao%20nam%20dai%20tay"
+        },
+        {
+          "id": "giay-chay-bo-den",
+          "name": "Giày chạy bộ đen",
+          "subtitle": "RUNNING SHOES",
+          "description": "Đế bọt nhẹ, hoàn trả lực tốt, mũ giày lưới.",
+          "detect": "sneakers",
+          "image": {
+            "file": "../../assets-source/demo/item/giay-chay-bo-den.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 35.3,
+            "y": 84.8
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20chay%20bo%20nam%20den"
+        },
+        {
+          "id": "kinh-the-thao",
+          "name": "Kính thể thao",
+          "subtitle": "SPORT SUNGLASSES",
+          "description": "Tròng phân cực, gọng ôm mặt, không rơi khi chạy.",
+          "detect": "sunglasses",
+          "image": {
+            "file": "../../assets-source/demo/item/kinh-the-thao.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 50,
+            "y": 9
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=kinh%20the%20thao%20chay%20bo"
+        },
+        {
+          "id": "tat-trang",
+          "name": "Tất trắng cổ ngắn",
+          "subtitle": "ANKLE SOCKS",
+          "description": "Cotton thấm hút, cổ ngắn, bán theo bộ ba.",
+          "detect": "socks",
+          "image": {
+            "file": "../../assets-source/demo/item/tat-trang.jpg"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 20.8,
+            "y": 67.5
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=tat%20trang%20co%20ngan%20the%20thao"
+        },
+        {
+          "id": "tui-bao-tu-den",
+          "name": "Túi bao tử đen",
+          "subtitle": "BELT BAG",
+          "description": "Túi bao tử nhẹ, đựng điện thoại và chìa khoá khi tập.",
+          "detect": "bag",
+          "image": {
+            "file": "../../assets-source/demo/item/tui-bao-tu-den.jpg"
+          },
+          "side": "right",
+          "order": 2,
+          "anchor": {
+            "x": 60,
+            "y": 48
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=tui%20bao%20tu%20the%20thao"
+        }
+      ]
+    },
+    {
+      "slug": "blazer-den-monochrome",
+      "title": "Blazer đen monochrome",
+      "seoDescription": "Blazer đen, áo thun đen, quần tây đen, giày derby da và mặt dây chuyền bạc. Toàn đen, không nhàm.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/blazer-den-studio.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "den-trang-monochrome",
+        "toi-gian-di-lam"
+      ],
+      "items": [
+        {
+          "id": "blazer-den",
+          "name": "Blazer đen",
+          "subtitle": "BLACK BLAZER",
+          "description": "Blazer đen dáng suông, vai mềm, mặc với áo thun là đủ sang.",
+          "detect": "blazer",
+          "image": {
+            "file": "../../assets-source/demo/item/blazer-den.jpg"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 46.2,
+            "y": 36.5
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=blazer%20den%20nam%20dang%20suong"
+        },
+        {
+          "id": "ao-thun-den",
+          "name": "Áo thun đen in",
+          "subtitle": "BLACK TEE",
+          "description": "Cotton đen dày vừa, in nhỏ trước ngực.",
+          "detect": "t-shirt",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-thun-den-705.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 50,
+            "y": 40
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20thun%20den%20nam"
+        },
+        {
+          "id": "quan-tay-den",
+          "name": "Quần tây đen",
+          "subtitle": "BLACK TROUSERS",
+          "description": "Ống đứng, lưng vừa, vải đứng form.",
+          "detect": "trousers",
+          "image": {
+            "file": "../../assets-source/demo/item/quan-tay-den.png"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 60.5,
+            "y": 70.5
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20tay%20den%20nam"
+        },
+        {
+          "id": "giay-derby-den",
+          "name": "Giày derby da",
+          "subtitle": "DERBY SHOES",
+          "description": "Da bóng nhẹ, đế cao su, buộc dây.",
+          "detect": "shoes",
+          "image": {
+            "file": "../../assets-source/demo/item/giay-derby-den.jpg"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 41.9,
+            "y": 89.8
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20derby%20da%20nam"
+        },
+        {
+          "id": "mat-day-chuyen-bac",
+          "name": "Mặt dây chuyền bạc",
+          "subtitle": "SILVER PENDANT",
+          "description": "Mặt tròn chạm hoa văn, dây bạc mảnh.",
+          "detect": "necklace",
+          "image": {
+            "file": "../../assets-source/demo/item/mat-day-chuyen-bac.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 50,
+            "y": 24
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=mat%20day%20chuyen%20bac%20nam"
+        }
+      ]
+    },
+    {
+      "slug": "polo-xanh-nhat-cuoi-tuan",
+      "title": "Polo xanh nhạt cuối tuần",
+      "seoDescription": "Áo polo xanh nhạt, quần jean đen, sneaker trắng, đồng hồ dây da và kính mát cho sáng cuối tuần.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/polo-xanh-nhat.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "cuoi-tuan-ca-phe",
+        "toi-gian-di-lam"
+      ],
+      "items": [
+        {
+          "id": "ao-polo",
+          "name": "Áo polo cổ bẻ",
+          "subtitle": "POLO SHIRT",
+          "description": "Cotton pique, cổ bẻ, tay ngắn, màu nhạt dễ phối.",
+          "detect": "polo shirt",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-polo-trang.jpg"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 50.7,
+            "y": 33.4
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20polo%20nam%20xanh%20nhat"
+        },
+        {
+          "id": "quan-jean-den",
+          "name": "Quần jean đen",
+          "subtitle": "BLACK JEANS",
+          "description": "Jean đen ống đứng hơi ôm.",
+          "detect": "jeans",
+          "image": {
+            "file": "../../assets-source/demo/item/quan-jean-den.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 49.4,
+            "y": 68.5
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20jean%20den%20nam%20slim"
+        },
+        {
+          "id": "giay-sneaker-trang",
+          "name": "Giày sneaker trắng",
+          "subtitle": "WHITE SNEAKERS",
+          "description": "Sneaker trắng kem, đế thấp.",
+          "detect": "sneakers",
+          "image": {
+            "file": "../../assets-source/demo/item/giay-sneaker-trang.png"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 44.5,
+            "y": 91.7
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20trang%20kem"
+        },
+        {
+          "id": "dong-ho-day-da-nau",
+          "name": "Đồng hồ dây da nâu",
+          "subtitle": "LEATHER WATCH",
+          "description": "Mặt tròn đen, dây da nâu.",
+          "detect": "wristwatch",
+          "image": {
+            "file": "../../assets-source/demo/item/dong-ho-day-da-nau.jpg"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 36,
+            "y": 52
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=dong%20ho%20day%20da%20nau%20nam"
+        },
+        {
+          "id": "kinh-mat-hop-da",
+          "name": "Kính mát phi công",
+          "subtitle": "AVIATOR SUNGLASSES",
+          "description": "Gọng kim loại, tròng tối, kèm hộp da.",
+          "detect": "sunglasses",
+          "image": {
+            "file": "../../assets-source/demo/item/kinh-mat-hop-da.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 50,
+            "y": 9
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=kinh%20mat%20phi%20cong%20nam"
+        }
+      ]
+    },
+    {
+      "slug": "denim-on-denim",
+      "title": "Denim on denim",
+      "seoDescription": "Áo khoác jean, áo thun trắng, quần jean xanh, sneaker trắng xám, dây chuyền bạc và túi đeo chéo.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/denim-on-denim.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "streetwear-he",
+        "cuoi-tuan-ca-phe"
+      ],
+      "items": [
+        {
+          "id": "ao-khoac-jean",
+          "name": "Áo khoác jean",
+          "subtitle": "DENIM JACKET",
+          "description": "Denim wash sáng, form vừa, túi ngực hai bên.",
+          "detect": "denim jacket",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-khoac-jean.png"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 47.5,
+            "y": 40.6
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20khoac%20jean%20nam"
+        },
+        {
+          "id": "ao-thun-trang-tron",
+          "name": "Áo thun trắng trơn",
+          "subtitle": "WHITE TEE",
+          "description": "Cotton trắng cơ bản mặc trong áo khoác.",
+          "detect": "t-shirt",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-thun-trang-tron.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 46.9,
+            "y": 40.2
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20thun%20trang%20tron%20nam"
+        },
+        {
+          "id": "quan-jean-xanh",
+          "name": "Quần jean xanh",
+          "subtitle": "SLIM JEANS",
+          "description": "Jean xanh wash nhẹ, ống đứng hơi ôm.",
+          "detect": "jeans",
+          "image": {
+            "file": "../../assets-source/demo/item/quan-jean-xanh-xep.jpg"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 50.5,
+            "y": 68.7
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20jean%20xanh%20nam%20slim"
+        },
+        {
+          "id": "giay-sneaker-trang-xam",
+          "name": "Giày sneaker trắng xám",
+          "subtitle": "SNEAKERS",
+          "description": "Kiểu dáng thể thao, dễ phối đồ.",
+          "detect": "sneakers",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/giay-sneaker-trang-xam.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 45.0,
+            "y": 88.6
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20trang%20xam"
+        },
+        {
+          "id": "day-chuyen-bac",
+          "name": "Dây chuyền bạc",
+          "subtitle": "SILVER CHAIN",
+          "description": "Dây chuyền bạc bản nhỏ.",
+          "detect": "necklace",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/day-chuyen-bac.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 50,
+            "y": 24
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=day%20chuyen%20bac%20nam"
+        },
+        {
+          "id": "tui-deo-cheo",
+          "name": "Túi đeo chéo",
+          "subtitle": "CROSSBODY BAG",
+          "description": "Túi nhỏ đeo chéo, vừa điện thoại và ví.",
+          "detect": "bag",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/tui-deo-cheo.png"
+          },
+          "side": "right",
+          "order": 2,
+          "anchor": {
+            "x": 66,
+            "y": 48
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=tui%20deo%20cheo%20nam"
+        }
+      ]
+    },
+    {
+      "slug": "so-mi-soc-studio",
+      "title": "Sơ mi sọc tối giản",
+      "seoDescription": "Sơ mi sọc rộng, quần tây đen, sneaker trắng, mặt dây chuyền bạc và đồng hồ thép. Đơn giản, đúng form.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/so-mi-soc-studio.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "toi-gian-di-lam",
+        "den-trang-monochrome"
+      ],
+      "items": [
+        {
+          "id": "ao-so-mi-soc",
+          "name": "Áo sơ mi sọc",
+          "subtitle": "STRIPED SHIRT",
+          "description": "Sọc mảnh xám trắng, form rộng, mặc bỏ ngoài quần.",
+          "detect": "striped shirt",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-so-mi-linen-xam.jpg"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 50,
+            "y": 30
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20so%20mi%20soc%20form%20rong%20nam"
+        },
+        {
+          "id": "quan-tay-den",
+          "name": "Quần tây đen",
+          "subtitle": "BLACK TROUSERS",
+          "description": "Ống đứng, lưng vừa, vải đứng form.",
+          "detect": "trousers",
+          "image": {
+            "file": "../../assets-source/demo/item/quan-tay-den.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 50,
+            "y": 66
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20tay%20den%20nam"
+        },
+        {
+          "id": "giay-sneaker-trang",
+          "name": "Giày sneaker trắng",
+          "subtitle": "WHITE SNEAKERS",
+          "description": "Sneaker trắng trơn, đế thấp.",
+          "detect": "sneakers",
+          "image": {
+            "file": "../../assets-source/demo/item/giay-sneaker-trang.png"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 50,
+            "y": 95
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20trang%20tron"
+        },
+        {
+          "id": "mat-day-chuyen-bac",
+          "name": "Mặt dây chuyền bạc",
+          "subtitle": "SILVER PENDANT",
+          "description": "Mặt tròn chạm hoa văn, dây bạc mảnh.",
+          "detect": "necklace",
+          "image": {
+            "file": "../../assets-source/demo/item/mat-day-chuyen-bac.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 50,
+            "y": 22
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=mat%20day%20chuyen%20bac"
+        },
+        {
+          "id": "dong-ho-thep-bac",
+          "name": "Đồng hồ thép bạc",
+          "subtitle": "STEEL WATCH",
+          "description": "Dây thép bạc, mặt xanh navy.",
+          "detect": "wristwatch",
+          "image": {
+            "file": "../../assets-source/demo/item/dong-ho-thep-bac.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 64,
+            "y": 52
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=dong%20ho%20day%20thep%20nam"
+        }
+      ]
+    },
+    {
+      "slug": "ao-thun-rong-nu",
+      "title": "Áo thun rộng và sneaker",
+      "seoDescription": "Áo thun nâu form rộng mặc như váy, sneaker đen, mặt dây chuyền bạc và túi xách vàng cho ngày cuối tuần.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/nu-ao-thun-rong.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "streetwear-he",
+        "cuoi-tuan-ca-phe"
+      ],
+      "items": [
+        {
+          "id": "ao-thun-nau",
+          "name": "Áo thun nâu form rộng",
+          "subtitle": "OVERSIZED TEE",
+          "description": "Cotton nâu đất, dài qua hông, mặc một mình như váy suông.",
+          "detect": "t-shirt",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-thun-nau.png"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 46.6,
+            "y": 43.8
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20thun%20nau%20form%20rong%20nu"
+        },
+        {
+          "id": "giay-sneaker-den",
+          "name": "Giày sneaker đen",
+          "subtitle": "BLACK SNEAKERS",
+          "description": "Sneaker đen cổ cao, đế trắng.",
+          "detect": "sneakers",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/giay-sneaker-den.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 40.7,
+            "y": 85.8
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20den%20co%20cao"
+        },
+        {
+          "id": "mat-day-chuyen-bac",
+          "name": "Mặt dây chuyền bạc",
+          "subtitle": "SILVER PENDANT",
+          "description": "Mặt tròn chạm hoa văn, dây bạc mảnh.",
+          "detect": "necklace",
+          "image": {
+            "file": "../../assets-source/demo/item/mat-day-chuyen-bac.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 45.1,
+            "y": 31.2
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=mat%20day%20chuyen%20bac%20nu"
+        },
+        {
+          "id": "tui-xach-vang",
+          "name": "Túi xách vàng",
+          "subtitle": "YELLOW BAG",
+          "description": "Túi da vàng mù tạt, khoá kim loại, có dây đeo vai.",
+          "detect": "handbag",
+          "image": {
+            "file": "../../assets-source/demo/item/tui-xach-vang.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 66,
+            "y": 52
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=tui%20xach%20vang%20mu%20tat"
+        }
+      ]
+    },
+    {
+      "slug": "blazer-nu-street",
+      "title": "Blazer đen xuống phố",
+      "seoDescription": "Blazer đen, áo thun trắng, quần jean đen, sneaker trắng, túi da nâu và kính gọng tròn.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/nu-blazer-den.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "den-trang-monochrome",
+        "toi-gian-di-lam"
+      ],
+      "items": [
+        {
+          "id": "blazer-den",
+          "name": "Blazer đen",
+          "subtitle": "BLACK BLAZER",
+          "description": "Blazer đen dáng suông, vai mềm.",
+          "detect": "blazer",
+          "image": {
+            "file": "../../assets-source/demo/item/blazer-den.jpg"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 50,
+            "y": 32
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=blazer%20den%20nu%20dang%20suong"
+        },
+        {
+          "id": "ao-thun-trang-tron",
+          "name": "Áo thun trắng trơn",
+          "subtitle": "WHITE TEE",
+          "description": "Cotton trắng cơ bản.",
+          "detect": "t-shirt",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-thun-trang-tron.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 50,
+            "y": 40
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20thun%20trang%20tron%20nu"
+        },
+        {
+          "id": "quan-jean-den",
+          "name": "Quần jean đen",
+          "subtitle": "BLACK JEANS",
+          "description": "Jean đen ống đứng.",
+          "detect": "jeans",
+          "image": {
+            "file": "../../assets-source/demo/item/quan-jean-den.png"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 50,
+            "y": 66
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20jean%20den%20nu"
+        },
+        {
+          "id": "giay-sneaker-trang",
+          "name": "Giày sneaker trắng",
+          "subtitle": "WHITE SNEAKERS",
+          "description": "Sneaker trắng trơn, đế thấp.",
+          "detect": "sneakers",
+          "image": {
+            "file": "../../assets-source/demo/item/giay-sneaker-trang.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 50,
+            "y": 95
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20trang%20nu"
+        },
+        {
+          "id": "tui-da-nau",
+          "name": "Túi da nâu",
+          "subtitle": "LEATHER BAG",
+          "description": "Túi da nâu bóng, hai khoá cài, quai xách và dây đeo.",
+          "detect": "handbag",
+          "image": {
+            "file": "../../assets-source/demo/item/tui-da-nau.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 66,
+            "y": 50
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=tui%20da%20nau%20nu"
+        },
+        {
+          "id": "kinh-mat-gong-tron",
+          "name": "Kính mát gọng tròn",
+          "subtitle": "ROUND SUNGLASSES",
+          "description": "Gọng kim loại mảnh.",
+          "detect": "sunglasses",
+          "image": {
+            "file": "../../assets-source/demo/item/kinh-mat-gong-tron.png"
+          },
+          "side": "right",
+          "order": 2,
+          "anchor": {
+            "x": 50,
+            "y": 9
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=kinh%20mat%20gong%20tron%20nu"
+        }
+      ]
+    },
+    {
+      "slug": "ao-thun-den-san-thuong",
+      "title": "Đen xám sân thượng",
+      "seoDescription": "Áo thun đen, quần ống đứng xám, sneaker trắng và đồng hồ thép. Tối giản đúng nghĩa.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/ao-thun-den-san-thuong.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "den-trang-monochrome",
+        "cuoi-tuan-ca-phe"
+      ],
+      "items": [
+        {
+          "id": "ao-thun-den",
+          "name": "Áo thun đen in",
+          "subtitle": "BLACK TEE",
+          "description": "Cotton đen dày vừa, in nhỏ.",
+          "detect": "t-shirt",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-thun-den-705.png"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 50,
+            "y": 34
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20thun%20den%20nam"
+        },
+        {
+          "id": "quan-tay-ong-dung",
+          "name": "Quần ống đứng",
+          "subtitle": "STRAIGHT TROUSERS",
+          "description": "Ống đứng, vải nhẹ, màu xám sáng.",
+          "detect": "trousers",
+          "image": {
+            "file": "../../assets-source/demo/item/quan-tay-den.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 50,
+            "y": 64
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20ong%20dung%20xam%20nam"
+        },
+        {
+          "id": "giay-sneaker-trang",
+          "name": "Giày sneaker trắng",
+          "subtitle": "WHITE SNEAKERS",
+          "description": "Sneaker trắng trơn, đế thấp.",
+          "detect": "sneakers",
+          "image": {
+            "file": "../../assets-source/demo/item/giay-sneaker-trang.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 50,
+            "y": 92
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20trang%20tron"
+        },
+        {
+          "id": "dong-ho-thep-bac",
+          "name": "Đồng hồ thép bạc",
+          "subtitle": "STEEL WATCH",
+          "description": "Dây thép bạc, mặt xanh navy.",
+          "detect": "wristwatch",
+          "image": {
+            "file": "../../assets-source/demo/item/dong-ho-thep-bac.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 62,
+            "y": 50
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=dong%20ho%20day%20thep%20nam"
+        }
+      ]
+    },
+    {
+      "slug": "ao-khoac-phao-dem",
+      "title": "Áo khoác phao đêm phố",
+      "seoDescription": "Áo khoác phao, áo thun đen, mũ lưỡi trai, dây chuyền bạc và sneaker đen cho tối ra phố.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/ao-khoac-phao.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "streetwear-he",
+        "den-trang-monochrome"
+      ],
+      "items": [
+        {
+          "id": "ao-khoac-phao",
+          "name": "Áo khoác phao",
+          "subtitle": "PUFFER JACKET",
+          "description": "Áo phao nhẹ, cổ đứng, khoá kéo, giữ ấm cho tối lộng gió.",
+          "detect": "jacket",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-khoac-navy.jpg"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 50,
+            "y": 34
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20khoac%20phao%20nam"
+        },
+        {
+          "id": "ao-thun-den",
+          "name": "Áo thun đen",
+          "subtitle": "BLACK TEE",
+          "description": "Cotton đen, lớp nền cho áo khoác.",
+          "detect": "t-shirt",
+          "image": {
+            "file": "../../assets-source/demo/item/ao-thun-den-705.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 50,
+            "y": 44
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20thun%20den%20nam"
+        },
+        {
+          "id": "giay-sneaker-den",
+          "name": "Giày sneaker đen",
+          "subtitle": "BLACK SNEAKERS",
+          "description": "Sneaker đen đế trắng.",
+          "detect": "sneakers",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/giay-sneaker-den.png"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 50,
+            "y": 95
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20den%20nam"
+        },
+        {
+          "id": "mu-luoi-trai",
+          "name": "Mũ lưỡi trai",
+          "subtitle": "BASEBALL CAP",
+          "description": "Mũ lưỡi trai cotton, khoá chỉnh sau.",
+          "detect": "cap",
+          "image": {
+            "file": "../../assets-source/demo/item/mu-luoi-trai-vang.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 50,
+            "y": 6
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=mu%20luoi%20trai%20nam"
+        },
+        {
+          "id": "day-chuyen-bac",
+          "name": "Dây chuyền bạc",
+          "subtitle": "SILVER CHAIN",
+          "description": "Dây chuyền bạc bản nhỏ.",
+          "detect": "necklace",
+          "image": {
+            "file": "../../assets-source/cut/mesh-84/day-chuyen-bac.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 50,
+            "y": 26
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=day%20chuyen%20bac%20nam"
+        }
+      ]
+    },
+    {
+      "slug": "ao-thun-in-dao-pho",
+      "title": "Áo thun in dạo phố",
+      "seoDescription": "Áo thun in chữ, quần jean đen, sneaker trắng xám, móc khoá và khăn bandana cho buổi chiều dạo phố.",
+      "modelImage": {
+        "file": "../../assets-source/demo/model/ao-thun-trang-in.jpg"
+      },
+      "status": "published",
+      "featured": false,
+      "collections": [
+        "streetwear-he"
+      ],
+      "items": [
+        {
+          "id": "ao-thun-in-chu",
+          "name": "Áo thun in chữ",
+          "subtitle": "GRAPHIC T-SHIRT",
+          "description": "Cotton mềm, form rộng, hoạ tiết in trước ngực.",
+          "detect": "t-shirt",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/ao-thun-in-chu.png"
+          },
+          "side": "left",
+          "order": 0,
+          "anchor": {
+            "x": 50,
+            "y": 30
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=ao%20thun%20in%20hinh%20form%20rong"
+        },
+        {
+          "id": "quan-jean-den",
+          "name": "Quần jean đen in",
+          "subtitle": "PRINTED JEANS",
+          "description": "Jean đen ống rộng, hoạ tiết trắng dọc ống.",
+          "detect": "pants",
+          "image": {
+            "file": "../../assets-source/demo/item/quan-jean-den.png"
+          },
+          "side": "left",
+          "order": 1,
+          "anchor": {
+            "x": 50,
+            "y": 64
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=quan%20jean%20den%20ong%20rong%20in"
+        },
+        {
+          "id": "giay-sneaker-trang-xam",
+          "name": "Giày sneaker trắng xám",
+          "subtitle": "SNEAKERS",
+          "description": "Kiểu dáng thể thao, dễ phối đồ.",
+          "detect": "sneakers",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/giay-sneaker-trang-xam.png"
+          },
+          "side": "left",
+          "order": 2,
+          "anchor": {
+            "x": 50,
+            "y": 94
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=giay%20sneaker%20trang%20xam"
+        },
+        {
+          "id": "moc-khoa-phu-kien",
+          "name": "Móc khoá phụ kiện",
+          "subtitle": "KEYCHAIN",
+          "description": "Móc khoá kim loại gắn thắt lưng.",
+          "detect": "belt",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/moc-khoa-phu-kien.png"
+          },
+          "side": "right",
+          "order": 0,
+          "anchor": {
+            "x": 56,
+            "y": 50
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=moc%20khoa%20phu%20kien%20streetwear"
+        },
+        {
+          "id": "khan-bandana-do",
+          "name": "Khăn bandana đỏ",
+          "subtitle": "BANDANA",
+          "description": "Khăn bandana đỏ, buộc cổ tay hoặc túi quần.",
+          "detect": "wrist",
+          "image": {
+            "file": "../../assets-source/cut/dramatic/khan-bandana-do.png"
+          },
+          "side": "right",
+          "order": 1,
+          "anchor": {
+            "x": 34,
+            "y": 52
+          },
+          "affiliateUrl": "https://shopee.vn/search?keyword=khan%20bandana%20do"
+        }
+      ]
+    }
+  ],
+  "home": [
+    {
+      "type": "HeroSlider",
+      "props": {
+        "id": "demo-hero",
+        "label": "Banner chính",
+        "autoplaySeconds": 6,
+        "slides": [
+          {
+            "image": {
+              "file": "../../assets-source/demo/hero/silhouette-walk.jpg"
+            },
+            "mobileImage": {
+              "file": "../../assets-source/demo/hero/silhouette-walk-mobile.jpg"
+            },
+            "eyebrow": "Lookbook mới",
+            "alt": "Bóng người mẫu bước đi trong ánh sáng trắng",
+            "heading": "Mặc đẹp dưới 30 giây",
+            "text": "Chọn một outfit, bấm vào món đồ, mua đúng link. Không cần nghĩ nhiều mỗi sáng.",
+            "ctaLabel": "Xem lookbook",
+            "ctaHref": "/looks"
+          },
+          {
+            "image": {
+              "file": "../../assets-source/demo/hero/store-interior.jpg"
+            },
+            "mobileImage": {
+              "file": "../../assets-source/demo/hero/store-interior-mobile.jpg"
+            },
+            "eyebrow": "Bộ sưu tập",
+            "alt": "Cửa hàng quần áo với kệ gỗ và đèn treo",
+            "heading": "Phối đồ theo phong cách",
+            "text": "Năm bộ sưu tập, mỗi bộ một tâm trạng: đi làm, cà phê, ra phố, đi tập.",
+            "ctaLabel": "Khám phá",
+            "ctaHref": "/collections"
+          },
+          {
+            "image": {
+              "file": "../../assets-source/demo/hero/couple-white-street.jpg"
+            },
+            "mobileImage": {
+              "file": "../../assets-source/demo/hero/couple-white-street-mobile.jpg"
+            },
+            "eyebrow": "Monochrome",
+            "alt": "Hai người mặc đồ trắng đi bộ trên phố",
+            "heading": "Đen trắng không bao giờ lỗi mốt",
+            "ctaLabel": "Xem bộ sưu tập",
+            "ctaHref": "/collections/den-trang-monochrome"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Marquee",
+      "props": {
+        "id": "demo-marquee",
+        "label": "Thông tin nhanh",
+        "items": [
+          {
+            "text": "Outfit mới mỗi tuần"
+          },
+          {
+            "text": "Bấm món đồ, mua đúng link"
+          },
+          {
+            "text": "Phối đồ dưới 30 giây"
+          },
+          {
+            "text": "Miễn phí, không cần tài khoản"
+          },
+          {
+            "text": "Under30ss"
+          }
+        ],
+        "durationSeconds": 40
+      }
+    },
+    {
+      "type": "FeaturedLookbook",
+      "props": {
+        "id": "demo-featured",
+        "source": "featured"
+      }
+    },
+    {
+      "type": "CollectionTiles",
+      "props": {
+        "id": "demo-collections",
+        "eyebrow": "Phong cách",
+        "title": "Bộ sưu tập",
+        "mode": "auto",
+        "collectionSlugs": [],
+        "count": 6,
+        "columnsDesktop": 3,
+        "showViewAll": true
+      }
+    },
+    {
+      "type": "OutfitList",
+      "props": {
+        "id": "demo-latest",
+        "eyebrow": "Mới lên kệ",
+        "title": "Outfit mới",
+        "source": "latest",
+        "collectionSlugs": [],
+        "outfitSlugs": [],
+        "count": 8,
+        "display": "carousel",
+        "columnsDesktop": 4,
+        "excludeFeatured": true,
+        "showViewAll": true
+      }
+    },
+    {
+      "type": "CampaignBanner",
+      "props": {
+        "id": "demo-campaign",
+        "eyebrow": "Chiến dịch tháng này",
+        "heading": "Monochrome cho mọi dịp",
+        "body": "Blazer đen, áo thun trắng, quần tây và giày da. Năm outfit chỉ hai màu, mặc đi làm buổi sáng và đi chơi buổi tối mà không cần thay đồ.",
+        "image": {
+          "file": "../../assets-source/demo/section/campaign-blazer.jpg"
+        },
+        "alt": "Người mẫu mặc blazer xám và áo đen, ảnh đen trắng",
+        "imagePosition": "left",
+        "ctaLabel": "Xem bộ sưu tập",
+        "ctaHref": "/collections/den-trang-monochrome"
+      }
+    },
+    {
+      "type": "OutfitList",
+      "props": {
+        "id": "demo-by-style",
+        "eyebrow": "Chọn theo tâm trạng",
+        "title": "Theo phong cách",
+        "source": "collection",
+        "collectionSlugs": [
+          "streetwear-he",
+          "toi-gian-di-lam",
+          "the-thao-nang-dong"
+        ],
+        "outfitSlugs": [],
+        "count": 8,
+        "display": "grid",
+        "columnsDesktop": 4,
+        "excludeFeatured": false,
+        "showViewAll": true
+      }
+    },
+    {
+      "type": "TextWithImage",
+      "props": {
+        "id": "demo-about",
+        "eyebrow": "Về Under30ss",
+        "heading": "Phối sẵn, để bạn chỉ việc mặc",
+        "body": "Under30ss là lookbook cho người dưới 30: mỗi outfit là một ảnh người mẫu thật, từng món đồ được nối thẳng tới link mua. Bạn không cần lướt hàng trăm sản phẩm, chỉ cần chọn bộ mình thích.\n\nChúng tôi chọn tay từng món theo tiêu chí dễ phối, giá hợp lý và mua được ngay. Mỗi tuần có outfit mới, mỗi mùa có bộ sưu tập mới.",
+        "image": {
+          "file": "../../assets-source/demo/section/about-rack.jpg"
+        },
+        "alt": "Giá treo quần áo tông màu trung tính",
+        "imagePosition": "right",
+        "ctaLabel": "Xem tất cả outfit",
+        "ctaHref": "/looks"
+      }
+    },
+    {
+      "type": "Commitments",
+      "props": {
+        "id": "demo-commitments",
+        "items": [
+          {
+            "icon": "badge-check",
+            "title": "Link mua chuẩn",
+            "text": "Mỗi món đồ dẫn thẳng tới trang bán, đúng mẫu, đúng màu trong ảnh."
+          },
+          {
+            "icon": "sparkles",
+            "title": "Phối sẵn, khỏi nghĩ",
+            "text": "Outfit được phối trọn bộ từ áo tới giày, bạn chỉ cần chọn size."
+          },
+          {
+            "icon": "refresh-ccw",
+            "title": "Mới mỗi tuần",
+            "text": "Lookbook cập nhật hằng tuần theo mùa và theo xu hướng."
+          },
+          {
+            "icon": "heart",
+            "title": "Chọn tay từng món",
+            "text": "Không chạy theo quảng cáo, chỉ giữ lại món đáng tiền và dễ phối."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Gallery",
+      "props": {
+        "id": "demo-gallery",
+        "eyebrow": "Thư viện",
+        "title": "Nhìn là muốn mặc",
+        "note": "Bấm vào ảnh để xem từng món đồ",
+        "source": "collection",
+        "collectionSlugs": [
+          "cuoi-tuan-ca-phe"
+        ],
+        "outfitSlugs": [],
+        "count": 8
+      }
+    },
+    {
+      "type": "Faq",
+      "props": {
+        "id": "demo-faq",
+        "eyebrow": "Hỏi đáp",
+        "title": "Câu hỏi thường gặp",
+        "items": [
+          {
+            "question": "Under30ss có bán hàng không?",
+            "answer": "Không. Under30ss là lookbook phối đồ. Bạn bấm vào món đồ để sang trang bán của đối tác, việc đặt hàng, thanh toán và giao hàng do bên bán thực hiện."
+          },
+          {
+            "question": "Link mua có đúng mẫu trong ảnh không?",
+            "answer": "Mỗi món được chọn tay và kiểm tra trước khi đăng. Nếu bên bán hết hàng hoặc đổi mẫu, chúng tôi cập nhật link trong vòng một tuần."
+          },
+          {
+            "question": "Tôi có cần tài khoản để xem không?",
+            "answer": "Không. Toàn bộ lookbook xem miễn phí, không cần đăng ký. Bạn chỉ cần tài khoản ở trang bán khi đặt hàng."
+          },
+          {
+            "question": "Bao lâu có outfit mới?",
+            "answer": "Mỗi tuần có ít nhất một outfit mới, mỗi mùa có một bộ sưu tập mới. Đăng ký bản tin ở cuối trang để nhận thông báo."
+          },
+          {
+            "question": "Tôi muốn gợi ý một món đồ hoặc một shop?",
+            "answer": "Nhắn cho chúng tôi qua Instagram hoặc TikTok ở cuối trang. Chúng tôi đọc hết và trả lời trong vài ngày."
+          }
+        ]
+      }
+    },
+    {
+      "type": "NewsletterSignup",
+      "props": {
+        "id": "demo-newsletter",
+        "eyebrow": "Bản tin",
+        "heading": "Outfit mới gửi thẳng vào hộp thư",
+        "body": "Mỗi tuần một email: outfit mới, bộ sưu tập mới và vài mẹo phối đồ. Không spam, huỷ bất cứ lúc nào.",
+        "buttonLabel": "Đăng ký",
+        "successMessage": "Cảm ơn bạn, outfit mới sẽ tới hộp thư vào thứ Sáu.",
+        "finePrint": "Mỗi tuần một email, không chia sẻ địa chỉ của bạn cho ai."
+      }
+    }
+  ],
+  "subscribers": [
+    {
+      "email": "minh.anh@example.com",
+      "status": "subscribed",
+      "daysAgo": 1
+    },
+    {
+      "email": "quoc.bao@example.com",
+      "status": "subscribed",
+      "daysAgo": 2
+    },
+    {
+      "email": "thu.ha@example.com",
+      "status": "subscribed",
+      "daysAgo": 4
+    },
+    {
+      "email": "duc.huy@example.com",
+      "status": "unsubscribed",
+      "daysAgo": 6
+    },
+    {
+      "email": "lan.phuong@example.com",
+      "status": "subscribed",
+      "daysAgo": 9
+    },
+    {
+      "email": "khanh.linh@example.com",
+      "status": "subscribed",
+      "daysAgo": 13
+    },
+    {
+      "email": "tuan.kiet@example.com",
+      "status": "unsubscribed",
+      "daysAgo": 20
+    },
+    {
+      "email": "ngoc.mai@example.com",
+      "status": "subscribed",
+      "daysAgo": 27
+    }
+  ]
+}

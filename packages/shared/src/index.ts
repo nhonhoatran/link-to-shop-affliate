@@ -15,3 +15,4 @@ export * from './collection-contract';
 export * from './newsletter-contract';
 export * from './home-sections';
 export * from './home-layout-contract';
+export * from './seed-demo-schema';

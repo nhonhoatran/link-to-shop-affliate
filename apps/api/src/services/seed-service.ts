@@ -51,7 +51,7 @@ const readSeedImage = async (options: SeedOptions, file: string): Promise<Buffer
 };
 
 // Content-addressed keys make re-running the seed idempotent and avoid orphan objects.
-const uploadSeedImage = async (
+export const uploadSeedImage = async (
   ctx: AppContext,
   options: SeedOptions,
   kind: MediaKind,
