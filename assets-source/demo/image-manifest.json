@@ -1,0 +1,452 @@
+{
+  "downloads": {
+    "raw/model-so-mi-trang-dao-pho.jpg": "1552252059-9d77e4059ad1",
+    "raw/model-linen-xanh-di-lam.jpg": "1792007194806-72a27dd975b0",
+    "raw/model-hoodie-den.jpg": "1773848091825-57df9e4fce8b",
+    "raw/model-ao-khoac-phao.jpg": "1772521234184-3730c30c4cb5",
+    "raw/model-varsity-nau.jpg": "1771310978840-b003aa2bf33e",
+    "raw/model-the-thao-den.jpg": "1608217002058-2e45c33b6c2c",
+    "raw/model-ao-thun-den-ngoai-troi.jpg": "1612872142401-f32c632130d1",
+    "raw/model-blazer-den-studio.jpg": "1787044864685-a46c18614e8e",
+    "raw/model-suit-den-kinh-mat.jpg": "1618886614638-80e3c103d31a",
+    "raw/model-polo-xanh-nhat.jpg": "1775306413232-fecd45367613",
+    "raw/model-denim-jacket-ao-trang.jpg": "1555583743-991174c11425",
+    "raw/model-denim-on-denim.jpg": "1605192554106-d549b1b975cd",
+    "raw/model-so-mi-soc-studio.jpg": "1590903098127-feab9d795179",
+    "raw/model-nu-ao-thun-rong.jpg": "1780566759999-4dbaa4218959",
+    "raw/model-nu-blazer-den.jpg": "1599330293148-164c1e10c8c0",
+    "raw/model-ao-thun-trang-in.jpg": "1623596305214-19f21cbf48ee",
+    "raw/model-ao-thun-in-mural.jpg": "1689044611227-3267fabaf76a",
+    "raw/model-ao-thun-den-studio.jpg": "1590750093844-bc3ae9e48f9c",
+    "raw/model-ao-thun-den-san-thuong.jpg": "1603072921615-f0d52e2f0c04",
+    "raw/model-so-mi-trang-cargo-dem.jpg": "1793443696280-029ed5e7fe99",
+    "raw/model-ao-len-den-spotlight.jpg": "1760245773960-200dbe893696",
+    "raw/scene-silhouette-walk.jpg": "1792588067900-e3774a3c10bc",
+    "raw/scene-store-interior.jpg": "1441986300917-64674bd600d8",
+    "raw/scene-store-rack-wall.jpg": "1441984904996-e0b6ba687e04",
+    "raw/scene-rack-neutral.jpg": "1603400521630-9f2de124b33b",
+    "raw/scene-blazer-hand-pocket.jpg": "1613915617430-8ab0fd7c6baf",
+    "raw/scene-white-outfit.jpg": "1657815929003-b97cc426cb3d",
+    "raw/scene-woman-white-suit.jpg": "1627130697816-4d71dbfe6a5b",
+    "raw/scene-coffee-man.jpg": "1790200426978-f12e99344ba5",
+    "raw/scene-adidas-mono.jpg": "1783314940783-c8b562fff574",
+    "raw/scene-black-blazer-pose.jpg": "1754315052701-0b98f6ba786b",
+    "raw/scene-couple-white-street.jpg": "1634921276069-c24ba5d6b35c",
+    "raw/scene-rack-minimal.jpg": "1551232864-3f0890e580d9",
+    "raw/scene-silhouette-jacket.jpg": "1603189343302-e603f7add05a",
+    "raw/item-giay-sneaker-trang.jpg": "1625860191460-10a66c7384fb",
+    "raw/item-quan-jean-den.jpg": "1718252540617-6ecda2b56b57",
+    "raw/item-dong-ho-day-da-nau.jpg": "1594619231897-7609cd81cdbe",
+    "raw/item-dong-ho-thep-bac.jpg": "1606387318469-bada9b642157",
+    "raw/item-tui-tote-den.jpg": "1618249807726-2f381c277de1",
+    "raw/item-tui-da-nau.jpg": "1691480150204-66dd1eb77391",
+    "raw/item-mu-luoi-trai-vang.jpg": "1645266729222-17cd32e06fd0",
+    "raw/item-giay-chay-bo-den.jpg": "1786379582231-f4a593cacf2d",
+    "raw/item-kinh-mat-gong-tron.jpg": "1588768897961-332c50c55d18",
+    "raw/item-kinh-the-thao.jpg": "1711223499758-8aef018b720e",
+    "raw/item-kinh-mat-hop-da.jpg": "1710407625705-fe00b2ecf9e7",
+    "raw/item-mat-day-chuyen-bac.jpg": "1590845947379-6c663322efea",
+    "raw/item-quan-jean-xanh-xep.jpg": "1637069585336-827b298fe84a",
+    "raw/item-tui-bao-tu-den.jpg": "1645276281394-395ff9f072a7",
+    "raw/item-tui-xach-vang.jpg": "1640901556395-f0e709c33494",
+    "raw/item-ao-thun-trang-tron.jpg": "1651761179569-4ba2aa054997",
+    "raw/item-ao-polo-trang.jpg": "1621773881532-fe65715b5137",
+    "raw/item-ao-so-mi-linen-trang.jpg": "1713881587420-113c1c43e28a",
+    "raw/item-ao-so-mi-linen-xam.jpg": "1713881842156-3d9ef36418cc",
+    "raw/item-ao-so-mi-xanh-nhat.jpg": "1558171813-2ffcb3d2ea27",
+    "raw/item-hoodie-den-in-chu.jpg": "1680292783974-a9a336c10366",
+    "raw/item-ao-khoac-jean.jpg": "1543076447-215ad9ba6923",
+    "raw/item-ao-bomber-nau.jpg": "1591047139829-d91aecb6caea",
+    "raw/item-ao-khoac-navy.jpg": "1624548140129-74786c5f1279",
+    "raw/item-blazer-den.jpg": "1598808503746-f34c53b9323e",
+    "raw/item-giay-loafer-da-lon.jpg": "1676121270762-47c8d3a7b9d5",
+    "raw/item-quan-tay-den.jpg": "1760616172899-0681b97a2de3",
+    "raw/item-giay-derby-den.jpg": "1668069226492-508742b03147",
+    "raw/item-ao-thun-nau.jpg": "1607160199580-1b0c9b736b66",
+    "raw/item-tat-trang.jpg": "1589895868481-e2ffe351cccb",
+    "raw/item-ao-thun-den-705.jpg": "1618354691438-25bc04584c23",
+    "raw/item-quan-chino-xam.jpg": "1601679249486-3e2a903f23ee"
+  },
+  "outputs": [
+    {
+      "out": "model/so-mi-trang-dao-pho.jpg",
+      "src": "raw/model-so-mi-trang-dao-pho.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/linen-xanh-di-lam.jpg",
+      "src": "raw/model-linen-xanh-di-lam.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/hoodie-den.jpg",
+      "src": "raw/model-hoodie-den.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/ao-khoac-phao.jpg",
+      "src": "raw/model-ao-khoac-phao.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/varsity-nau.jpg",
+      "src": "raw/model-varsity-nau.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/the-thao-den.jpg",
+      "src": "raw/model-the-thao-den.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/blazer-den-studio.jpg",
+      "src": "raw/model-blazer-den-studio.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/polo-xanh-nhat.jpg",
+      "src": "raw/model-polo-xanh-nhat.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/denim-on-denim.jpg",
+      "src": "raw/model-denim-on-denim.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/so-mi-soc-studio.jpg",
+      "src": "raw/model-so-mi-soc-studio.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/nu-ao-thun-rong.jpg",
+      "src": "raw/model-nu-ao-thun-rong.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/nu-blazer-den.jpg",
+      "src": "raw/model-nu-blazer-den.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/ao-thun-trang-in.jpg",
+      "src": "raw/model-ao-thun-trang-in.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "model/ao-thun-den-san-thuong.jpg",
+      "src": "raw/model-ao-thun-den-san-thuong.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1600
+    },
+    {
+      "out": "hero/silhouette-walk.jpg",
+      "src": "raw/scene-silhouette-walk.jpg",
+      "aspect": "21:9",
+      "maxEdge": 2000
+    },
+    {
+      "out": "hero/silhouette-walk-mobile.jpg",
+      "src": "raw/scene-silhouette-walk.jpg",
+      "aspect": "4:5",
+      "maxEdge": 1200
+    },
+    {
+      "out": "hero/store-interior.jpg",
+      "src": "raw/scene-store-interior.jpg",
+      "aspect": "21:9",
+      "maxEdge": 2000
+    },
+    {
+      "out": "hero/store-interior-mobile.jpg",
+      "src": "raw/scene-store-interior.jpg",
+      "aspect": "4:5",
+      "maxEdge": 1200
+    },
+    {
+      "out": "hero/couple-white-street.jpg",
+      "src": "raw/scene-couple-white-street.jpg",
+      "aspect": "21:9",
+      "maxEdge": 2000,
+      "focus": 0.12
+    },
+    {
+      "out": "hero/couple-white-street-mobile.jpg",
+      "src": "raw/scene-couple-white-street.jpg",
+      "aspect": "4:5",
+      "maxEdge": 1200,
+      "focus": 0.4
+    },
+    {
+      "out": "section/campaign-blazer.jpg",
+      "src": "raw/scene-blazer-hand-pocket.jpg",
+      "aspect": "4:5",
+      "maxEdge": 1500
+    },
+    {
+      "out": "section/about-rack.jpg",
+      "src": "raw/scene-rack-neutral.jpg",
+      "aspect": "4:5",
+      "maxEdge": 1500
+    },
+    {
+      "out": "section/og-silhouette.jpg",
+      "src": "raw/scene-silhouette-walk.jpg",
+      "aspect": "16:9",
+      "maxEdge": 1600
+    },
+    {
+      "out": "cover/streetwear-he.jpg",
+      "src": "raw/model-ao-thun-in-mural.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1200
+    },
+    {
+      "out": "cover/toi-gian-di-lam.jpg",
+      "src": "raw/scene-woman-white-suit.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1200
+    },
+    {
+      "out": "cover/cuoi-tuan-ca-phe.jpg",
+      "src": "raw/scene-coffee-man.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1200
+    },
+    {
+      "out": "cover/the-thao-nang-dong.jpg",
+      "src": "raw/scene-adidas-mono.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1200
+    },
+    {
+      "out": "cover/den-trang-monochrome.jpg",
+      "src": "raw/scene-black-blazer-pose.jpg",
+      "aspect": "2:3",
+      "maxEdge": 1200
+    },
+    {
+      "out": "item/giay-sneaker-trang.png",
+      "src": "raw/item-giay-sneaker-trang.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/quan-jean-den.png",
+      "src": "raw/item-quan-jean-den.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/dong-ho-thep-bac.png",
+      "src": "raw/item-dong-ho-thep-bac.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/tui-tote-den.png",
+      "src": "raw/item-tui-tote-den.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/tui-da-nau.png",
+      "src": "raw/item-tui-da-nau.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/mu-luoi-trai-vang.png",
+      "src": "raw/item-mu-luoi-trai-vang.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/giay-chay-bo-den.png",
+      "src": "raw/item-giay-chay-bo-den.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/kinh-mat-gong-tron.png",
+      "src": "raw/item-kinh-mat-gong-tron.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/kinh-the-thao.png",
+      "src": "raw/item-kinh-the-thao.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/mat-day-chuyen-bac.png",
+      "src": "raw/item-mat-day-chuyen-bac.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/tui-xach-vang.png",
+      "src": "raw/item-tui-xach-vang.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/ao-thun-trang-tron.png",
+      "src": "raw/item-ao-thun-trang-tron.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/ao-khoac-jean.png",
+      "src": "raw/item-ao-khoac-jean.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/ao-bomber-nau.png",
+      "src": "raw/item-ao-bomber-nau.jpg",
+      "transparent": true,
+      "maxEdge": 800,
+      "box": [
+        0.0,
+        0.1,
+        0.86,
+        1.0
+      ]
+    },
+    {
+      "out": "item/giay-loafer-da-lon.png",
+      "src": "raw/item-giay-loafer-da-lon.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/quan-tay-den.png",
+      "src": "raw/item-quan-tay-den.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/ao-thun-den-705.png",
+      "src": "raw/item-ao-thun-den-705.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/ao-thun-nau.png",
+      "src": "raw/item-ao-thun-nau.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/kinh-mat-hop-da.png",
+      "src": "raw/item-kinh-mat-hop-da.jpg",
+      "transparent": true,
+      "maxEdge": 800
+    },
+    {
+      "out": "item/dong-ho-day-da-nau.jpg",
+      "src": "raw/item-dong-ho-day-da-nau.jpg",
+      "maxEdge": 800
+    },
+    {
+      "out": "item/quan-jean-xanh-xep.jpg",
+      "src": "raw/item-quan-jean-xanh-xep.jpg",
+      "maxEdge": 800
+    },
+    {
+      "out": "item/tui-bao-tu-den.jpg",
+      "src": "raw/item-tui-bao-tu-den.jpg",
+      "maxEdge": 800
+    },
+    {
+      "out": "item/ao-polo-trang.jpg",
+      "src": "raw/item-ao-polo-trang.jpg",
+      "maxEdge": 800,
+      "box": [
+        0.15,
+        0.05,
+        0.85,
+        0.95
+      ]
+    },
+    {
+      "out": "item/ao-so-mi-linen-trang.jpg",
+      "src": "raw/item-ao-so-mi-linen-trang.jpg",
+      "maxEdge": 800,
+      "box": [
+        0.15,
+        0.08,
+        0.85,
+        0.75
+      ]
+    },
+    {
+      "out": "item/ao-so-mi-linen-xam.jpg",
+      "src": "raw/item-ao-so-mi-linen-xam.jpg",
+      "maxEdge": 800,
+      "box": [
+        0.15,
+        0.08,
+        0.85,
+        0.75
+      ]
+    },
+    {
+      "out": "item/ao-so-mi-xanh-nhat.jpg",
+      "src": "raw/item-ao-so-mi-xanh-nhat.jpg",
+      "maxEdge": 800
+    },
+    {
+      "out": "item/hoodie-den-in-chu.jpg",
+      "src": "raw/item-hoodie-den-in-chu.jpg",
+      "maxEdge": 800
+    },
+    {
+      "out": "item/ao-khoac-navy.jpg",
+      "src": "raw/item-ao-khoac-navy.jpg",
+      "maxEdge": 800
+    },
+    {
+      "out": "item/blazer-den.jpg",
+      "src": "raw/item-blazer-den.jpg",
+      "maxEdge": 800,
+      "box": [
+        0.25,
+        0.05,
+        0.95,
+        0.95
+      ]
+    },
+    {
+      "out": "item/giay-derby-den.jpg",
+      "src": "raw/item-giay-derby-den.jpg",
+      "maxEdge": 800
+    },
+    {
+      "out": "item/tat-trang.jpg",
+      "src": "raw/item-tat-trang.jpg",
+      "maxEdge": 800,
+      "box": [
+        0.35,
+        0.45,
+        0.95,
+        0.95
+      ]
+    }
+  ]
+}

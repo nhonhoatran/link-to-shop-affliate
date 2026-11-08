@@ -22,3 +22,9 @@ assets-source/cut/**/raw/
 .cursor/
 .opencode/
 GEMINI.md
+
+# Stock originals for the demo seed (re-downloaded by scripts/demo-images)
+assets-source/demo/raw/
+
+# Playwright MCP session output (screenshots, snapshots)
+.playwright-mcp/
