@@ -276,6 +276,16 @@ $C run --rm --no-deps -v "$DIR/bucket:/restore:ro" --entrypoint sh rustfs-init -
 
 Thử khôi phục trên stack riêng trước khi làm trên production. Khôi phục Mongo ghi đè dữ liệu hiện tại.
 
+## Trang chủ: hoàn tác và reset bố cục
+
+Đợt trang chủ và bộ sưu tập không thêm biến môi trường và không thêm dependency. Migration nằm trong dữ liệu (collection `page_layouts`, `collections`); không cần lệnh riêng.
+
+- Hoàn tác lần đăng gần nhất: `POST /api/admin/home/restore-previous` với body `{ "basePublishedAt": "<publishedAt hiện tại>" }`, cần cookie phiên admin. Lấy `publishedAt` từ `GET /api/admin/home`. Trên giao diện là nút "Hoàn tác" trong toast sau khi đăng hoặc menu "Khác" → "Hoàn tác lần đăng gần nhất". Chỉ có một bản trước.
+- Reset bố cục về mặc định: `POST /api/admin/home/reset`. Bản nháp bị xoá; bản đăng cũ (nếu có) vẫn hoàn tác được.
+- Cả hai đều revalidate `/` ngay, nên không cần chờ cache hết hạn.
+
+Tên các thao tác và đường dẫn API: [Kiến trúc, mục Trang chủ và bộ sưu tập](./system-architecture.md#trang-chủ-và-bộ-sưu-tập).
+
 ## Tham chiếu biến môi trường
 
 Nguồn đối chiếu: `.env.example` (gốc), `apps/api/.env.example`, `apps/web/.env.example`, `infra/.env.prod.example`, và các schema trong code (`apps/api/src/config/env-config.ts`, `apps/api/src/lib/runtime-defaults.ts`, `apps/web/src/lib/web-env.ts`).
@@ -356,7 +366,8 @@ Cột "Bắt buộc" theo code: **Có** nghĩa là schema hoặc compose báo l�
 |------|----------|---------|
 | `ENV_FILE` | `backup-mongo-and-bucket.sh` | Mặc định `<repo>/.env.prod` |
 | `COMPOSE_PROJECT_NAME` | `backup-mongo-and-bucket.sh` | Tuỳ chọn |
-| `E2E_BASE_URL` | Playwright | Mặc định `http://localhost:8080` |
+| `E2E_BASE_URL` | Playwright | Mặc định `http://localhost:8080`. Chuỗi `content-*` đổi bố cục trang chủ, settings và bộ sưu tập, nên từ chối chạy khi host không phải localhost / 127.0.0.1 |
+| `E2E_ALLOW_CONTENT_RESET` | Playwright | Đặt `1` để cho chuỗi `content-*` chạy trên host khác localhost (chấp nhận bố cục trang chủ bị ghi đè rồi khôi phục từ snapshot) |
 | `E2E_ADMIN_EMAIL` | Playwright | Mặc định `admin@under30ss.local`. Phải là admin có trong DB đang chạy |
 | `E2E_ADMIN_PASSWORD` | Playwright | Bắt buộc khi chạy `pnpm e2e`. Chỉ đặt trong shell, không lưu vào file |
 

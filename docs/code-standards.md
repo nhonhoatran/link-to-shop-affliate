@@ -197,6 +197,30 @@ Quy tắc:
 - Fixtures mẫu cho test: `@under30ss/shared/fixtures` (`packages/shared/src/fixtures`).
 - Quy ước chuỗi: thông điệp lỗi cho người dùng viết tiếng Việt; tên trường, mã lỗi và khoá JSON viết tiếng Anh.
 
+## Section trang chủ, bộ sưu tập, editor
+
+Thư mục:
+
+- `apps/web/src/components/home-sections/`: view của từng loại section, `HomeSectionList`, `SectionShell` (holder chung, tiêu đề qua `aria-labelledby`).
+- `apps/web/src/components/admin/collections/` (form, danh sách, outfit trong bộ sưu tập), `components/admin/pickers/` (`AdminEntityPicker` tìm kiếm phía server, dùng chung cho outfit và bộ sưu tập), `components/admin/home-editor/` (màn hình, toolbar, danh sách thẻ section, form theo `home-section-field-specs.ts`, xem trước).
+
+Luật "view section client-safe": view trong `home-sections/` chỉ nhận DTO đã resolve từ API (`GET /api/public/home`). Không import module server-only, không gọi API, không đọc env. Test `apps/web/test/home-sections/views-client-safe.test.tsx` giữ luật này.
+
+Thêm một loại section mới:
+
+1. Thêm schema và `type` vào `packages/shared/src/home-sections/` (`home-section-union.ts`, `home-section-defaults.ts`, `home-section-meta.ts`).
+2. Thêm resolver ở API (`apps/api/src/services/home-section-resolver-service.ts`) để lấy dữ liệu theo id, lọc bản ghi không còn dùng được.
+3. Thêm view trong `components/home-sections/` và đăng ký trong `home-section-views.ts`.
+4. Thêm field spec trong `components/admin/home-editor/home-section-field-specs.ts` (nhãn tiếng Việt, lấy từ `HOME_SECTION_META`).
+5. Thêm test: schema (shared), resolver (api), view (web), và spec `content-home-sections-render` nếu loại đó có hành vi riêng trên trang.
+
+Chữ mới của từng khu vực nằm ở file copy riêng (`apps/web/src/components/public/collection-copy.ts`, `components/home-sections/home-section-copy.ts`, `components/admin/home-editor/home-editor-copy.ts`). `public-copy.ts` chỉ dành cho shell.
+
+### Client component và barrel shared
+
+- Module `'use client'` không import giá trị (value) từ barrel `@under30ss/shared`. Barrel kéo theo zod và mọi schema vào client bundle public, tăng khoảng 100 KiB. Dùng `import type` hoặc module client-safe riêng. Ví dụ: `apps/web/src/components/public/home-path.ts`.
+- Server Component không truyền hàm sang Client Component (props phải serializable). Dựng link hoặc giá trị ngay trong Client Component, hoặc truyền dữ liệu thuần. Ví dụ đã sửa: trang sửa bộ sưu tập không còn truyền hàm phân trang xuống panel. Panel tự gọi `collectionOutfitsPageHref` từ `components/admin/collections/collection-list-query.ts`.
+
 ## Cấu hình, không fix cứng giá trị nghiệp vụ
 
 Giá trị nghiệp vụ (giới hạn upload, ngưỡng rate limit, số trang, múi giờ, thời gian cache, tên site) không được hard-code. Chúng nằm ở một trong ba nơi, ưu tiên theo thứ tự:
@@ -263,10 +287,10 @@ Quy tắc: không bỏ qua test đang fail để qua build. Không dùng mock th
 
 | Phạm vi | Công cụ | Vị trí | Số test (2026-11-07) |
 |---------|---------|--------|----------------------|
-| `packages/shared` | Vitest | `packages/shared/src/**/*.test.ts` | 37 |
-| `apps/api` | Vitest, supertest, mongodb-memory-server | `apps/api/src/**/*.test.ts`, `apps/api/test/**/*.test.ts` | 102 |
-| `apps/web` | Vitest, jsdom, Testing Library | `apps/web/src/**/*.test.{ts,tsx}`, `apps/web/test/**/*.test.{ts,tsx}` | 265 |
-| E2E | Playwright (Chromium) | `e2e/*.spec.ts`, `e2e/cleanup.teardown.ts` | 65 (đã liệt kê, xem bên dưới) |
+| `packages/shared` | Vitest | `packages/shared/src/**/*.test.ts` | 126 |
+| `apps/api` | Vitest, supertest, mongodb-memory-server | `apps/api/src/**/*.test.ts`, `apps/api/test/**/*.test.ts` | 183 |
+| `apps/web` | Vitest, jsdom, Testing Library | `apps/web/src/**/*.test.{ts,tsx}`, `apps/web/test/**/*.test.{ts,tsx}` | 572 |
+| E2E | Playwright (Chromium) | `e2e/*.spec.ts`, `e2e/*.teardown.ts` | 88 (xem bên dưới) |
 
 Chi tiết:
 
@@ -282,10 +306,15 @@ Chi tiết:
     | `admin-shell` | `admin-shell-*.spec.ts` | Theme, rail, drawer, toast, redirect, viewport admin. Không phụ thuộc `admin-flow` |
     | `visual` | `visual-*.spec.ts` | Chụp `[data-lookbook]` so với baseline |
     | `cleanup` | `cleanup.teardown.ts` | Xoá outfit test qua API sau khi chạy |
+    | `content-setup` → `content-collections` → `content-home-editor-flow` → `content-home-editor-mobile` → `content-home-sections-render` → `content-footer-and-nav` | `content-*.spec.ts` (mỗi file một project) | Đổi bố cục trang chủ, settings, bộ sưu tập. Chạy nối tiếp qua `dependencies`, không song song. `content-setup` (`content.setup.ts`) chỉ chạy khi `E2E_BASE_URL` là localhost / 127.0.0.1 hoặc có `E2E_ALLOW_CONTENT_RESET=1`, rồi ghi bố cục trang chủ và settings hiện có vào `test-results/content-snapshot.json`. Project cuối có `teardown: content-cleanup` (`content.teardown.ts`: khôi phục bố cục và settings từ snapshot, xoá fixture có tiền tố `e2e-content-`). Không khôi phục được y nguyên `previous` và `publishedAt` của bản đăng |
 
-  - Biến môi trường: `E2E_ADMIN_PASSWORD` (bắt buộc, không có giá trị mặc định, không lưu trong repo), `E2E_ADMIN_EMAIL` (mặc định `admin@under30ss.local`), `E2E_BASE_URL` (mặc định `http://localhost:8080`).
+    Lý do một file một project: Playwright không tuần tự hoá các file trong cùng project khi `workers: 2`. `visual` và `admin-shell` chạy trước chuỗi `content` vì snapshot `/` cần bố cục mặc định.
+
+  - Biến môi trường: `E2E_ADMIN_PASSWORD` (bắt buộc, không có giá trị mặc định, không lưu trong repo), `E2E_ADMIN_EMAIL` (mặc định `admin@under30ss.local`), `E2E_BASE_URL` (mặc định `http://localhost:8080`), `E2E_ALLOW_CONTENT_RESET` (xem dưới).
   - Test chỉ đăng nhập thành công, không thử sai, nên không chạm rate limit. Playwright chạy `retries: 0`.
-  - Số test: 65 (admin-flow 1, public 41, admin-shell 18, visual 4, cleanup 1). Chạy đầy đủ 2026-11-07: 65 passed.
+  - Số test: 88 (admin-flow 1, public 41, admin-shell 18, visual 4, cleanup 1; content: setup 1, collections 4, editor desktop 2, editor mobile 3, render 7, footer và nav 5, content-cleanup 1).
+  - Cache dev: dưới `next dev`, request đầu tiên tới trang public sau khi đăng, reset hoặc đổi settings có thể còn nội dung cũ; request kế tiếp đúng. Production (`next build` + `next start`) đã kiểm chứng là đọc mới. Web gọi `revalidateTag(tag, { expire: 0 })` (`apps/web/src/app/api/revalidate/route.ts`), theo [tài liệu Next.js](https://nextjs.org/docs/app/api-reference/functions/revalidateTag). Spec phải `expect.poll` (đọc lại trang), không `waitForTimeout` cố định để chờ dữ liệu.
+  - Đăng nhập admin: `adminApi()` và `signInContext()` đăng nhập một lần mỗi worker. Limiter 20 lần/IP/15 phút, nên chạy đầy đủ `pnpm e2e` là đủ, không lặp lại nhiều lần liên tiếp.
 - **Lighthouse.** Mục tiêu SEO và accessibility ≥ 95 (kế hoạch P7). Không có script tự động trong repo, chạy tay bằng Lighthouse CLI. Kết quả đo và điều kiện xem [Roadmap, trạng thái](./development-roadmap.md#trạng-thái-phase).
 
 ## Bảo mật trong code

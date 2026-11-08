@@ -4,6 +4,38 @@ Ghi lại các thay đổi đáng kể theo phiên bản. Mỗi mục ghi ngày,
 
 Liên quan: [Roadmap](./development-roadmap.md) · [Kiến trúc](./system-architecture.md) · [Triển khai](./deployment-guide.md)
 
+## Trang chủ section, bộ sưu tập và editor (2026-11-07)
+
+Phạm vi: `apps/api`, `apps/web`, `packages/shared`, `e2e`, `docs`. Kế hoạch: `plans/261107-1341-homepage-sections-and-collections/` (7 phase). Thay đổi chưa commit tại thời điểm viết mục này.
+
+### Tính năng
+
+| Phase | Nội dung |
+|-------|----------|
+| P1 | Hợp đồng dùng chung: bộ sưu tập, bố cục trang chủ (7 loại section), revalidate có `tags`, settings mới. Checklist UI và số đo bundle "trước" |
+| P2 | API bộ sưu tập (`/api/admin/collections`, `/api/public/collections`), bố cục (`/api/admin/home/*`, `/api/public/home`), đăng giữ một bản trước, hoàn tác (`restore-previous`), reset |
+| P3 | Admin bộ sưu tập (danh sách, form, ảnh bìa, gán outfit, Lên/Xuống, xoá có usage). Trang `/collections` và `/collections/[slug]` |
+| P4 | Renderer section và trang chủ public: slider có nút tạm dừng, tab băng chuyền bằng radio (không cần JS), FAQ `<details>` với JSON-LD `FAQPage`, lookbook dùng `h2` và trang chủ có một `h1` |
+| P5 | Dải thông báo toàn site (mặc định tắt), link Bộ sưu tập trên header và footer tự ẩn khi chưa có bộ sưu tập đã đăng, footer cấu hình được trong Cài đặt |
+| P6 | Trình soạn trang chủ `/admin/home` và xem trước `/admin/home-preview`. Kéo thả (bàn phím và chuột), nút Lên/Xuống, tab Chỉnh sửa ⇄ Xem trước dưới 1024px, toast "Hoàn tác" khi đăng |
+| P7 | E2E: project `content` (setup, 5 spec, teardown; chạy nối tiếp). Số đo lại bundle, tài liệu |
+
+### Kiểm chứng
+
+- Unit: `packages/shared` 126, `apps/api` 183, `apps/web` 572 test; e2e 88/88. Chi tiết ở [Roadmap, số liệu và ngân sách](./development-roadmap.md#số-liệu-và-ngân-sách).
+- E2E: 88 test (65 project cũ, 23 project `content` gồm `content-setup` và `content-cleanup`).
+- Visual: 4/4 xanh, không cập nhật snapshot.
+- First Load JS (encoded, KiB): `/` 196,0 → 199,1 (ngân sách +15 KB, đạt); `/looks` 194,0 → 194,0.
+- Lighthouse CLI chưa chạy; accessibility kiểm bằng axe-core (xem roadmap).
+
+### Sửa lỗi và điều chỉnh
+
+- Trang sửa bộ sưu tập crash do truyền hàm từ Server Component sang Client Component. Đã sửa: panel tự dựng link phân trang từ `collectionOutfitsPageHref`.
+- Client bundle: module `'use client'` import giá trị từ barrel `@under30ss/shared` kéo theo zod và toàn bộ schema, làm tăng bundle public. Đã chuyển sang import kiểu type hoặc module client-safe (`apps/web/src/components/public/home-path.ts`). Quy tắc: [Code standards](./code-standards.md#client-component-và-barrel-shared).
+- Publish bản nháp trùng bản đang đăng là no-op (200, giữ `previous`, không revalidate). Trước đây có thể ghi đè `previous` bằng bản giống hệt.
+- Thêm outfit vào bộ sưu tập: giới hạn 24 bộ sưu tập mỗi outfit (400 `VALIDATION_ERROR`). Bộ sưu tập bị xoá giữa chừng thì gỡ các id vừa thêm (race cleanup).
+- Link mạng xã hội mở cùng tab (`PublicSmartLink` `newTab`, chỉ cho URL ngoài).
+
 ## Refactor giao diện client và admin (2026-11-07)
 
 Phạm vi: `apps/web`, `apps/api`, `packages/shared`, `e2e`. Kế hoạch: `plans/261107-0913-professional-ui-refactor-client-admin/` (7 phase). Thay đổi chưa commit tại thời điểm viết mục này.

@@ -78,7 +78,9 @@ Web dùng Next.js 16 App Router với hai route group, mỗi nhóm có layout ri
 
 | Đường dẫn | File | Vai trò |
 |-----------|------|---------|
-| `/` | `(public)/page.tsx` | Outfit nổi bật (`featured`) kèm mục "Outfit khác". Khai báo `dynamic = 'force-dynamic'`. Chưa có outfit nổi bật thì hiện thông báo trống kèm mục "Outfit khác" |
+| `/` | `(public)/page.tsx` | Trang chủ dựng từ bố cục section (xem [Trang chủ và bộ sưu tập](#trang-chủ-và-bộ-sưu-tập)). Có một `h1` ẩn lấy tên SEO của site. Bố cục mặc định: lookbook nổi bật, "Outfit khác", ô bộ sưu tập (tự ẩn khi chưa có bộ sưu tập đã đăng) |
+| `/collections?page=n` | `(public)/collections/page.tsx` | Danh sách bộ sưu tập đã đăng, phân trang theo `looksPageSize`. Tên trang lấy từ setting `collectionsLabel` |
+| `/collections/[slug]` | `(public)/collections/[slug]/page.tsx` | Một bộ sưu tập: breadcrumb, `h1`, mô tả, lưới outfit, phân trang. Slug không tồn tại trả 404 |
 | `/looks?page=n` | `(public)/looks/page.tsx` | Danh sách outfit đã publish, phân trang phía server. `page` không hợp lệ được đưa về trang 1. `page` lớn hơn tổng số trang trả 404. Không có outfit nào thì hiện thông báo trống |
 | `/look/[slug]` | `(public)/look/[slug]/page.tsx` | Một lookbook, breadcrumb về `/looks`, mục "Outfit khác" (loại outfit đang xem) |
 | 404 | `(public)/not-found.tsx` | Dùng layout public có sẵn |
@@ -96,7 +98,10 @@ Số outfit mỗi trang và số outfit "Outfit khác" lấy từ settings (`loo
 | `/admin` | `admin/(protected)/page.tsx` | Tổng quan: số liệu, outfit nổi bật, outfit sửa gần đây. Có `q`, `status` hoặc `page` trên URL thì redirect 307 sang `/admin/outfits?...` |
 | `/admin/outfits` | `admin/(protected)/outfits/page.tsx` | Danh sách outfit: lọc và phân trang phía server (`q`, `status`, `page`) |
 | `/admin/outfits/new`, `/admin/outfits/[id]` | `outfits/new/page.tsx`, `outfits/[id]/page.tsx` | Tạo và sửa outfit |
-| `/admin/settings` | `settings/page.tsx` | Cài đặt site, SEO, upload, số outfit mỗi trang |
+| `/admin/settings` | `settings/page.tsx` | Cài đặt site, SEO, upload, số outfit mỗi trang, link Bộ sưu tập, footer, dải thông báo |
+| `/admin/collections`, `/admin/collections/new`, `/admin/collections/[id]` | `collections/page.tsx`, `collections/new/page.tsx`, `collections/[id]/page.tsx` | Danh sách, tạo và sửa bộ sưu tập (ảnh bìa, outfit trong bộ sưu tập, Lên/Xuống, xoá) |
+| `/admin/home` | `home/page.tsx` | Trình soạn trang chủ: thêm, sắp xếp, ẩn, sửa section; lưu nháp, đăng, hoàn tác |
+| `/admin/home-preview` | `home-preview/page.tsx` | Xem trước bản nháp (ngoài nhóm `(protected)`, có banner "Bản xem trước, chưa đăng"). Không đổi những gì khách thấy |
 | `/admin/users` | `users/page.tsx` | Danh sách, tạo và xoá admin |
 | `/admin/login` | `admin/login/page.tsx` | Đăng nhập, nằm ngoài `(protected)` |
 | 404 trong admin | `(protected)/not-found.tsx` | "Không tìm thấy trang", nút về `/admin/outfits` |
@@ -188,6 +193,70 @@ Cơ chế ba lớp:
    - Seed chỉ đặt `featured` khi outfit được publish (`wantFeatured = featured && status === 'published'`).
 
 Giới hạn đã biết: hai admin cùng bấm đặt nổi bật đồng thời thì một phía vẫn thấy trạng thái cũ trên editor tới khi tải lại trang. Dữ liệu vẫn đúng (chỉ một outfit nổi bật). Xem [Roadmap](./development-roadmap.md).
+
+## Trang chủ và bộ sưu tập
+
+### Mô hình dữ liệu
+
+| Model | File | Nội dung |
+|-------|------|----------|
+| `Collection` | `apps/api/src/models/collection-model.ts` | `slug`, `name`, `description?`, `coverImage?`, `status` (`draft` / `published`), `order`, `seoDescription?`. Index `{ status, order, _id }` |
+| `PageLayout` | `apps/api/src/models/page-layout-model.ts` | Collection `page_layouts`, `pageKey: 'home'` (`HOME_PAGE_KEY`). Giữ `draft`, `published`, `publishedAt`, và đúng một bản đăng trước (`previous`) |
+| `Outfit.collectionIds` | `apps/api/src/models/outfit-model.ts` | Mảng id bộ sưu tập chứa outfit. Index `{ collectionIds, status, updatedAt, _id }` |
+
+Bố cục trang chủ là JSON `[{ type, props: { id, visible, ... } }]` với `schemaVersion`. Bảy loại section: `HeroSlider`, `CollectionTiles`, `OutfitList`, `FeaturedLookbook`, `TextWithImage`, `Faq`, `Commitments`. Schema nằm ở `packages/shared/src/home-sections/`, kiểu và union section ở `home-section-union.ts`; contract bố cục (nháp, đăng, hoàn tác, xem trước, section đã resolve) ở `packages/shared/src/home-layout-contract.ts`.
+
+### API
+
+| Phương thức, đường dẫn | Quyền | Nội dung |
+|------------------------|-------|----------|
+| `GET /api/public/collections?page&size` | Công khai | Bộ sưu tập đã đăng, phân trang theo `looksPageSize` |
+| `GET /api/public/collections/slugs` | Công khai | Slug và `updatedAt` cho sitemap |
+| `GET /api/public/collections/:slug` | Công khai | Một bộ sưu tập kèm outfit đã đăng, mới nhất trước. Không có hoặc chưa đăng: 404 |
+| `GET /api/public/home` | Công khai | Các section đã resolve từ bản đăng; chưa đăng thì trả 3 section mặc định (`DEFAULT_HOME_CONTENT`). Section lỗi dữ liệu bị lọc khỏi danh sách |
+| `GET/POST /api/admin/collections`, `GET/PUT/DELETE /api/admin/collections/:id` | Admin | CRUD. Đăng (`published`) bắt buộc có ảnh bìa |
+| `POST /api/admin/collections/:id/move` | Admin | `{ direction: 'up' | 'down' }`, đổi `order` |
+| `POST/DELETE /api/admin/collections/:id/outfits[/:outfitId]` | Admin | Gán và gỡ outfit. Gán theo kiểu tất cả hoặc không: giới hạn `MAX_COLLECTIONS_PER_OUTFIT` = 24 bộ sưu tập mỗi outfit. Có outfit đã đủ 24 bộ sưu tập thì trả 400 `VALIDATION_ERROR` (`fields.outfitIds`), không thêm outfit nào. Nếu bộ sưu tập bị xoá giữa chừng thì gỡ id vừa thêm và trả 404 |
+| `GET /api/admin/home` | Admin | Bản nháp, bản đăng, `publishedAt`, `previous`, `hasUnpublishedChanges`, `usingDefault` |
+| `PUT /api/admin/home/draft` | Admin | `{ content, baseUpdatedAt }`. Sai `baseUpdatedAt` trả 409. Không revalidate |
+| `POST /api/admin/home/preview` | Admin | Resolve một bố cục gửi lên, không lưu. `GET /home/preview` resolve bản nháp đã lưu |
+| `POST /api/admin/home/revert-draft` | Admin | Bản nháp quay về bản đăng. Không revalidate |
+| `POST /api/admin/home/publish` | Admin | `{ baseUpdatedAt }`. Bản đăng cũ thành `previous`, revalidate `/`. Nháp trùng bản đang đăng thì không ghi gì: trả 200 với `publishedAt` và `previous` hiện tại, không revalidate (an toàn khi client gọi lại hoặc mở tab thứ hai). Nháp quá cũ (`baseUpdatedAt` lệch) vẫn trả 409 |
+| `POST /api/admin/home/restore-previous` | Admin | `{ basePublishedAt }`. Đổi chỗ bản đăng và `previous` (làm lại lần nữa là quay về bản vừa đăng). Có lock theo `basePublishedAt`. Không có bản đăng trước: 409 với `fields.previous = 'NO_PREVIOUS'`. Revalidate `/` |
+| `POST /api/admin/home/reset` | Admin | Bản nháp về mặc định, bản đăng cũ giữ làm `previous` nếu đã có đăng. Revalidate `/` |
+
+Route nằm ở `apps/api/src/routes/admin-home-routes.ts`, `public-home-routes.ts`, `admin-collection-routes.ts`, `public-collection-routes.ts`. Logic đăng và hoàn tác ở `apps/api/src/services/home-layout-publish-service.ts`.
+
+### Luồng nháp → đăng → hoàn tác
+
+1. Trình soạn lưu nháp (`PUT /draft`). Khách chưa thấy gì.
+2. Xem trước bằng `/admin/home-preview` (đọc nháp, không ghi).
+3. "Đăng" (`POST /publish`): bản đăng hiện tại chuyển thành `previous`, nháp thành bản đăng. Không hỏi xác nhận; toast có nút "Hoàn tác" (giữ 10 giây, dừng khi rê chuột hoặc focus).
+4. "Hoàn tác" (toast hoặc menu "Khác" → "Hoàn tác lần đăng gần nhất") gọi `restore-previous`. Chỉ giữ một bản trước, nên hoàn tác hai lần là quay về bản vừa đăng.
+5. "Khôi phục bố cục mặc định" (`reset`) xoá bản nháp, hỏi xác nhận. Bản đăng cũ vẫn hoàn tác được.
+
+### Revalidate theo tag
+
+Ngoài đường dẫn, contract revalidate có `tags` (chỉ nhận tag khai báo trong `PUBLIC_CACHE_TAGS`, `packages/shared/src/revalidate-contract.ts`). `scope: 'all'` expire mọi tag. Web gọi `revalidateTag(tag, { expire: 0 })` (`apps/web/src/app/api/revalidate/route.ts`), theo [tài liệu Next.js](https://nextjs.org/docs/app/api-reference/functions/revalidateTag). Dưới `next dev`, request đầu tiên sau khi đăng có thể còn nội dung cũ; production (`next build` + `next start`) đã kiểm chứng đọc mới.
+
+| Sự kiện | Đường dẫn | Tag |
+|---------|-----------|-----|
+| Đổi bộ sưu tập | đường dẫn bộ sưu tập (`collectionPaths`, `revalidate-web-service.ts:39`) | `public-collections`, `public-home`, `public-settings` |
+| Đổi outfit | đường dẫn outfit (`outfitPaths`, `revalidate-web-service.ts:35`) | `public-collections`, `public-home` |
+| Đăng, hoàn tác, reset bố cục | `/` | `public-home` (`HOME_REVALIDATION`, `revalidate-web-service.ts`) |
+
+Tag `public-home` gắn vào fetch bố cục trong `apps/web/src/lib/seo/public-home-loaders.ts`; `public-collections` gắn vào loader bộ sưu tập.
+
+### Settings bổ sung
+
+Các trường mới của `Settings` (đều optional, API luôn điền khi đọc):
+
+- `collectionsNavEnabled`: mặc định bật. Link "Bộ sưu tập" trên header và footer chỉ hiện khi có ít nhất một bộ sưu tập đã đăng.
+- `collectionsLabel`: tên hiển thị của link và trang bộ sưu tập, mặc định `DEFAULT_COLLECTIONS_LABEL`.
+- `footer`: `{ columns: [{ title, links: [{ label, href }] }], social: [{ label, href }] }`. Tối đa 4 cột, 8 link mỗi cột, 8 link mạng xã hội. `href` nội bộ (`/...`) hoặc `https://`; link `javascript:` bị từ chối (schema `safeHrefSchema`, `packages/shared/src/safe-href.ts`; e2e kiểm tra tại ô nhập).
+- `announcement`: `{ enabled, text (≤160), linkLabel? (≤40), href? }`, mặc định tắt. Là cấu hình toàn site, hiện phía trên header public, không phải section trang chủ.
+
+Settings là PUT toàn bộ document: client phải gửi lại mọi trường, trường bị bỏ sẽ bị xoá (xem `e2e/support/admin-settings.ts`).
 
 ## Luồng revalidate API → web
 

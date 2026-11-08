@@ -53,6 +53,41 @@ Kế hoạch 7 phase, phụ thuộc theo `plan.md` trong thư mục plan. Tất 
 
 Số liệu unit đo lại bằng `pnpm exec vitest run` trong từng workspace. E2E chỉ đếm bằng `--list`, chưa chạy lại vì cần stack.
 
+## Trang chủ section, bộ sưu tập và editor
+
+Plan: `plans/261107-1341-homepage-sections-and-collections/`. Trạng thái: P1–P7 đã code, chưa commit.
+
+| Phase | Nội dung | Trạng thái |
+|-------|----------|------------|
+| P1–P6 | Xem [mục changelog](./project-changelog.md#trang-chủ-section-bộ-sưu-tập-và-editor-2026-11-07) | Hoàn thành |
+| P7 | E2E, số đo, tài liệu | Xem bảng kiểm chứng bên dưới |
+
+### Số liệu và ngân sách
+
+- Unit (2026-11-07, `pnpm test`): `packages/shared` 126/126; `apps/api` 183/183; `apps/web` 572/572. Một lần chạy trước đó trên Windows có worker crash ở `test/auth-device-cookie.test.ts` (exit `3221226505`); chạy lại đầy đủ không tái hiện.
+- E2E: 88 test (`playwright test --list`) = 65 project cũ + 23 project `content` (setup 1, collections 4, editor 2, editor mobile 3, render 7, footer và nav 5, cleanup 1). Báo cáo tester ghi lần chạy đủ trước đó: 87/87 xanh (chưa tính `content-setup`). Lần chạy 88/88 chưa có báo cáo.
+- Visual: 4/4 xanh, không cập nhật snapshot.
+- Accessibility: chưa chạy Lighthouse CLI. Kiểm tra bằng axe-core 4.14.0 (rule `color-contrast`, cùng rule với Lighthouse). Card đang fade do `.revealOnScroll` (`apps/web/src/styles/motion-primitives.module.css`) fail ở 1.2–1.5:1 khi tải lúc chưa cuộn.
+- First Load JS (encoded KiB, `scripts/perf/measure-first-load-js.mjs`, median): `/` 199,1 (baseline 196,0, tăng 3,1 KiB, trong ngân sách +15 KB); `/looks` 194,0. Số baseline và cách đo: [perf-baseline-first-load-js.md](../plans/261107-1341-homepage-sections-and-collections/perf-baseline-first-load-js.md).
+- `GET /api/public/home` (layout mặc định, 3 section): median khoảng 6 ms ở `localhost`. Chưa đo với bố cục đầy đủ section.
+
+### Việc còn mở
+
+| Việc | Lý do và bằng chứng | Hướng xử lý |
+|------|---------------------|-------------|
+| Reveal animation làm card fail contrast | axe `color-contrast` 1.2–1.5:1 lúc load chưa cuộn (xem trên) | Chủ repo chọn: đổi `.revealOnScroll` hoặc chấp nhận |
+| Lighthouse chính thức | Chưa chạy CLI, mobile + desktop, build production, cho `/`, `/collections`, `/collections/[slug]` | Chạy và ghi số vào báo cáo |
+| Meta description rỗng | Khi `seoDescription` của site rỗng, `/` và `/collections/[slug]` không có description (`apps/web/src/app/(public)/page.tsx`, `apps/web/src/lib/seo/build-collection-metadata.ts`) | Thêm chữ mặc định cho trang chủ, đồng bộ với trang danh sách |
+| N+1 khi lấy tên nhãn trong editor và picker | Mỗi nhãn gọi một lần | Thêm filter `ids` cho list API |
+| Thiếu lock trên reset và revert-draft | Hai thao tác này không nhận `baseUpdatedAt` | Thêm lock như publish và restore |
+| Gộp JSON-LD FAQPage | Trang có nhiều section FAQ cần một khối gộp | Thống nhất khi có nhiều FAQ |
+| Field bắt buộc của chrome public | Header, footer, announcement chưa đánh dấu rõ field bắt buộc | Bổ sung vào schema và form |
+| Gộp helper API trùng | Một số helper lặp giữa các service | Dedupe theo DRY |
+| File vượt 200 dòng | Quy tắc `development-rules.md` | Rà và tách module |
+
+- Đã xong, không còn là follow-up: link mạng xã hội mở cùng tab (`PublicSmartLink` có prop `newTab`, chỉ bật `target="_blank"` cho URL ngoài; `site-social-links.tsx`).
+- Follow-up trong plan: xoá `getFeaturedOutfit` nếu không còn dùng, blog (dự án con), giá và brand món đồ, dọn loader không dùng, dọn heading/pill trùng ở module cũ (checklist UI, C2 và Q1).
+
 ## Cột mốc
 
 | Ngày | Cột mốc |
