@@ -16,6 +16,9 @@ const mapSectionImages = (section: HomeSection, map: MapImage): HomeSection => {
   if (section.type === 'TextWithImage' && section.props.image) {
     return { ...section, props: { ...section.props, image: map(section.props.image) } };
   }
+  if (section.type === 'CampaignBanner') {
+    return { ...section, props: { ...section.props, image: map(section.props.image) } };
+  }
   return section;
 };
 
@@ -33,7 +36,7 @@ export const listSectionImageKeys = (section: HomeSection): { path: string; key:
       found.push({ path: `slides.${index}.image.key`, key: slide.image.key });
       if (slide.mobileImage) found.push({ path: `slides.${index}.mobileImage.key`, key: slide.mobileImage.key });
     });
-  } else if (section.type === 'TextWithImage' && section.props.image) {
+  } else if ((section.type === 'TextWithImage' || section.type === 'CampaignBanner') && section.props.image) {
     found.push({ path: 'image.key', key: section.props.image.key });
   }
   return found;

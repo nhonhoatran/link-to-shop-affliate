@@ -54,11 +54,11 @@ describe('public home: default layout', () => {
 
   it('shows the featured lookbook and the other outfits without the featured one', async () => {
     await createOutfitVia(agent, 'main-look', { featured: true });
-    for (const slug of ['one', 'two', 'three']) await createOutfitVia(agent, slug);
+    for (const slug of ['one', 'two', 'three', 'four']) await createOutfitVia(agent, slug);
 
     const home = await publicHome();
     expect(home.source).toBe('default');
-    expect(home.sections.map((section: { type: string }) => section.type)).toEqual(['FeaturedLookbook', 'OutfitList']);
+    expect(home.sections.map((section: { type: string }) => section.type)).toEqual(['FeaturedLookbook', 'OutfitList', 'Gallery']);
     expect(home.sections[0].data.outfit.slug).toBe('main-look');
     const slugs = slugsOf(home.sections[1].data.tabs[0].items);
     expect(slugs).toHaveLength(3);

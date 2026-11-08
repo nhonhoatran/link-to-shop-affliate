@@ -8,7 +8,7 @@ import { OUTFIT_CARD_FIELDS, toPublicOutfitCard, type OutfitCardRecord } from '.
 
 type OutfitList = Extract<HomeSection, { type: 'OutfitList' }>;
 
-const latestRecords = (filter: Record<string, unknown>, limit: number): Promise<OutfitCardRecord[]> =>
+export const latestRecords = (filter: Record<string, unknown>, limit: number): Promise<OutfitCardRecord[]> =>
   OutfitModel.find({ status: 'published', ...filter })
     .select(OUTFIT_CARD_FIELDS)
     .sort({ updatedAt: -1, _id: -1 })
@@ -26,12 +26,17 @@ const latestTab = async (count: number, ctx: ResolveContext): Promise<OutfitList
   return [{ key: 'latest', href: LOOKS_PAGE_PATH, items: records.map((record) => toPublicOutfitCard(record, ctx.resolveUrl)) }];
 };
 
-const manualTab = async (section: OutfitList, ctx: ResolveContext): Promise<OutfitListTabData[]> => {
-  const ids = section.props.outfitIds.filter(isObjectId);
+export const manualRecords = async (outfitIds: string[]): Promise<OutfitCardRecord[]> => {
+  const ids = outfitIds.filter(isObjectId);
   const found = await OutfitModel.find({ status: 'published', _id: { $in: ids } })
     .select(OUTFIT_CARD_FIELDS)
     .lean<(OutfitCardRecord & { _id: unknown })[]>();
-  return [{ key: 'manual', items: orderByIds(found, ids).map((record) => toPublicOutfitCard(record, ctx.resolveUrl)) }];
+  return orderByIds(found, ids);
+};
+
+const manualTab = async (section: OutfitList, ctx: ResolveContext): Promise<OutfitListTabData[]> => {
+  const records = await manualRecords(section.props.outfitIds);
+  return [{ key: 'manual', items: records.map((record) => toPublicOutfitCard(record, ctx.resolveUrl)) }];
 };
 
 const collectionTabs = async (section: OutfitList, count: number, ctx: ResolveContext): Promise<OutfitListTabData[]> => {

@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import type { AnnouncementInput, FooterInput, ImageRef } from '@under30ss/shared';
+import type { AnnouncementInput, FooterInput, ImageRef, NewsletterConsentInput } from '@under30ss/shared';
 
 export interface SettingsDoc {
   singleton: 'site';
@@ -14,6 +14,9 @@ export interface SettingsDoc {
   collectionsLabel?: string;
   footer?: FooterInput;
   announcement?: AnnouncementInput;
+  newsletterConsent?: NewsletterConsentInput;
+  /** Bumped by the API when the sentence or link changes; never taken from the request. */
+  newsletterConsentVersion?: number;
   updatedAt: Date;
 }
 
@@ -35,6 +38,8 @@ const settingsSchema = new Schema<SettingsDoc>(
     // Validated by the shared zod schemas before every write.
     footer: Schema.Types.Mixed,
     announcement: Schema.Types.Mixed,
+    newsletterConsent: Schema.Types.Mixed,
+    newsletterConsentVersion: Number,
   },
   { timestamps: { createdAt: false, updatedAt: true } },
 );

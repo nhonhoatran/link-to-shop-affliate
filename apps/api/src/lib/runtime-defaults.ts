@@ -41,3 +41,13 @@ export const getDefaultSettings = (): { siteName: string; seoTitle: string; seoD
   seoTitle: process.env.DEFAULT_SEO_TITLE ?? 'Under30ss - Shop the look',
   seoDescription: process.env.DEFAULT_SEO_DESCRIPTION ?? '',
 });
+
+export interface NewsletterRateLimitConfig {
+  windowMs: number;
+  maxPerIp: number;
+}
+
+export const getNewsletterRateLimit = (): NewsletterRateLimitConfig => ({
+  windowMs: readPositiveInt('NEWSLETTER_RATE_LIMIT_WINDOW_MINUTES', 15) * 60_000,
+  maxPerIp: readPositiveInt('NEWSLETTER_RATE_LIMIT_MAX_PER_IP', 10),
+});

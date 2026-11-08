@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { AdminUserModel } from '../models/admin-user-model';
 import { CollectionModel } from '../models/collection-model';
+import { NewsletterSubscriberModel } from '../models/newsletter-subscriber-model';
 import { OutfitModel } from '../models/outfit-model';
 import { PageLayoutModel } from '../models/page-layout-model';
 import { SettingsModel } from '../models/settings-model';
@@ -13,6 +14,7 @@ export const connectMongo = async (uri: string): Promise<void> => {
     SettingsModel.init(),
     CollectionModel.init(),
     PageLayoutModel.init(),
+    NewsletterSubscriberModel.init(),
   ]);
   await ensureContentIndexes();
 };

@@ -10,6 +10,7 @@ import {
 } from '@under30ss/shared';
 import type { Env } from '../config/env-config';
 import { badRequest, conflict } from '../lib/app-error';
+import { isDuplicateKey } from '../lib/mongo-query-helpers';
 import { HOME_PAGE_KEY, PageLayoutModel, type PageLayoutDoc } from '../models/page-layout-model';
 import { assertHomeLayoutLimits } from './home-layout-guards';
 import { attachSectionImageUrls } from './home-section-image-mapper';
@@ -47,7 +48,6 @@ export const parseLockDate = (value: string | null, field: string): Date | null 
 
 export const CONFLICT_MESSAGE = 'Bố cục trang chủ đã được thay đổi ở nơi khác, vui lòng tải lại trang';
 
-const isDuplicateKey = (error: unknown): boolean => (error as { code?: number }).code === 11000;
 
 /** Every write targets the single `home` document, so make sure it exists before the conditional update. */
 export const ensureHomeLayout = async (): Promise<void> => {

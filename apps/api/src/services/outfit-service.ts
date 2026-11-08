@@ -9,13 +9,13 @@ import type {
 } from '@under30ss/shared';
 import type { Env } from '../config/env-config';
 import { badRequest, conflict } from '../lib/app-error';
+import { escapeRegex, isDuplicateKey } from '../lib/mongo-query-helpers';
 import { isObjectId } from '../lib/object-id';
 import { isPublicKey, PUBLIC_KEY_ERROR } from '../lib/public-key-prefix';
 import { OutfitModel, type OutfitRecord } from '../models/outfit-model';
 import { assertCollectionsExist } from './collection-membership-service';
 import { createMediaUrlResolver, toAdminListItem, toOutfit } from './outfit-mapper';
 
-const escapeRegex = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** Anonymous read is only granted to the public/ prefix, so no other key may be referenced. */
 export const assertPublicImageKeys = (modelImage: ImageRef, items: { image: ImageRef }[]): void => {
@@ -60,7 +60,6 @@ export const findOutfitById = async (id: string): Promise<Outfit | null> => {
 const FEATURED_DRAFT_MESSAGE = 'Chỉ đặt nổi bật cho outfit đã đăng';
 const FEATURED_RACE_MESSAGE = 'Outfit nổi bật vừa được thay đổi ở nơi khác, vui lòng thử lại';
 
-const isDuplicateKey = (error: unknown): boolean => (error as { code?: number }).code === 11000;
 
 /** Sets the flag only while the outfit is still published, in one atomic write. */
 const setFeaturedIfPublished = (id: string): Promise<OutfitRecord | null> =>

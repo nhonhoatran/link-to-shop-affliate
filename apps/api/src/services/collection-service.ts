@@ -8,6 +8,7 @@ import type {
 } from '@under30ss/shared';
 import type { Env } from '../config/env-config';
 import { badRequest, conflict } from '../lib/app-error';
+import { escapeRegex, isDuplicateKey } from '../lib/mongo-query-helpers';
 import { isObjectId } from '../lib/object-id';
 import { isPublicKey, PUBLIC_KEY_ERROR } from '../lib/public-key-prefix';
 import { CollectionModel, type CollectionRecord } from '../models/collection-model';
@@ -17,9 +18,7 @@ import { countOutfitsByCollection, detachCollectionFromOutfits } from './collect
 import { loadHomeLayout, parseStoredContent } from './home-layout-service';
 import { createMediaUrlResolver } from './outfit-mapper';
 
-const escapeRegex = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const SLUG_TAKEN = 'Slug đã được dùng cho bộ sưu tập khác';
-const isDuplicateKey = (error: unknown): boolean => (error as { code?: number }).code === 11000;
 
 const assertCoverKey = (input: CollectionInput): void => {
   if (input.coverImage && !isPublicKey(input.coverImage.key)) {

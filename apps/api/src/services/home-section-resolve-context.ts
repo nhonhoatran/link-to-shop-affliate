@@ -1,4 +1,4 @@
-import type { PublicOutfitDto } from '@under30ss/shared';
+import type { NewsletterConsentDto, PublicOutfitDto } from '@under30ss/shared';
 import type { Env } from '../config/env-config';
 import type { ListingSettings } from './settings-service';
 
@@ -7,6 +7,8 @@ export interface ResolveContext {
   listing: ListingSettings;
   resolveUrl: (key: string) => string;
   featured: () => Promise<PublicOutfitDto | null>;
+  /** The saved consent sentence, or null while an admin has not saved one yet. */
+  consent: () => Promise<NewsletterConsentDto | null>;
 }
 
 /** Keeps the order the admin picked; ids that no longer match a record are skipped. */

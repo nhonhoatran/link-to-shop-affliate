@@ -10,6 +10,7 @@ import { createSessionMiddleware } from './middleware/session-middleware';
 import { createAdminCollectionRoutes } from './routes/admin-collection-routes';
 import { createAdminHomeRoutes } from './routes/admin-home-routes';
 import { createAdminMediaRoutes } from './routes/admin-media-routes';
+import { createAdminNewsletterRoutes } from './routes/admin-newsletter-routes';
 import { createAdminOutfitRoutes } from './routes/admin-outfit-routes';
 import { createAdminSettingsRoutes } from './routes/admin-settings-routes';
 import { createAdminStatsRoutes } from './routes/admin-stats-routes';
@@ -18,6 +19,7 @@ import { createAuthRoutes } from './routes/auth-routes';
 import { createHealthRoutes } from './routes/health-routes';
 import { createPublicCollectionRoutes } from './routes/public-collection-routes';
 import { createPublicHomeRoutes } from './routes/public-home-routes';
+import { createPublicNewsletterRoutes } from './routes/public-newsletter-routes';
 import { createPublicRoutes } from './routes/public-outfit-routes';
 
 // Outfit payloads (<= 30 items) are small; uploads go through multer, not this parser.
@@ -45,6 +47,7 @@ export const createApp = (ctx: AppContext): Express => {
   admin.use('/settings', createAdminSettingsRoutes(ctx));
   admin.use('/admins', createAdminUserRoutes());
   admin.use('/media', createAdminMediaRoutes(ctx));
+  admin.use('/newsletter', createAdminNewsletterRoutes(ctx));
 
   const api = Router();
   api.use('/health', createHealthRoutes());
@@ -52,6 +55,7 @@ export const createApp = (ctx: AppContext): Express => {
   api.use('/public', createPublicRoutes(ctx));
   api.use('/public', createPublicCollectionRoutes(ctx));
   api.use('/public', createPublicHomeRoutes(ctx));
+  api.use('/public', createPublicNewsletterRoutes());
   api.use('/admin', admin);
 
   app.use('/api', api);

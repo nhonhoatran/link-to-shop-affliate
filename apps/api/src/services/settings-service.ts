@@ -6,6 +6,7 @@ import { getDefaultSettings } from '../lib/runtime-defaults';
 import { SettingsModel, type SettingsDoc } from '../models/settings-model';
 import { createMediaUrlResolver } from './outfit-mapper';
 import { toAdminChrome, toPublicChrome } from './settings-chrome-service';
+import { saveConsent } from './settings-newsletter-consent-service';
 
 type SettingsRecord = SettingsDoc;
 
@@ -34,7 +35,7 @@ const assertWithinCeiling = (value: number | undefined, ceiling: number, field: 
 
 export const getAdminSettings = async (env: Env): Promise<AdminSettingsDto> => {
   const stored = await loadSettings();
-  if (!stored) return { ...getDefaultSettings(), ...toAdminChrome(null) };
+  if (!stored) return { ...getDefaultSettings(), ...toAdminChrome(null), newsletterConsentVersion: null };
   const resolveUrl = createMediaUrlResolver(env);
   const { siteName, seoTitle, seoDescription, ogImage, uploadMaxMb, looksPageSize, relatedOutfitsCount, updatedAt } = stored;
   return {
@@ -46,6 +47,8 @@ export const getAdminSettings = async (env: Env): Promise<AdminSettingsDto> => {
     ...(looksPageSize ? { looksPageSize } : {}),
     ...(relatedOutfitsCount ? { relatedOutfitsCount } : {}),
     ...toAdminChrome(stored),
+    ...(stored.newsletterConsent ? { newsletterConsent: stored.newsletterConsent } : {}),
+    newsletterConsentVersion: stored.newsletterConsentVersion ?? null,
     updatedAt: updatedAt.toISOString(),
   };
 };
@@ -75,7 +78,9 @@ export const updateSettings = async (input: SettingsInput, env: Env): Promise<Ad
   assertWithinCeiling(input.uploadMaxMb, env.UPLOAD_MAX_MB_CEILING, 'uploadMaxMb', 'Dung lượng ảnh tối đa', 'MB');
   assertWithinCeiling(input.looksPageSize, env.PUBLIC_PAGE_SIZE_MAX, 'looksPageSize', 'Số outfit mỗi trang', 'outfit');
   assertWithinCeiling(input.relatedOutfitsCount, env.PUBLIC_PAGE_SIZE_MAX, 'relatedOutfitsCount', 'Số outfit gợi ý', 'outfit');
-  const { ogImage, ...required } = input;
+  // Handled apart from the generic loop: an absent key switches the form off (clears the sentence), and the version
+  // is never reset so older subscriptions stay comparable. Re-enabling always bumps it.
+  const { ogImage, newsletterConsent, ...required } = input;
   const set: Record<string, unknown> = { ...(ogImage ? { ogImage } : {}) };
   const unset: Record<string, 1> = {};
   for (const [key, value] of Object.entries(required)) {
@@ -83,12 +88,14 @@ export const updateSettings = async (input: SettingsInput, env: Env): Promise<Ad
     else set[key] = value;
   }
   if (!ogImage) unset.ogImage = 1;
+  if (!newsletterConsent) unset.newsletterConsent = 1;
   for (const key of OPTIONAL_KEYS) if (!(key in set)) unset[key] = 1;
   await SettingsModel.findOneAndUpdate(
     { singleton: 'site' },
     { $set: set, ...(Object.keys(unset).length > 0 ? { $unset: unset } : {}) },
     { upsert: true, runValidators: true },
   );
+  if (newsletterConsent) await saveConsent(newsletterConsent);
   return getAdminSettings(env);
 };
 
