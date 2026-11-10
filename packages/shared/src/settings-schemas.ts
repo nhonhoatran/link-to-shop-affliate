@@ -68,6 +68,12 @@ export const DEFAULT_NEWSLETTER_CONSENT: z.infer<typeof newsletterConsentSchema>
 };
 export const DEFAULT_PRIVACY_LABEL = 'Chính sách bảo mật';
 
+export const HOME_MODES = ['feed', 'sections'] as const;
+export type HomeMode = (typeof HOME_MODES)[number];
+// Absent setting = feed: the home page is the swipe feed; 'sections' renders the home builder layout.
+export const DEFAULT_HOME_MODE: HomeMode = 'feed';
+export const homeModeSchema = z.enum(HOME_MODES);
+
 export const settingsInputSchema = z.object({
   siteName: z.string().min(1).max(80),
   seoTitle: z.string().min(1).max(120),
@@ -81,6 +87,7 @@ export const settingsInputSchema = z.object({
   // Absent = shown (when at least one collection is published) with DEFAULT_COLLECTIONS_LABEL.
   collectionsNavEnabled: z.boolean().optional(),
   collectionsLabel: z.string().min(1).max(40).optional(),
+  homeMode: homeModeSchema.optional(),
   footer: footerSchema.optional(),
   announcement: announcementSchema.optional(),
   newsletterConsent: newsletterConsentSchema.optional(),
@@ -105,6 +112,7 @@ export const publicSettingsSchema = z.object({
   relatedOutfitsCount: z.number().int().positive(),
   collectionsLabel: z.string().optional(),
   collectionsNavVisible: z.boolean().optional(),
+  homeMode: homeModeSchema.optional(),
   footer: footerSchema.optional(),
   announcement: publicAnnouncementSchema.nullable().optional(),
 });

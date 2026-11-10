@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { outfitItemSchema, outfitStatusSchema, slugSchema } from './outfit-schemas';
+import { outfitItemSchema, outfitSlugSchema, outfitStatusSchema } from './outfit-schemas';
 
 // Seed images are files on disk (relative to the seed/ directory); the seeder
 // uploads them to S3 and replaces `file` with the storage key.
@@ -13,7 +13,7 @@ export const seedItemSchema = outfitItemSchema.extend({ image: seedImageSchema }
 
 // The publish rule is not enforced here: sample outfits may ship without links.
 export const seedOutfitSchema = z.object({
-  slug: slugSchema,
+  slug: outfitSlugSchema,
   title: z.string().min(1).max(120),
   seoDescription: z.string().max(300).optional(),
   modelImage: seedImageSchema,

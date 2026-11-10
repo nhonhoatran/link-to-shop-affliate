@@ -119,3 +119,15 @@ describe('settingsInputSchema newsletterConsent', () => {
     expect(settingsInputSchema.parse({ ...base, newsletterConsentVersion: 3 })).not.toHaveProperty('newsletterConsentVersion');
   });
 });
+
+describe('homeMode', () => {
+  it('accepts the known modes and an absent value', () => {
+    expect(settingsInputSchema.safeParse({ ...base, homeMode: 'feed' }).success).toBe(true);
+    expect(settingsInputSchema.safeParse({ ...base, homeMode: 'sections' }).success).toBe(true);
+    expect(settingsInputSchema.parse(base).homeMode).toBeUndefined();
+  });
+
+  it('rejects an unknown mode', () => {
+    expect(settingsInputSchema.safeParse({ ...base, homeMode: 'grid' }).success).toBe(false);
+  });
+});

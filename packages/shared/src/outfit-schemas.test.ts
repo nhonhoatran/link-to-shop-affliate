@@ -55,6 +55,10 @@ describe('outfitInputSchema', () => {
     expect(result.success).toBe(true);
   });
 
+  it.each(['featured', 'slugs', 'feed'])('rejects the reserved slug %j', (slug) => {
+    expect(outfitInputSchema.safeParse(makeOutfit({ slug })).success).toBe(false);
+  });
+
   it.each(['Bad Slug', 'ao--thun', '-ao', 'ao-', 'áo-thun', ''])('rejects slug %j', (slug) => {
     expect(outfitInputSchema.safeParse(makeOutfit({ slug })).success).toBe(false);
   });

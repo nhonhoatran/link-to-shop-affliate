@@ -17,6 +17,7 @@ export const API_PATHS = {
     outfits: '/api/public/outfits',
     featuredOutfit: '/api/public/outfits/featured',
     outfitSlugs: '/api/public/outfits/slugs',
+    outfitFeed: '/api/public/outfits/feed',
     outfitBySlug: '/api/public/outfits/:slug',
     settings: '/api/public/settings',
     collections: '/api/public/collections',

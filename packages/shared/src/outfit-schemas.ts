@@ -25,6 +25,11 @@ export const slugSchema = z
   .max(80)
   .regex(SLUG_PATTERN, 'Slug must be lowercase letters, digits and single hyphens');
 
+// `/api/public/outfits/{featured,slugs,feed}` are routes; an outfit with one of these slugs would be unreachable.
+export const RESERVED_OUTFIT_SLUGS: readonly string[] = ['featured', 'slugs', 'feed'];
+
+export const outfitSlugSchema = slugSchema.refine((slug) => !RESERVED_OUTFIT_SLUGS.includes(slug), 'This slug is reserved');
+
 const isHttpsUrl = (value: string): boolean => {
   try {
     return new URL(value).protocol === 'https:';
@@ -54,7 +59,7 @@ export const outfitItemSchema = z.object({
 export const outfitStatusSchema = z.enum(['draft', 'published']);
 
 const outfitBaseSchema = z.object({
-  slug: slugSchema,
+  slug: outfitSlugSchema,
   title: z.string().min(1).max(120),
   seoDescription: z.string().max(300).optional(),
   modelImage: imageRefSchema,

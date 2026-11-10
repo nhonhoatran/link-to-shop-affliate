@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { collectionSlugSchema } from './collection-schemas';
 import { HOME_SECTION_TYPES } from './home-sections';
 import { newsletterEmailSchema, newsletterStatusSchema } from './newsletter-contract';
-import { anchorSchema, outfitItemSchema, outfitStatusSchema, slugSchema } from './outfit-schemas';
+import { anchorSchema, outfitItemSchema, outfitSlugSchema, outfitStatusSchema } from './outfit-schemas';
 import { settingsInputSchema } from './settings-schemas';
 
 // Demo seed: one file describes settings, collections, outfits, the home layout and newsletter subscribers.
@@ -21,7 +21,7 @@ export const demoItemSchema = outfitItemSchema.omit({ image: true, anchor: true 
 });
 
 export const demoOutfitSchema = z.object({
-  slug: slugSchema,
+  slug: outfitSlugSchema,
   title: z.string().min(1).max(120),
   seoDescription: z.string().max(300).optional(),
   modelImage: demoImageSchema,
