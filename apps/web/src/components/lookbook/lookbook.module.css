@@ -171,11 +171,7 @@
     display: none;
   }
 
-  /* Threads would tangle over the small model: show pins instead and let the item list carry the link. */
-  .connectors {
-    display: none;
-  }
-
+  /* Touch has no hover highlight, so pins stay visible as tap targets alongside the threads. */
   .hotspot::after {
     opacity: 1;
     transform: scale(1);
