@@ -24,6 +24,7 @@ import { SettingsSocialLinksEditor } from './settings/settings-social-links-edit
 import { useFocusFirstInvalid } from './settings/use-focus-first-invalid';
 import { SettingsNewsletterConsentFields } from './settings/settings-newsletter-consent-fields';
 import { SettingsListingFields } from './settings-listing-fields';
+import { SettingsHomeModeField } from './settings/settings-home-mode-field';
 
 export function SettingsForm({ initial }: { initial: AdminSettingsDto }) {
   const [state, setState] = useState<SettingsFormState>(() => fromAdminSettings(initial));
@@ -128,6 +129,7 @@ export function SettingsForm({ initial }: { initial: AdminSettingsDto }) {
         />
       </AdminPanel>
       <AdminPanel id="settings-listing" title="Danh sách">
+        <SettingsHomeModeField value={state.homeMode} onChange={(homeMode) => change({ homeMode })} />
         <SettingsListingFields
           values={state}
           errors={errors}

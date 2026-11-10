@@ -1,4 +1,11 @@
-import { DEFAULT_NEWSLETTER_CONSENT, type AdminSettingsDto, type ImageWithUrl, type SettingsInput } from '@under30ss/shared';
+import {
+  DEFAULT_HOME_MODE,
+  DEFAULT_NEWSLETTER_CONSENT,
+  type AdminSettingsDto,
+  type HomeMode,
+  type ImageWithUrl,
+  type SettingsInput,
+} from '@under30ss/shared';
 
 export interface LinkRow {
   key: number;
@@ -34,6 +41,7 @@ export interface SettingsFormState {
   uploadMaxMb: string;
   looksPageSize: string;
   relatedOutfitsCount: string;
+  homeMode: HomeMode;
   ogImage: ImageWithUrl | undefined;
   collectionsNavEnabled: boolean;
   collectionsLabel: string;
@@ -60,6 +68,7 @@ export function fromAdminSettings(initial: AdminSettingsDto): SettingsFormState 
     uploadMaxMb: initial.uploadMaxMb?.toString() ?? '',
     looksPageSize: initial.looksPageSize?.toString() ?? '',
     relatedOutfitsCount: initial.relatedOutfitsCount?.toString() ?? '',
+    homeMode: initial.homeMode ?? DEFAULT_HOME_MODE,
     ogImage: initial.ogImage,
     collectionsNavEnabled: initial.collectionsNavEnabled ?? true,
     collectionsLabel: initial.collectionsLabel ?? '',
@@ -111,6 +120,7 @@ export function toSettingsInput(state: SettingsFormState): unknown {
     ...(uploadMaxMb === undefined ? {} : { uploadMaxMb }),
     ...(looksPageSize === undefined ? {} : { looksPageSize }),
     ...(relatedOutfitsCount === undefined ? {} : { relatedOutfitsCount }),
+    homeMode: state.homeMode,
     collectionsNavEnabled: state.collectionsNavEnabled,
     ...(collectionsLabel === '' ? {} : { collectionsLabel }),
     footer: {
