@@ -46,9 +46,9 @@ pnpm workspace (`pnpm-workspace.yaml`: `apps/*`, `packages/*`). Các lệnh ở 
 │   └── web/                  # @under30ss/web: Next.js 16 (App Router)
 │       ├── src/
 │       │   ├── app/          # route group (public)/ (/, /looks, /look/[slug]); admin/ (admin/(protected)/ là khu quản trị); api/revalidate; robots, sitemap
-│       │   ├── components/   # admin/ (shell/, overview/, ...), lookbook/, public/, motion/, ui/
+│       │   ├── components/   # admin/ (shell/, overview/, ...), feed/ (feed outfit), lookbook/, public/, motion/, ui/
 │       │   ├── hooks/        # use-modal-dialog.ts, hook của editor admin (hooks/admin/)
-│       │   ├── lib/          # client API (browser/server), SEO, web-env, media-url, admin-paths.ts
+│       │   ├── lib/          # client API (browser/server), SEO, feed/ (Server Action tải thêm), web-env, media-url, admin-paths.ts
 │       │   └── styles/       # design-tokens.css, client-theme-tokens.css, admin-theme-tokens.css, motion-primitives.module.css
 │       ├── test/             # vitest + jsdom + Testing Library
 │       ├── Dockerfile
@@ -122,7 +122,7 @@ Luồng xử lý một request: `middleware` → `routes` → `services` → `mo
 
 ### Lookbook
 
-Component lookbook nằm trong `components/lookbook/`. Đường cong connector tính trong `compute-connector-paths.ts` (cubic Bézier). Các giá trị hiển thị (kích thước, tỉ lệ cột, độ cong, thời lượng animation) nằm trong token ở `styles/design-tokens.css`, không hard-code trong component.
+Component lookbook nằm trong `components/lookbook/`. Đường cong connector tính trong `compute-connector-paths.ts` (cubic Bézier). Prop `fill` của `LookbookLayout` đưa lookbook vào khung cao cố định của feed; phần đó chỉ dùng CSS (`lookbook-fill.module.css`), không đo bằng JS. Khung phải là size container (`container-type: size`), vì `cqh` và `cqw` tính theo khung đó. Các giá trị hiển thị (kích thước, tỉ lệ cột, độ cong, thời lượng animation) nằm trong token ở `styles/design-tokens.css`, không hard-code trong component.
 
 ## Giao diện (web)
 
@@ -277,7 +277,7 @@ Ngoại lệ là guard kỹ thuật, không phải giá trị nghiệp vụ (ví
 ## Danh sách lọc, tìm kiếm, phân trang
 
 - Query, lọc, sắp xếp và phân trang làm ở **server**. Admin gọi `GET /api/admin/outfits?q&status&page&size` và nhận đúng một trang. Không kéo toàn bộ dữ liệu về trình duyệt rồi lọc bằng JS.
-- Public: `/looks?page=n` render phía server; API `GET /api/public/outfits?page&size` trả đúng một trang.
+- Public: `/looks?page=n` render phía server; API `GET /api/public/outfits?page&size` trả đúng một trang. Trang `/`, `/looks` và `/collections/[slug]` (chế độ feed) đọc `GET /api/public/outfits/feed` theo lô, server render slide; link `?page=N+1` là dự phòng khi không có JS. Chi tiết: [Kiến trúc, mục Feed outfit](./system-architecture.md#feed-outfit).
 - Kích thước trang mặc định và tối đa lấy từ settings hoặc env: admin dùng `ADMIN_PAGE_SIZE_DEFAULT` và `ADMIN_PAGE_SIZE_MAX`; public dùng `looksPageSize` (fallback `PUBLIC_LOOKS_PAGE_SIZE`) và trần `PUBLIC_PAGE_SIZE_MAX`.
 - Tương tác nhỏ (ô tìm kiếm, phân trang) dùng form hoặc link để server dựng lại kết quả.
 

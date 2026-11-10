@@ -11,6 +11,7 @@ Tài liệu liên quan: [Quy chuẩn code](./code-standards.md) · [Triển khai
 - [API đọc cho giao diện](#api-đọc-cho-giao-diện)
 - [Mô hình dữ liệu](#mô-hình-dữ-liệu)
 - [Bất biến featured](#bất-biến-featured)
+- [Feed outfit](#feed-outfit)
 - [Bản tin (newsletter)](#bản-tin-newsletter)
 - [Luồng revalidate API → web](#luồng-revalidate-api--web)
 - [Tuỳ chọn giao diện admin (cookie)](#tuỳ-chọn-giao-diện-admin-cookie)
@@ -79,10 +80,10 @@ Web dùng Next.js 16 App Router với hai route group, mỗi nhóm có layout ri
 
 | Đường dẫn | File | Vai trò |
 |-----------|------|---------|
-| `/` | `(public)/page.tsx` | Trang chủ dựng từ bố cục section (xem [Trang chủ và bộ sưu tập](#trang-chủ-và-bộ-sưu-tập)). Có một `h1` ẩn lấy tên SEO của site. Bố cục mặc định: lookbook nổi bật, ô bộ sưu tập (tự ẩn khi chưa có bộ sưu tập đã đăng), "Outfit khác", thư viện ảnh, form đăng ký bản tin (chỉ hiện khi đã lưu câu đồng ý). Nhận query `?newsletter=` sau khi gửi form |
-| `/collections?page=n` | `(public)/collections/page.tsx` | Danh sách bộ sưu tập đã đăng, phân trang theo `looksPageSize`. Tên trang lấy từ setting `collectionsLabel` |
-| `/collections/[slug]` | `(public)/collections/[slug]/page.tsx` | Một bộ sưu tập: breadcrumb, `h1`, mô tả, lưới outfit, phân trang. Slug không tồn tại trả 404 |
-| `/looks?page=n` | `(public)/looks/page.tsx` | Danh sách outfit đã publish, phân trang phía server. `page` không hợp lệ được đưa về trang 1. `page` lớn hơn tổng số trang trả 404. Không có outfit nào thì hiện thông báo trống |
+| `/` | `(public)/page.tsx` | Mặc định (`homeMode` không đặt hoặc `feed`): [feed outfit](#feed-outfit), outfit nổi bật đứng đầu. Khi `homeMode` = `sections`: trang dựng từ bố cục section (xem [Trang chủ và bộ sưu tập](#trang-chủ-và-bộ-sưu-tập)), có `h1` ẩn lấy tên SEO. Nhận query `?newsletter=` sau khi gửi form bản tin. Không có outfit nào thì hiện thông báo trống. `?page` vượt tổng số trang trả 404 |
+| `/collections?page=n` | `(public)/collections/page.tsx` | Danh sách bộ sưu tập đã đăng (lưới, không đổi), phân trang theo `looksPageSize`. Tên trang lấy từ setting `collectionsLabel` |
+| `/collections/[slug]` | `(public)/collections/[slug]/page.tsx` | [Feed outfit](#feed-outfit) lọc theo bộ sưu tập. Không còn ảnh bìa, mô tả hay breadcrumb hiển thị; tên bộ sưu tập là `h1` ẩn. Slug sai định dạng, không tồn tại hoặc chưa đăng trả 404. `?page=n` vượt tổng trả 404 |
+| `/looks?page=n` | `(public)/looks/page.tsx` | [Feed outfit](#feed-outfit) toàn bộ outfit đã publish, nổi bật đứng đầu. `?page=n` bắt đầu từ lô n. `page` không hợp lệ được đưa về trang 1. `page` lớn hơn tổng số trang trả 404. Không có outfit nào thì hiện thông báo trống |
 | `/look/[slug]` | `(public)/look/[slug]/page.tsx` | Một lookbook, breadcrumb về `/looks`, mục "Outfit khác" (loại outfit đang xem) |
 | 404 | `(public)/not-found.tsx` | Dùng layout public có sẵn |
 | (layout) | `(public)/layout.tsx` | Bọc `PublicShell`: header (ẩn khi cuộn xuống, hiện khi cuộn lên hoặc khi có focus) và footer |
@@ -90,7 +91,7 @@ Web dùng Next.js 16 App Router với hai route group, mỗi nhóm có layout ri
 
 `app/not-found.tsx` ở gốc xử lý URL không khớp route nào. Nó tự bọc `PublicShell`, vì không có layout nhóm `(public)` bao quanh.
 
-Số outfit mỗi trang và số outfit "Outfit khác" lấy từ settings (`looksPageSize`, `relatedOutfitsCount`), xem [Settings](#settings).
+Số outfit mỗi lô feed, mỗi trang `/collections` và số outfit "Outfit khác" lấy từ settings (`looksPageSize`, `relatedOutfitsCount`), xem [Settings](#settings).
 
 ### Nhóm admin: `app/admin/`
 
@@ -123,6 +124,7 @@ Hai endpoint mới trong refactor giao diện. Hợp đồng nằm trong `packag
 | Phương thức, đường dẫn | Quyền | Nội dung |
 |------------------------|-------|----------|
 | `GET /api/public/outfits?page&size` | Công khai | Trang outfit đã publish, mới nhất trước (`updatedAt` giảm dần, rồi `_id`). Mỗi phần tử gồm `slug`, `title`, `modelImage` (có `url`), `updatedAt`. Không lộ draft và link affiliate. `size` bỏ trống thì dùng `looksPageSize` của settings. `size` luôn kẹp về `PUBLIC_PAGE_SIZE_MAX`. `page` có trần kỹ thuật `MAX_LIST_PAGE` (100000). Tham số sai kiểu trả 400 |
+| `GET /api/public/outfits/feed?page&size&collection` | Công khai | Dữ liệu đầy đủ cho [feed outfit](#feed-outfit): `Paginated<PublicOutfitDto>`. Nổi bật trước, rồi `updatedAt` giảm dần, rồi `_id`. Mỗi món có `affiliateUrl` và `anchor`; món không có `anchor` bị bỏ. `collection` là slug bộ sưu tập đã đăng; không có hoặc chưa đăng thì 404. `size` và trần như endpoint trên. `page` vượt tổng trả `items: []`, không 404. Tham số sai kiểu trả 400 |
 | `GET /api/admin/stats` | Admin (sau `requireAdmin`) | `counts` gồm `total`, `published`, `draft`, `publishedMissingAffiliate`, `draftMissingAffiliate`; `featured` là outfit nổi bật đã publish hoặc `null`; `recent` gồm số outfit sửa gần đây theo `ADMIN_STATS_RECENT_COUNT` |
 
 Ghi chú:
@@ -137,7 +139,7 @@ Các model Mongoose nằm trong `apps/api/src/models/`. Kiểu dữ liệu chia 
 
 | Trường | Kiểu | Ràng buộc |
 |--------|------|-----------|
-| `slug` | string | Duy nhất. Regex `^[a-z0-9]+(?:-[a-z0-9]+)*$`, tối đa 80 ký tự |
+| `slug` | string | Duy nhất. Regex `^[a-z0-9]+(?:-[a-z0-9]+)*$`, tối đa 80 ký tự. Không được là `featured`, `slugs`, `feed` (`RESERVED_OUTFIT_SLUGS`, `outfitSlugSchema` trong `packages/shared/src/outfit-schemas.ts`) |
 | `title` | string | 1–120 ký tự |
 | `seoDescription` | string? | Tối đa 300 ký tự |
 | `modelImage` | ImageRef | `{ key, width, height }`, key bắt đầu bằng `public/` |
@@ -153,6 +155,7 @@ Index của collection (`apps/api/src/models/outfit-model.ts`):
 | `{ featured: 1 }` unique, `partialFilterExpression: { featured: true }` | Một outfit nổi bật |
 | `{ updatedAt: -1 }` | Sắp xếp theo thời gian sửa |
 | `{ status: 1, updatedAt: -1, _id: -1 }` | Truy vấn danh sách public (`GET /api/public/outfits`) |
+| `{ status: 1, featured: -1, updatedAt: -1, _id: -1 }` | Thứ tự feed (`GET /api/public/outfits/feed`) |
 
 Index `{ status, updatedAt, _id }` được thêm trong refactor giao diện. API tạo index khi khởi động qua `ensureOutfitIndexes()` (`createIndexes`). Collection đã có dữ liệu thì chỉ cần khởi động lại API.
 
@@ -168,7 +171,7 @@ Collection của model `AdminUser`. Trường: `email` (duy nhất, lowercase, t
 
 ### Settings
 
-Collection của model `Settings`, đúng một bản ghi với `singleton: 'site'`. Trường: `siteName`, `seoTitle`, `seoDescription`, `ogImage?` (`{ key, width, height }`, key phải thuộc `public/`), `uploadMaxMb?`, `looksPageSize?`, `relatedOutfitsCount?`, `updatedAt`.
+Collection của model `Settings`, đúng một bản ghi với `singleton: 'site'`. Trường: `siteName`, `seoTitle`, `seoDescription`, `ogImage?` (`{ key, width, height }`, key phải thuộc `public/`), `uploadMaxMb?`, `looksPageSize?`, `relatedOutfitsCount?`, `homeMode?`, `updatedAt`.
 
 - Khi chưa có bản ghi, API dùng giá trị từ env `DEFAULT_SITE_NAME`, `DEFAULT_SEO_TITLE`, `DEFAULT_SEO_DESCRIPTION`.
 - `uploadMaxMb` nếu có được kẹp về `UPLOAD_MAX_MB_CEILING` khi đọc. Hạ trần sau này cũng siết giới hạn đã lưu trước đó.
@@ -180,7 +183,7 @@ Collection `sessions` do `connect-mongo` quản lý, TTL theo `SESSION_MAX_AGE_H
 
 ## Bất biến featured
 
-Tối đa một outfit được đặt nổi bật. Trang chủ `/` hiển thị outfit này.
+Tối đa một outfit được đặt nổi bật. Trang chủ `/` hiển thị outfit này đầu tiên trong feed (mặc định) hoặc trong section `FeaturedLookbook` (`homeMode` = `sections`). Feed và `/looks` luôn đưa outfit nổi bật lên đầu.
 
 Cơ chế ba lớp:
 
@@ -207,6 +210,8 @@ Giới hạn đã biết: hai admin cùng bấm đặt nổi bật đồng thờ
 | `Outfit.collectionIds` | `apps/api/src/models/outfit-model.ts` | Mảng id bộ sưu tập chứa outfit. Index `{ collectionIds, status, updatedAt, _id }` |
 
 Bố cục trang chủ là JSON `[{ type, props: { id, visible, ... } }]` với `schemaVersion`. Mười một loại section: `HeroSlider`, `CollectionTiles`, `OutfitList`, `FeaturedLookbook`, `TextWithImage`, `Faq`, `Commitments`, `CampaignBanner`, `Marquee`, `Gallery`, `NewsletterSignup`. Schema nằm ở `packages/shared/src/home-sections/`, kiểu và union section ở `home-section-union.ts`; contract bố cục (nháp, đăng, hoàn tác, xem trước, section đã resolve) ở `packages/shared/src/home-layout-contract.ts`.
+
+Bố cục chỉ hiện trên `/` khi `homeMode` = `sections`. Ở chế độ feed (mặc định) bố cục vẫn lưu và soạn như thường, khách không thấy. Trình soạn `/admin/home` hiện nhắc khi đang ở chế độ feed (`home-mode-notice.tsx`).
 
 `HOME_SECTION_META` (`home-section-meta.ts`) mô tả từng loại cho trình soạn và trang xem trước, gồm hai cờ:
 - `resolvesData`: API phải resolve dữ liệu cho loại này (outfit, bộ sưu tập, câu đồng ý).
@@ -261,6 +266,7 @@ Các trường mới của `Settings` (đều optional, API luôn điền khi đ
 - `collectionsLabel`: tên hiển thị của link và trang bộ sưu tập, mặc định `DEFAULT_COLLECTIONS_LABEL`.
 - `footer`: `{ columns: [{ title, links: [{ label, href }] }], social: [{ label, href }] }`. Tối đa 4 cột, 8 link mỗi cột, 8 link mạng xã hội. `href` nội bộ (`/...`) hoặc `https://`; link `javascript:` bị từ chối (schema `safeHrefSchema`, `packages/shared/src/safe-href.ts`; e2e kiểm tra tại ô nhập).
 - `announcement`: `{ enabled, text (≤160), linkLabel? (≤40), href? }`, mặc định tắt. Là cấu hình toàn site, hiện phía trên header public, không phải section trang chủ.
+- `homeMode`: `'feed'` hoặc `'sections'`. Không đặt thì là `feed` (`DEFAULT_HOME_MODE` trong `packages/shared/src/settings-schemas.ts`). Chỉ quyết định `/`: `feed` hiện [feed outfit](#feed-outfit), `sections` hiện bố cục section. Trả về trong settings công khai và settings admin (`settings-service.ts`). Admin đặt ở Cài đặt, mục "Danh sách", ô "Trang chủ hiển thị".
 - `newsletterConsent` và `newsletterConsentVersion`: câu đồng ý cạnh ô chọn của form bản tin. Chi tiết ở [Bản tin](#bản-tin-newsletter).
 
 Settings là PUT toàn bộ document: client phải gửi lại mọi trường, trường bị bỏ sẽ bị xoá (xem `e2e/support/admin-settings.ts`). `newsletterConsentVersion` là ngoại lệ: không bị xoá khi bỏ câu đồng ý.
@@ -277,6 +283,55 @@ Settings là PUT toàn bộ document: client phải gửi lại mọi trường,
 Trên một trang, `Gallery` nguồn `latest` bỏ các outfit đã hiện ở `OutfitList` và `FeaturedLookbook` của cùng trang (`shownOutfitSlugs` trong `home-section-resolver-service.ts`), và lấy thêm để đủ số ô. Nguồn `collection` và `manual` hiện chưa bỏ trùng.
 
 Bố cục mặc định (`DEFAULT_HOME_CONTENT`, `packages/shared/src/home-sections/default-home-content.ts`) gồm năm section: `FeaturedLookbook`, `CollectionTiles`, `OutfitList`, `Gallery`, `NewsletterSignup`. Bố cục đã đăng trước đó không đổi khi mặc định thay đổi.
+
+## Feed outfit
+
+Trang `/` (khi `homeMode` là `feed`), `/looks` và `/collections/[slug]` hiển thị outfit dạng feed: mỗi khung là một lookbook vừa màn hình, người dùng lướt dọc. Plan: `plans/261110-2143-tiktok-outfit-feed/`.
+
+### Luồng dữ liệu và render
+
+```mermaid
+sequenceDiagram
+  participant B as Trình duyệt
+  participant W as web (server)
+  participant A as api
+  B->>W: GET /, /looks hoặc /collections/slug
+  W->>A: GET /api/public/outfits/feed?page=1&size
+  A-->>W: Paginated PublicOutfitDto
+  W-->>B: HTML lô đầu (OutfitFeedSlide, mốc tải thêm)
+  B->>W: Server Action loadFeedPage (page=2) khi mốc gần hiện
+  W->>A: GET /api/public/outfits/feed?page=2
+  W-->>B: JSX các slide của lô 2, nextPage
+```
+
+- Lô đầu render trên server (có nội dung khi tắt JS và cho SEO). `?page=N` bắt đầu thẳng từ lô N.
+- Mốc tải thêm là `<a href="?page=N+1">`. `FeedLoadMore` (client) theo dõi mốc bằng `IntersectionObserver` trên vùng cuộn `[data-feed]`, với `rootMargin` lấy từ `--feed-preload-margin` (150%). Khi JS chạy, bấm mốc gọi Server Action thay vì chuyển trang.
+- Server Action `loadFeedPage` (`apps/web/src/lib/feed/load-feed-page-action.tsx`) kiểm input bằng `publicOutfitFeedQuerySchema`, gọi loader, trả slide đã render và `nextPage`. Lỗi thì hiện nút thử lại.
+- Hết outfit (`nextPage` = null): feed render `SiteFooter` ở cuối. Shell ẩn footer riêng khi có feed.
+- Các file chính trong `apps/web/src/components/feed/`: `outfit-feed.tsx` (server), `outfit-feed-slide.tsx`, `feed-load-more.tsx` (client), `feed-step-buttons.tsx` (client, nút ▲▼ và phím mũi tên, PageUp, PageDown). Tokens `--feed-*` nằm trong `apps/web/src/styles/design-tokens.css`.
+
+### Điều hướng và bố cục khung
+
+- Shell có feed: `.shell:has([data-feed-wrap])` cao đúng `100dvh`, feed là vùng cuộn riêng, scroll-snap theo từng khung (`public-shell.module.css`, `outfit-feed.module.css`).
+- Nút ▲▼ hiện từ 768px trở lên (`.steps` trong `outfit-feed.module.css`). Phím mũi tên, PageUp và PageDown hoạt động khi focus không nằm trong ô nhập.
+- Dưới 768px, header thành một dòng (`site-header.module.css`, chỉ khi có feed). Nav cuộn ngang trong header trên các trang feed.
+- Lookbook chế độ `fill` (`apps/web/src/components/lookbook/lookbook-fill.module.css`), chỉ bằng CSS:
+
+| Quy tắc | Điều kiện | Ghi chú |
+|---------|-----------|---------|
+| Người mẫu cao đúng khung, ảnh món co theo phần cột | Luôn | Chữ giữ cỡ, không co đều theo khung |
+| Mô tả món giới hạn 2 dòng | Luôn | `--feed-item-description-lines` |
+| Ẩn mô tả món | Một cột có từ 5 món trở lên | Selector `:has([data-side] > li:nth-child(5))` |
+| Ẩn phụ đề | Vùng chứa lookbook từ 520px trở xuống | `@container (max-height: 520px)`, không tính dòng tên outfit |
+
+- Dòng tên outfit dưới khung là link tới `/look/[slug]`. Bấm món đồ đi thẳng link affiliate (hành vi lookbook không đổi).
+- Số outfit mỗi lô là `looksPageSize`. Trần là `PUBLIC_PAGE_SIZE_MAX`.
+
+### Giới hạn đã biết
+
+- `/` không trả 404 khi `?page` vượt tổng số trang. Hai trang còn lại trả 404.
+- Thứ tự feed (`featured`, `updatedAt`) chưa có index riêng. API sắp xếp trên bộ nhớ. Chưa đo ở quy mô lớn.
+- Thu khung chỉ bằng CSS. Không có tính toán chiều rộng bằng JS.
 
 ## Bản tin (newsletter)
 
@@ -373,7 +428,7 @@ Chi tiết:
 - Đường `/api/revalidate` nằm trên web nhưng Caddy không chuyển `/api/*` của web ra ngoài (các `/api/*` đều tới API), nên chỉ mạng nội bộ compose gọi được.
 
 Giới hạn về `/looks` và settings:
-- Danh sách `/looks` (`getPublicOutfitPage`) không gắn tag. Thay đổi `looksPageSize` có thể để trang `/looks` cũ tới khi cache danh sách hết hạn (`PUBLIC_REVALIDATE_SECONDS`). Tester quan sát điều này trước khi có tag `public-settings` (`plans/reports/tester-261107-0528-ui-refactor-e2e.md`). Chưa đo lại sau khi có tag.
+- `/`, `/looks` và `/collections/[slug]` đọc feed (`getOutfitFeedPage`, `apps/web/src/lib/seo/public-feed-loaders.ts`) gắn tag `public-home` và `public-collections`. Đổi outfit hoặc bộ sưu tập làm mới các trang này ngay. Lưu settings (`scope: 'all'`) expire mọi tag. Chưa đo độ trễ sau khi đổi `looksPageSize`.
 - Mục "Outfit khác" trên `/look/<slug>` có thể cũ tới `PUBLIC_REVALIDATE_SECONDS` khi outfit khác đổi. Đây là chấp nhận có chủ đích (quyết định 8 trong plan).
 
 ## Tuỳ chọn giao diện admin (cookie)
@@ -501,7 +556,7 @@ Biến liên quan tới giao diện public và admin:
 
 | Biến | Mặc định | Đọc ở đâu | Ghi chú |
 |------|----------|-----------|---------|
-| `PUBLIC_LOOKS_PAGE_SIZE` | 12 | `env-config.ts` (schema) | Số outfit mỗi trang `/looks` khi settings chưa đặt |
+| `PUBLIC_LOOKS_PAGE_SIZE` | 12 | `env-config.ts` (schema) | Số outfit mỗi lô feed và mỗi trang `/collections` khi settings chưa đặt |
 | `PUBLIC_RELATED_OUTFITS_COUNT` | 8 | `env-config.ts` (schema) | Số outfit ở mục "Outfit khác" khi settings chưa đặt |
 | `PUBLIC_PAGE_SIZE_MAX` | 48 | `env-config.ts` (schema) | Trần cho `size` và hai giá trị trên. Schema từ chối khi hai giá trị mặc định vượt trần |
 | `ADMIN_STATS_RECENT_COUNT` | 5 | `runtime-defaults.ts` (`process.env` trực tiếp) | Số outfit sửa gần đây trên Tổng quan. Không đi qua schema, nên không được kiểm tra lúc khởi động |

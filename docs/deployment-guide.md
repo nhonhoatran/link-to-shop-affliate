@@ -142,7 +142,7 @@ Hành vi quan trọng:
 
 ## Dữ liệu demo
 
-Bộ dữ liệu demo dựng đủ nội dung để trình diễn: settings (SEO, footer, dải thông báo, câu đồng ý bản tin), 5 bộ sưu tập, 16 outfit đã publish (đủ link và anchor), bố cục trang chủ dùng cả 11 loại section (đã đăng) và 8 người đăng ký bản tin. File seed: `seed/demo/demo-seed.json`, schema `demoSeedFileSchema` trong `packages/shared/src/seed-demo-schema.ts`.
+Bộ dữ liệu demo dựng đủ nội dung để trình diễn: settings (SEO, footer, dải thông báo, câu đồng ý bản tin), 5 bộ sưu tập, 16 outfit đã publish (đủ link và anchor), bố cục trang chủ dùng cả 11 loại section (đã đăng) và 8 người đăng ký bản tin. Seed không đặt `homeMode`, nên `/` hiện feed outfit; muốn thấy bố cục section thì đặt `homeMode` = `sections` trong Cài đặt. File seed: `seed/demo/demo-seed.json`, schema `demoSeedFileSchema` trong `packages/shared/src/seed-demo-schema.ts`.
 
 ```bash
 pnpm seed:demo            # upsert theo slug, chạy lại được
@@ -367,7 +367,7 @@ Cột "Bắt buộc" theo code: **Có** nghĩa là schema hoặc compose báo l�
 | `IMAGE_MAX_EDGE_ITEM` | 800 | Không | Cạnh lớn nhất của ảnh món (px) |
 | `ADMIN_PAGE_SIZE_DEFAULT` | 20 | Không | Phải không vượt `ADMIN_PAGE_SIZE_MAX` |
 | `ADMIN_PAGE_SIZE_MAX` | 100 | Không | |
-| `PUBLIC_LOOKS_PAGE_SIZE` | 12 | Không | Số outfit mỗi trang `/looks`. Admin có thể đặt khác trong settings. Không vượt `PUBLIC_PAGE_SIZE_MAX` |
+| `PUBLIC_LOOKS_PAGE_SIZE` | 12 | Không | Số outfit mỗi lô feed (`/`, `/looks`, `/collections/[slug]`) và mỗi trang `/collections`. Admin có thể đặt khác trong settings. Không vượt `PUBLIC_PAGE_SIZE_MAX` |
 | `PUBLIC_RELATED_OUTFITS_COUNT` | 8 | Không | Số outfit ở mục "Outfit khác" trên trang look. Admin có thể đặt khác trong settings. Không vượt `PUBLIC_PAGE_SIZE_MAX` |
 | `PUBLIC_PAGE_SIZE_MAX` | 48 | Không | Trần cho `size` của `GET /api/public/outfits` và hai giá trị trên |
 | `ADMIN_STATS_RECENT_COUNT` | 5 | Không | Số outfit sửa gần đây ở trang Tổng quan admin |

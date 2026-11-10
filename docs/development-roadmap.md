@@ -1,6 +1,6 @@
 # Roadmap Under30ss
 
-Trạng thái tính đến 2026-11-08. Chi tiết từng phase nằm trong `plans/261106-1201-under30ss-shop-the-look/` (v1) và `plans/261107-0913-professional-ui-refactor-client-admin/` (refactor giao diện).
+Trạng thái tính đến 2026-11-10. Chi tiết từng phase nằm trong `plans/261106-1201-under30ss-shop-the-look/` (v1) và `plans/261107-0913-professional-ui-refactor-client-admin/` (refactor giao diện).
 
 Liên quan: [Lịch sử thay đổi](./project-changelog.md) · [Kiến trúc](./system-architecture.md) · [Triển khai](./deployment-guide.md)
 
@@ -8,6 +8,7 @@ Liên quan: [Lịch sử thay đổi](./project-changelog.md) · [Kiến trúc](
 - [Trạng thái phase](#trạng-thái-phase)
 - [Refactor giao diện client và admin](#refactor-giao-diện-client-và-admin)
 - [Đợt editorial và bản tin](#đợt-editorial-và-bản-tin)
+- [Feed outfit kiểu TikTok](#feed-outfit-kiểu-tiktok)
 - [Cột mốc](#cột-mốc)
 - [Việc chưa kiểm chứng](#việc-chưa-kiểm-chứng)
 - [Việc hoãn sang sau v1](#việc-hoãn-sang-sau-v1)
@@ -139,6 +140,31 @@ Các mục sau chưa chạy. Không coi là đã xong.
 - Caddy `encode zstd gzip` (`infra/caddy/Caddyfile:3`): với JS của `/`, zstd lớn hơn gzip (208,8 KiB so với 199,5 KiB, đo bằng curl 2026-11-08). Đo lại trước khi đổi thứ tự (gzip trước) để chọn theo số liệu.
 - `e2e/support/outfit-state.ts:21` vẫn ghi state vào `test-results/e2e-outfit-state.json`. Playwright xoá `test-results/` khi bắt đầu chạy, nên chuyển state sang `e2e/.state/` như snapshot.
 
+## Feed outfit kiểu TikTok
+
+Plan: `plans/261110-2143-tiktok-outfit-feed/`. Trạng thái: xong 2026-11-11. Unit web 694/694, e2e 126/126, snapshot visual chụp lại.
+
+| Phase | Nội dung | Trạng thái |
+|-------|----------|------------|
+| P00 | Hợp đồng dùng chung (`packages/shared`) | Xong (theo plan) |
+| P01 | API `GET /api/public/outfits/feed`, setting `homeMode` | Xong (theo plan) |
+| P02 | Feed trên `/`, `/looks`, `/collections/[slug]`; lookbook `fill` | Xong. Ảnh kiểm trong `plans/261110-2143-tiktok-outfit-feed/visuals/`; đã sửa các lỗi từ code review |
+| P03 | Ô "Trang chủ hiển thị" trong Cài đặt; nhắc trong trình dựng trang chủ | Xong. Unit test có; chưa chụp ảnh màn admin |
+| P04 | E2E, snapshot, tài liệu | Xong. E2E 126/126 (2026-11-11), snapshot visual chụp lại |
+
+Chi tiết kỹ thuật: [Kiến trúc, mục Feed outfit](./system-architecture.md#feed-outfit). Thay đổi: [Lịch sử, mục 2026-11-10](./project-changelog.md#feed-outfit-kiểu-tiktok-2026-11-10).
+
+### Việc còn mở
+
+| Việc | Lý do và bằng chứng | Hướng xử lý |
+|------|---------------------|-------------|
+| Ảnh màn admin "Trang chủ hiển thị" | Chưa chụp; đăng nhập admin bằng trình duyệt tự động bị chặn trong phiên làm việc | Chủ repo xem trực tiếp trong admin |
+| Menu header ở 360px | Mục "Bộ sưu tập" phải vuốt ngang mới thấy hết. Đã chốt 2026-11-11 giữ vuốt ngang | Không làm gì |
+| iOS Safari và `100dvh` | Plan P02 ghi rủi ro vùng cuộn lồng nhau | Kiểm trên thiết bị thật |
+| Lô feed có thể lặp hoặc sót khi outfit bị sửa lúc khách đang lướt | Phân trang `skip`/`limit` theo `featured`, `updatedAt` (`public-outfit-feed-service.ts`) | Đổi sang phân trang theo con trỏ nếu gặp thực tế |
+| Slug `featured`, `slugs`, `feed` trong dữ liệu thật | Schema đã từ chối slug này, chưa kiểm dữ liệu có sẵn | Truy vấn DB trước khi triển khai |
+| Demo seed không đặt `homeMode` | `pnpm seed:demo` không đổi `homeMode`, nên `/` hiện feed, không hiện bố cục 11 section | Đặt `homeMode` trong seed nếu muốn demo bố cục |
+
 ## Cột mốc
 
 | Ngày | Cột mốc |
@@ -148,6 +174,7 @@ Các mục sau chưa chạy. Không coi là đã xong.
 | 2026-11-07 | Xác nhận lại test và E2E. Viết tài liệu `docs/` (v1) |
 | 2026-11-07 | Refactor giao diện client và admin hoàn thành về code (7 phase). Cập nhật tài liệu `docs/` |
 | 2026-11-08 | Đợt editorial: token monochrome, Playfair, 4 section mới, bản tin (form, admin, CSV). Review, sửa vòng hai, e2e 111/111 xanh, smoke compose và số đo prod. Còn mở: axe, pixel hero, Q4 |
+| 2026-11-10 | Feed outfit kiểu TikTok: API `GET /api/public/outfits/feed`, setting `homeMode`, feed trên `/`, `/looks`, `/collections/[slug]`, ô cài đặt admin. Code xong, chưa commit. E2E và snapshot còn mở |
 
 ## Việc chưa kiểm chứng
 

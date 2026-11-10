@@ -4,7 +4,69 @@ Ghi lại các thay đổi đáng kể theo phiên bản. Mỗi mục ghi ngày,
 
 Liên quan: [Roadmap](./development-roadmap.md) · [Kiến trúc](./system-architecture.md) · [Triển khai](./deployment-guide.md)
 
-## Bộ dữ liệu demo (2026-11-08)
+## Feed outfit kiểu TikTok (2026-11-10)
+
+Phạm vi: `packages/shared`, `apps/api`, `apps/web`, `docs`. Kế hoạch: `plans/261110-2143-tiktok-outfit-feed/` (phase 00 đến 04). Thay đổi chưa commit tại thời điểm viết mục này.
+
+Lý do: khách phản hồi lưới outfit, ảnh bìa và mô tả bộ sưu tập quá cao so với màn hình, không giống cách người dùng lướt TikTok. Mỗi outfit nay là một khung vừa đúng màn hình; cuộn gần hết lô thì tự tải lô kế.
+
+### Tính năng
+
+| Phase | Nội dung |
+|-------|----------|
+| P00 | Hợp đồng dùng chung: `publicOutfitFeedQuerySchema`, `PublicOutfitFeedResponse`, `API_PATHS.public.outfitFeed`, `homeModeSchema` (`HOME_MODES`, `DEFAULT_HOME_MODE`), `RESERVED_OUTFIT_SLUGS` (`featured`, `slugs`, `feed`) |
+| P01 | API `GET /api/public/outfits/feed?page&size&collection`. Setting `homeMode` được lưu và trả về |
+| P02 | Web: feed trên `/`, `/looks`, `/collections/[slug]`; tải thêm bằng Server Action; chế độ `fill` của lookbook |
+| P03 | Admin: ô "Trang chủ hiển thị" trong Cài đặt, mục "Danh sách". Trình dựng trang chủ hiện nhắc khi đang ở chế độ feed |
+
+- Trang chủ `/` mặc định là feed: outfit nổi bật đứng đầu, rồi đến `updatedAt` giảm dần.
+- Mỗi khung là một lookbook vừa màn hình, có đủ người mẫu, món đồ và mũi tên. Bấm món đồ vẫn đi thẳng tới link affiliate.
+- Lướt bằng scroll-snap trên mọi thiết bị. Từ 768px trở lên có nút ▲▼; phím ↑ ↓ PageUp PageDown dùng được khi có bàn phím.
+- Gần cuối lô thì tự tải lô kế. Khi chưa có JS hoặc JS lỗi, mốc tải thêm là link `?page=N+1` và vẫn sang được lô kế.
+- `/looks` và `/`: lưới và phân trang được thay bằng feed. `?page=N` vẫn hoạt động; trang vượt tổng số trang trả 404.
+- Lô tải thêm dùng đúng `size` của trang đầu, để lô sau không trùng hoặc sót outfit khi setting vừa đổi.
+- `/collections/[slug]`: bỏ ảnh bìa, mô tả và breadcrumb hiển thị. Tên bộ sưu tập thành `h1` ẩn. Bộ sưu tập rỗng vẫn có thông báo rỗng. Slug sai định dạng trả 404 (trước đó API trả 400 nên trang lỗi 500).
+- `/look/feed`, `/look/slugs`, `/look/featured` trả 404: slug dành riêng không được gửi tới API.
+- Index mới `{ status, featured, updatedAt, _id }` cho thứ tự feed; API tạo khi khởi động qua `ensureOutfitIndexes()`.
+- Seed (`seed-file-schema.ts`, `seed-demo-schema.ts`) cũng từ chối slug dành riêng.
+- Lookbook có chế độ `fill`: người mẫu cao đúng khung, ảnh món đồ co lại, chữ giữ cỡ đọc được. Mô tả món giới hạn 2 dòng và ẩn khi một cột có từ 5 món trở lên. Phụ đề ẩn khi vùng lookbook từ 520px trở xuống.
+- Khi trang có feed, khung trang cao đúng `100dvh`, feed là vùng cuộn riêng. Footer nằm ở cuối feed. Dưới 768px, header thành một dòng.
+- `homeMode`: không đặt hoặc `feed` thì trang chủ là feed. `sections` thì trang chủ dựng từ bố cục section như trước.
+
+### Sửa lỗi khi kiểm e2e (2026-11-11)
+
+- Footer của feed nằm trong `<main>` nên mất landmark `contentinfo`; footer của khung trang bị ẩn trên trang feed. `SiteFooter` có prop `insideMain`, feed đặt `role="contentinfo"`. Có unit test và e2e `content-footer-and-nav`.
+- `content.setup.ts` dùng lại `e2e/.state/content-snapshot.json` nếu file còn đó (lượt trước chưa khôi phục xong, ví dụ đăng nhập bị 429). `content.teardown.ts` khôi phục xong mới xoá file. Trước đó lượt chạy sau chụp đè trạng thái đang hư làm bản gốc, làm mất footer, thanh thông báo và mô tả SEO của DB local.
+
+### Không đổi
+
+- `/look/[slug]`, trang lưới `/collections`, `GET /api/public/outfits` và `GET /api/public/collections`.
+
+### Lưu ý khi nâng cấp
+
+- Không có migration DB và không có biến môi trường mới. Trường `homeMode` là optional.
+- Trang chủ đổi sang feed ngay khi triển khai, vì không đặt `homeMode` nghĩa là `feed`. Nếu muốn giữ bố cục section, đặt `homeMode` = `sections` trong Cài đặt. Bố cục đã đăng không bị xoá.
+- Slug `featured`, `slugs`, `feed` bị từ chối khi tạo outfit (`outfitSlugSchema`). Chưa kiểm dữ liệu thật: nếu DB đã có outfit dùng slug này thì phải đổi trước khi sửa.
+- Feed trả link affiliate của từng món (giống `GET /api/public/outfits/:slug`). Endpoint danh sách cũ vẫn không trả link.
+- Tải thêm dùng Server Action, nên web và API phải được triển khai cùng phiên bản.
+
+### Kiểm chứng
+
+| Hạng mục | Kết quả | Nguồn |
+|----------|---------|-------|
+| Đối chiếu tài liệu với code (2026-11-10): endpoint, `homeMode`, loader, CSS của feed và lookbook `fill` | Khớp với code | `apps/api/src/services/public-outfit-feed-service.ts`, `apps/api/src/routes/public-outfit-routes.ts`, `apps/web/src/components/feed/`, `apps/web/src/components/lookbook/lookbook-fill.module.css` |
+| Unit web | 694/694 (2026-11-11) | `cd apps/web && npx vitest run` |
+| E2E đầy đủ | 126/126 (2026-11-11), gồm `public-outfit-feed.spec.ts` mới và chuỗi content | `E2E_BASE_URL=http://localhost:3000 pnpm e2e` |
+| Snapshot visual `/look/dramatic`, `/look/mesh-84` ở 1440 và 390 | Chụp lại baseline (lệch từ commit 927f6fd, f6e869c, không do feed); đã xem ảnh | `pnpm e2e --project=visual --update-snapshots` |
+| Ảnh chụp khung đầu `/`, `/looks`, `/collections/streetwear-he` | 390×844, 1440×900, 360×640 | `plans/261110-2143-tiktok-outfit-feed/visuals/` |
+
+### Đã biết (chưa xử lý)
+
+- Feed phân trang bằng `skip`/`limit`. Nếu admin sửa hoặc đăng outfit đúng lúc khách đang lướt, lô kế có thể lặp một outfit hoặc sót một outfit. Chưa đổi sang phân trang theo con trỏ.
+- Thu lookbook vừa khung bằng CSS, không đo bằng JS như plan. Không có `lookbook-fit.tsx` và `compute-fit-width.ts`.
+- iOS Safari với `100dvh` và cuộn lồng nhau chưa kiểm trên thiết bị thật.
+- `/collections/[slug]` gọi API hai lần cho cùng slug: một lần lấy tên và metadata (chỉ xin 1 outfit), một lần lấy feed.
+
 
 Phạm vi: `packages/shared`, `apps/api`, `seed/demo`, `scripts/demo-images`, `assets-source/demo`, `docs`.
 
