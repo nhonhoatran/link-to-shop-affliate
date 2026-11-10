@@ -23,6 +23,7 @@ const OPTIONAL_KEYS = [
   'relatedOutfitsCount',
   'collectionsNavEnabled',
   'collectionsLabel',
+  'homeMode',
   'footer',
   'announcement',
 ] as const;
@@ -46,6 +47,7 @@ export const getAdminSettings = async (env: Env): Promise<AdminSettingsDto> => {
     ...(uploadMaxMb ? { uploadMaxMb } : {}),
     ...(looksPageSize ? { looksPageSize } : {}),
     ...(relatedOutfitsCount ? { relatedOutfitsCount } : {}),
+    ...(stored.homeMode ? { homeMode: stored.homeMode } : {}),
     ...toAdminChrome(stored),
     ...(stored.newsletterConsent ? { newsletterConsent: stored.newsletterConsent } : {}),
     newsletterConsentVersion: stored.newsletterConsentVersion ?? null,
@@ -68,7 +70,7 @@ export const getPublicSettings = async (env: Env): Promise<PublicSettingsDto> =>
   if (!stored) return { ...getDefaultSettings(), ogImageUrl: null, ...listing, ...chrome };
   const { siteName, seoTitle, seoDescription, ogImage } = stored;
   const ogImageUrl = ogImage ? createMediaUrlResolver(env)(ogImage.key) : null;
-  return { siteName, seoTitle, seoDescription, ogImageUrl, ...listing, ...chrome };
+  return { siteName, seoTitle, seoDescription, ogImageUrl, ...listing, ...(stored.homeMode ? { homeMode: stored.homeMode } : {}), ...chrome };
 };
 
 export const updateSettings = async (input: SettingsInput, env: Env): Promise<AdminSettingsDto> => {

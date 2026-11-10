@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import type { AnnouncementInput, FooterInput, ImageRef, NewsletterConsentInput } from '@under30ss/shared';
+import { HOME_MODES, type AnnouncementInput, type FooterInput, type HomeMode, type ImageRef, type NewsletterConsentInput } from '@under30ss/shared';
 
 export interface SettingsDoc {
   singleton: 'site';
@@ -12,6 +12,7 @@ export interface SettingsDoc {
   relatedOutfitsCount?: number;
   collectionsNavEnabled?: boolean;
   collectionsLabel?: string;
+  homeMode?: HomeMode;
   footer?: FooterInput;
   announcement?: AnnouncementInput;
   newsletterConsent?: NewsletterConsentInput;
@@ -35,6 +36,7 @@ const settingsSchema = new Schema<SettingsDoc>(
     relatedOutfitsCount: Number,
     collectionsNavEnabled: Boolean,
     collectionsLabel: String,
+    homeMode: { type: String, enum: HOME_MODES },
     // Validated by the shared zod schemas before every write.
     footer: Schema.Types.Mixed,
     announcement: Schema.Types.Mixed,

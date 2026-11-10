@@ -74,6 +74,8 @@ outfitSchema.index({ featured: 1 }, { unique: true, partialFilterExpression: { f
 outfitSchema.index({ updatedAt: -1 });
 // Public list: filter on status, newest first, `_id` as the stable tie-breaker.
 outfitSchema.index({ status: 1, updatedAt: -1, _id: -1 });
+// Public feed order: featured first, then newest.
+outfitSchema.index({ status: 1, featured: -1, updatedAt: -1, _id: -1 });
 
 // Collection page and carousel tabs: published outfits of one collection, newest first.
 outfitSchema.index({ collectionIds: 1, status: 1, updatedAt: -1, _id: -1 });

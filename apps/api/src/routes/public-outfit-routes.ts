@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { publicOutfitListQuerySchema } from '@under30ss/shared';
+import { publicOutfitFeedQuerySchema, publicOutfitListQuerySchema } from '@under30ss/shared';
 import { notFound } from '../lib/app-error';
 import type { AppContext } from '../lib/app-context';
+import { listPublishedOutfitFeed } from '../services/public-outfit-feed-service';
 import {
   getFeaturedOutfit,
   getPublishedOutfitBySlug,
@@ -25,6 +26,12 @@ export const createPublicRoutes = ({ env }: AppContext): Router => {
 
   router.get('/outfits/slugs', async (_req, res) => {
     res.json(await listPublishedSlugs());
+  });
+
+  router.get('/outfits/feed', async (req, res) => {
+    const feed = await listPublishedOutfitFeed(publicOutfitFeedQuerySchema.parse(req.query), env);
+    if (!feed) throw notFound('Không tìm thấy bộ sưu tập');
+    res.json(feed);
   });
 
   router.get('/outfits/:slug', async (req, res) => {

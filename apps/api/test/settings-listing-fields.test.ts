@@ -61,6 +61,22 @@ describe('listing settings', () => {
     expect((await save({ relatedOutfitsCount: -1 })).status).toBe(400);
   });
 
+  it('persists homeMode and exposes it only when stored', async () => {
+    expect((await publicSettings()).body).not.toHaveProperty('homeMode');
+    const saved = await save({ homeMode: 'sections' });
+    expect(saved.status).toBe(200);
+    expect(saved.body.homeMode).toBe('sections');
+    expect((await agent.get('/api/admin/settings')).body.homeMode).toBe('sections');
+    expect((await publicSettings()).body.homeMode).toBe('sections');
+    expect((await save({})).body).not.toHaveProperty('homeMode');
+  });
+
+  it('rejects an unknown homeMode', async () => {
+    const response = await save({ homeMode: 'grid' });
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
   it('clamps stored values to the ceiling on read', async () => {
     await SettingsModel.create({ ...base, looksPageSize: 500, relatedOutfitsCount: 60 });
     expect((await publicSettings()).body).toMatchObject({ looksPageSize: 48, relatedOutfitsCount: 48 });
