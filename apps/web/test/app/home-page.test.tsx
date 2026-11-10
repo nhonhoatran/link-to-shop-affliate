@@ -4,12 +4,25 @@ import { sampleOutfitCards, samplePublicOutfit, sampleResolvedEditorialSections 
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import HomePage, { generateMetadata } from '@/app/(public)/page';
 
-const { getHomePage, getPublicSettings } = vi.hoisted(() => ({
+const { getHomePage, getPublicSettings, getOutfitFeedPage } = vi.hoisted(() => ({
   getHomePage: vi.fn(),
   getPublicSettings: vi.fn(),
+  getOutfitFeedPage: vi.fn(),
 }));
 
 vi.mock('@/lib/seo/public-data-loaders', () => ({ getPublicSettings }));
+vi.mock('@/lib/seo/public-feed-loaders', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  getOutfitFeedPage,
+}));
+// The real feed has an async footer and client islands; the page only has to hand it the right props.
+vi.mock('@/components/feed/outfit-feed', () => ({
+  OutfitFeed: (props: { outfits: { slug: string }[]; nextPage: number | null; basePath: string }) => (
+    <div data-testid="feed" data-next={String(props.nextPage)} data-base={props.basePath}>
+      {props.outfits.map((o) => o.slug).join(',')}
+    </div>
+  ),
+}));
 vi.mock('@/lib/seo/public-home-loaders', () => ({ getHomePage }));
 
 const settings = {
@@ -43,7 +56,8 @@ beforeAll(() => {
 
 beforeEach(() => {
   getHomePage.mockReset();
-  getPublicSettings.mockReset().mockResolvedValue(settings);
+  getOutfitFeedPage.mockReset();
+  getPublicSettings.mockReset().mockResolvedValue({ ...settings, homeMode: 'sections' });
 });
 
 describe('/', () => {
@@ -81,6 +95,35 @@ describe('/', () => {
   it('lets a loader failure propagate to the error boundary', async () => {
     getHomePage.mockRejectedValue(new Error('down'));
     await expect(HomePage(pageProps())).rejects.toThrow('down');
+  });
+
+  it('renders the feed with a hidden h1 when homeMode is feed or unset', async () => {
+    getPublicSettings.mockResolvedValue(settings);
+    getOutfitFeedPage.mockResolvedValue({ items: [{ slug: 'a' }, { slug: 'b' }], total: 5, page: 1, size: 2 });
+    const { container, getByTestId } = render(await HomePage(pageProps()));
+    expect(getOutfitFeedPage).toHaveBeenCalledWith(1, settings.looksPageSize);
+    expect(getHomePage).not.toHaveBeenCalled();
+    expect(container.querySelector('h1')).toHaveTextContent('Shop title');
+    expect(getByTestId('feed')).toHaveTextContent('a,b');
+    expect(getByTestId('feed')).toHaveAttribute('data-next', '2');
+    expect(getByTestId('feed')).toHaveAttribute('data-base', '/');
+  });
+
+  it('starts the feed at the requested batch and ignores a bad page value', async () => {
+    getPublicSettings.mockResolvedValue({ ...settings, homeMode: 'feed' });
+    getOutfitFeedPage.mockResolvedValue({ items: [{ slug: 'c' }], total: 5, page: 3, size: 2 });
+    const { getByTestId } = render(await HomePage(pageProps({ page: '3' })));
+    expect(getOutfitFeedPage).toHaveBeenCalledWith(3, settings.looksPageSize);
+    expect(getByTestId('feed')).toHaveAttribute('data-next', 'null');
+    await HomePage(pageProps({ page: 'abc' }));
+    expect(getOutfitFeedPage).toHaveBeenLastCalledWith(1, settings.looksPageSize);
+  });
+
+  it('shows the empty message when the feed has no outfits', async () => {
+    getPublicSettings.mockResolvedValue(settings);
+    getOutfitFeedPage.mockResolvedValue({ items: [], total: 0, page: 1, size: 2 });
+    const { container } = render(await HomePage(pageProps()));
+    expect(container.querySelector('h1')).toHaveTextContent('Chưa có outfit nào');
   });
 
   it('uses the site metadata', async () => {

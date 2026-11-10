@@ -26,8 +26,8 @@ export function LookbookItemCard({ item, itemHeading: Heading, index }: Props) {
           />
         </span>
         <Heading className={styles.itemName}>{item.name}</Heading>
-        {item.subtitle ? <span className={styles.itemSubtitle}>{item.subtitle}</span> : null}
-        {item.description ? <span className={styles.itemDescription}>{item.description}</span> : null}
+        {item.subtitle ? <span className={styles.itemSubtitle} data-item-subtitle>{item.subtitle}</span> : null}
+        {item.description ? <span className={styles.itemDescription} data-item-description>{item.description}</span> : null}
       </a>
     </li>
   );

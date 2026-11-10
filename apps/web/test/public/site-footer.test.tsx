@@ -43,6 +43,15 @@ describe('SiteFooter', () => {
     expect(screen.getByText(`© ${new Date().getFullYear()} Shop`)).toBeInTheDocument();
   });
 
+  it('stays the contentinfo landmark when rendered inside main, as the feed does', () => {
+    render(
+      <main>
+        <SiteFooter siteName="Shop" description="About text" navItems={buildPublicNavItems()} insideMain />
+      </main>,
+    );
+    expect(screen.getByRole('contentinfo')).toHaveTextContent('About text');
+  });
+
   it('renders the site name as a decorative wordmark hidden from assistive tech', () => {
     const { container } = renderFooter();
     const wordmark = container.querySelector('[aria-hidden="true"]');

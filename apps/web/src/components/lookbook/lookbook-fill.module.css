@@ -1,0 +1,77 @@
+/*
+ * Lookbook inside a fixed-height box (a feed slide). The model fills the height and item images shrink
+ * into their share of the column, so text keeps a readable size instead of the whole lookbook scaling down.
+ * The parent must be a size container (cqh/cqw resolve against it).
+ */
+.fill[data-lookbook] {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
+  max-width: var(--feed-lookbook-max-width);
+  padding-block: var(--feed-lookbook-pad-block);
+  --lookbook-title-size: var(--feed-item-name-size);
+  --lookbook-subtitle-size: var(--feed-item-subtitle-size);
+  --lookbook-description-size: var(--feed-item-description-size);
+}
+
+.fill [data-side] {
+  justify-content: flex-start;
+  gap: var(--feed-item-gap);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fill [data-side] > li {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.fill [data-side] > li > a {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.fill [data-item-image] {
+  flex: 1 1 0;
+  min-height: var(--feed-item-image-min-height);
+  margin-bottom: var(--space-1);
+}
+
+.fill [data-item-image] img {
+  width: auto;
+  max-height: 100%;
+}
+
+.fill figure > img {
+  width: auto;
+  max-width: var(--feed-model-max-width);
+  max-height: calc(100cqh - 2 * var(--feed-lookbook-pad-block));
+}
+
+.fill [data-item-description] {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--feed-item-description-lines);
+}
+
+/* Mirrors the phone rule in lookbook.module.css, which the clamp above would otherwise override (639.98px = --lookbook-compact-below). */
+@media (max-width: 639.98px) {
+  .fill [data-item-description] {
+    display: none;
+  }
+}
+
+/* Each item gets an equal share of the height; with this many items a description leaves no room for the picture. */
+.fill:has([data-side] > li:nth-child(5)) [data-item-description] {
+  display: none;
+}
+
+/* Short slides (small phones): the English subtitle goes first so the picture keeps its room. Container queries cannot read custom properties. */
+@container (max-height: 520px) {
+  .fill [data-item-subtitle] {
+    display: none;
+  }
+}

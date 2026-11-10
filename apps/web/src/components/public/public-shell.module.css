@@ -34,3 +34,30 @@
 .skipLink:focus {
   transform: none;
 }
+
+/* A feed turns the page into an app frame: announcement and header on top, the feed scrolls on its own below. */
+.shell:has([data-feed-wrap]) {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.shell:has([data-feed-wrap]) .main {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* The feed renders the footer itself once the last outfit is reached. */
+.shell:has([data-feed-wrap]) .footerSlot {
+  display: none;
+}
+
+/* The route template wraps the page in one div; it has to pass the height on. */
+.shell:has([data-feed-wrap]) .main > div {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+}

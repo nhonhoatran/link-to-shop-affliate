@@ -100,3 +100,32 @@
     transition: none;
   }
 }
+
+/* Feed pages: a single compact row so the first lookbook gets the screen. */
+@media (max-width: 767.98px) {
+  body:has([data-feed-wrap]) .inner {
+    grid-template-areas: 'brand nav';
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    justify-items: stretch;
+    column-gap: var(--space-2);
+  }
+
+  body:has([data-feed-wrap]) .brand {
+    min-height: var(--client-tap-target);
+    font-size: var(--feed-header-brand-size);
+  }
+
+  body:has([data-feed-wrap]) .nav {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  body:has([data-feed-wrap]) .navLink {
+    padding-inline: var(--feed-header-link-padding);
+    font-size: var(--feed-header-link-size);
+    letter-spacing: var(--feed-header-link-tracking);
+  }
+}

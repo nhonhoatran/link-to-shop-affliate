@@ -1,0 +1,131 @@
+.wrap {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.feed {
+  flex: 1 1 0;
+  min-height: 0;
+  /* Slides size themselves in cqh, so the scroller's height must not depend on its content. */
+  container-type: size;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: thin;
+}
+
+.feed:focus-visible {
+  outline: 2px solid var(--client-focus);
+  outline-offset: -2px;
+}
+
+.slide {
+  display: flex;
+  flex-direction: column;
+  height: 100cqh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.fitArea {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  container-type: size;
+  overflow-x: hidden;
+  /* Safety net only: a lookbook with very many items scrolls inside its slide instead of being cut off. */
+  overflow-y: auto;
+}
+
+.caption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--feed-caption-height);
+  margin: 0;
+  padding-inline: var(--space-4);
+}
+
+.captionLink {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--client-ink);
+  text-overflow: ellipsis;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.captionLink:hover {
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}
+
+.more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--feed-more-height);
+  font-size: var(--client-label-size);
+  letter-spacing: var(--client-label-tracking);
+  text-transform: uppercase;
+  color: var(--client-ink-muted);
+  text-decoration: none;
+  scroll-snap-align: end;
+}
+
+.steps {
+  position: absolute;
+  top: 50%;
+  right: var(--space-4);
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  gap: var(--feed-step-button-gap);
+  transform: translateY(-50%);
+}
+
+.step {
+  display: grid;
+  place-items: center;
+  width: var(--feed-step-button-size);
+  height: var(--feed-step-button-size);
+  padding: 0;
+  border: 1px solid var(--client-border);
+  border-radius: 50%;
+  background: var(--client-surface);
+  color: var(--client-ink);
+  cursor: pointer;
+  transition: opacity var(--duration-fast) var(--easing-standard);
+}
+
+.step:hover:not(:disabled) {
+  background: var(--client-surface-soft);
+}
+
+.step:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* 768px = --bp-md: phones swipe; the buttons are for pointer devices. */
+@media (min-width: 768px) {
+  .steps {
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step {
+    transition: none;
+  }
+}
+
+/* Without a snap point at the end, mandatory snapping pulls the feed back from the footer. */
+.footerSnap {
+  scroll-snap-align: end;
+}

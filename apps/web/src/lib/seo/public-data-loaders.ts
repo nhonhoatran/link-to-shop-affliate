@@ -3,6 +3,7 @@ import {
   API_PATHS,
   apiUrl,
   PUBLIC_SETTINGS_CACHE_TAG,
+  RESERVED_OUTFIT_SLUGS,
   type FeaturedOutfitResponse,
   type OutfitSlugsResponse,
   type PublicOutfitCardDto,
@@ -33,8 +34,11 @@ export const getPublicSettings = cache(() =>
   apiGet<PublicSettingsResponse>(API_PATHS.public.settings, { ...safetyRevalidate(), tags: [PUBLIC_SETTINGS_CACHE_TAG] }),
 );
 
-export const getOutfitBySlug = cache((slug: string) =>
-  nullOnNotFound(apiGet<PublicOutfitResponse>(apiUrl.publicOutfit(slug), safetyRevalidate())),
+// Reserved slugs are API routes (feed, featured, slugs), never outfits.
+export const getOutfitBySlug = cache(async (slug: string) =>
+  RESERVED_OUTFIT_SLUGS.includes(slug)
+    ? null
+    : nullOnNotFound(apiGet<PublicOutfitResponse>(apiUrl.publicOutfit(slug), safetyRevalidate())),
 );
 
 export const getFeaturedOutfit = cache(() =>

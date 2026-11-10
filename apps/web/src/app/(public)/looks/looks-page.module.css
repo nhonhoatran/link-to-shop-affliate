@@ -1,8 +1,0 @@
-.title {
-  margin: 0 0 var(--space-5);
-  font-size: var(--page-title-size);
-  font-family: var(--font-display);
-  font-weight: var(--font-weight-display);
-  line-height: var(--line-height-tight);
-  color: var(--client-ink);
-}

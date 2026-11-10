@@ -19,6 +19,7 @@ const relativeRect = (rect: DOMRect, origin: DOMRect): RelativeRect => ({
 export function measureConnectors(root: HTMLElement): ConnectorMeasurement {
   const style = getComputedStyle(root);
   const origin = root.getBoundingClientRect();
+  const fill = root.hasAttribute('data-fill');
 
   const hotspots = new Map<string, HTMLElement>();
   root.querySelectorAll<HTMLElement>('a[data-hotspot]').forEach((el) => {
@@ -29,7 +30,9 @@ export function measureConnectors(root: HTMLElement): ConnectorMeasurement {
   root.querySelectorAll<HTMLElement>('a[data-item-id]:not([data-hotspot])').forEach((card) => {
     const id = card.dataset.itemId;
     const side = card.closest<HTMLElement>('[data-side]')?.dataset.side;
-    const image = card.querySelector<HTMLElement>('[data-item-image]');
+    // In fill mode the img is narrower than its box, so threads start at the picture itself.
+    const box = card.querySelector<HTMLElement>('[data-item-image]');
+    const image = fill ? (box?.querySelector<HTMLElement>('img') ?? box) : box;
     const hotspot = id ? hotspots.get(id) : undefined;
     if (!id || (side !== 'left' && side !== 'right') || !image || !hotspot) return;
     const dot = relativeRect(hotspot.getBoundingClientRect(), origin);

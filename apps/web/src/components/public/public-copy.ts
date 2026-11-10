@@ -48,3 +48,12 @@ export const RELATED_COPY = {
 } as const;
 
 export const footerCopyright = (year: number, siteName: string): string => `© ${year} ${siteName}`;
+
+export const FEED_COPY = {
+  region: 'Danh sách outfit',
+  previous: 'Outfit trước',
+  next: 'Outfit kế tiếp',
+  more: 'Xem tiếp',
+  loading: 'Đang tải thêm outfit',
+  retry: 'Không tải được, bấm để thử lại',
+} as const;

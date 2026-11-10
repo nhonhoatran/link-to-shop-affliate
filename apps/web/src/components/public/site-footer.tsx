@@ -11,11 +11,13 @@ interface SiteFooterProps {
   description: string;
   navItems: readonly PublicNavItem[];
   footer?: FooterInput | undefined;
+  /** Inside <main> a <footer> loses its contentinfo role, so the feed (which scrolls inside main) sets it back. */
+  insideMain?: boolean;
 }
 
-export function SiteFooter({ siteName, description, navItems, footer }: SiteFooterProps) {
+export function SiteFooter({ siteName, description, navItems, footer, insideMain = false }: SiteFooterProps) {
   return (
-    <footer className={styles.footer}>
+    <footer className={styles.footer} role={insideMain ? 'contentinfo' : undefined}>
       <div className={styles.inner}>
         {description ? <p className={styles.description}>{description}</p> : null}
         <PublicNavLinks

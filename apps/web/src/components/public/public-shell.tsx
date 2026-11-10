@@ -51,7 +51,9 @@ export async function PublicShell({ children }: { children: ReactNode }) {
       <main id="main" tabIndex={-1} className={styles.main}>
         {children}
       </main>
-      <SiteFooter siteName={siteName} description={description} navItems={navItems} footer={footer} />
+      <div className={styles.footerSlot}>
+        <SiteFooter siteName={siteName} description={description} navItems={navItems} footer={footer} />
+      </div>
     </div>
   );
 }

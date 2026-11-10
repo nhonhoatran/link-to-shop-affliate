@@ -3,8 +3,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { sampleCollectionCards } from '@under30ss/shared/fixtures';
 import CollectionPage, { generateMetadata } from '@/app/(public)/collections/[slug]/page';
 
-const { getCollectionPage, getPublicSettings, notFound } = vi.hoisted(() => ({
+const { getCollectionPage, getOutfitFeedPage, getPublicSettings, notFound } = vi.hoisted(() => ({
   getCollectionPage: vi.fn(),
+  getOutfitFeedPage: vi.fn(),
   getPublicSettings: vi.fn(),
   notFound: vi.fn(() => {
     throw new Error('NEXT_NOT_FOUND');
@@ -14,6 +15,18 @@ const { getCollectionPage, getPublicSettings, notFound } = vi.hoisted(() => ({
 vi.mock('next/navigation', () => ({ notFound }));
 vi.mock('@/lib/seo/public-collection-loaders', () => ({ getCollectionPage }));
 vi.mock('@/lib/seo/public-data-loaders', () => ({ getPublicSettings }));
+vi.mock('@/lib/seo/public-feed-loaders', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  getOutfitFeedPage,
+}));
+// The real feed has an async footer and client islands; the page only has to hand it the right props.
+vi.mock('@/components/feed/outfit-feed', () => ({
+  OutfitFeed: (props: { outfits: { slug: string }[]; nextPage: number | null; basePath: string; collection?: string }) => (
+    <div data-testid="feed" data-next={String(props.nextPage)} data-base={props.basePath} data-collection={props.collection}>
+      {props.outfits.map((o) => o.slug).join(',')}
+    </div>
+  ),
+}));
 
 const settings = {
   siteName: 'Shop',
@@ -23,15 +36,15 @@ const settings = {
   looksPageSize: 2,
   relatedOutfitsCount: 8,
 };
-const outfit = (slug: string) => ({
-  slug,
-  title: `Title ${slug}`,
-  modelImage: { key: `k-${slug}`, url: `/media/${slug}.webp`, width: 400, height: 1000 },
-  updatedAt: '2026-11-01T00:00:00.000Z',
-});
-const data = (total: number, page = 1) => ({
+const collectionData = () => ({
   collection: { ...sampleCollectionCards[0]!, description: 'Dòng một\nDòng hai', seoDescription: 'Seo' },
-  outfits: { items: total === 0 ? [] : [outfit('a'), outfit('b')], total, page, size: 2 },
+  outfits: { items: [], total: 5, page: 1, size: 2 },
+});
+const feedData = (total: number, page = 1) => ({
+  items: total === 0 ? [] : [{ slug: 'a' }, { slug: 'b' }],
+  total,
+  page,
+  size: 2,
 });
 const props = (page?: string, slug = 'streetwear') => ({
   params: Promise.resolve({ slug }),
@@ -39,7 +52,8 @@ const props = (page?: string, slug = 'streetwear') => ({
 });
 
 beforeEach(() => {
-  getCollectionPage.mockReset().mockResolvedValue(data(5));
+  getCollectionPage.mockReset().mockResolvedValue(collectionData());
+  getOutfitFeedPage.mockReset().mockResolvedValue(feedData(5));
   getPublicSettings.mockReset().mockResolvedValue(settings);
   notFound.mockClear();
   vi.stubEnv('API_INTERNAL_URL', 'http://api.test:4000');
@@ -49,43 +63,39 @@ beforeEach(() => {
 });
 
 describe('/collections/[slug]', () => {
-  it('renders breadcrumb, header with split description, outfit cards and pagination', async () => {
-    render(await CollectionPage(props()));
-    expect(getCollectionPage).toHaveBeenCalledWith('streetwear', 1, settings.looksPageSize);
-    expect(screen.getByRole('heading', { level: 1, name: 'Streetwear' })).toBeInTheDocument();
-    expect(screen.getByText('Dòng một')).toBeInTheDocument();
-    expect(screen.getByText('Dòng hai')).toBeInTheDocument();
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(2);
-    expect(screen.getByRole('link', { name: 'Title a' })).toHaveAttribute('href', '/look/a');
-    expect(screen.getByRole('navigation', { name: 'Đường dẫn trang' })).toHaveTextContent('Trang chủ');
-    expect(screen.getByRole('link', { name: 'Bộ sưu tập' })).toHaveAttribute('href', '/collections');
-    expect(screen.getByRole('link', { name: 'Sau' })).toHaveAttribute('href', '/collections/streetwear?page=2');
-  });
-
-  it('loads the cover eagerly with high priority', async () => {
+  it('renders only a hidden title and the feed filtered by the collection', async () => {
     const { container } = render(await CollectionPage(props()));
-    const cover = container.querySelector('header img')!;
-    expect(cover.getAttribute('loading')).toBe('eager');
-    expect(cover.getAttribute('fetchpriority')).toBe('high');
+    expect(getOutfitFeedPage).toHaveBeenCalledWith(1, settings.looksPageSize, 'streetwear');
+    expect(screen.getByRole('heading', { level: 1, name: 'Streetwear' })).toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Đường dẫn trang' })).toBeNull();
+    expect(screen.queryByText('Dòng một')).toBeNull();
+    expect(container.querySelector('img')).toBeNull();
+    const feed = screen.getByTestId('feed');
+    expect(feed).toHaveTextContent('a,b');
+    expect(feed).toHaveAttribute('data-next', '2');
+    expect(feed).toHaveAttribute('data-base', '/collections/streetwear');
+    expect(feed).toHaveAttribute('data-collection', 'streetwear');
   });
 
   it('calls notFound() for an unknown or draft slug', async () => {
     getCollectionPage.mockResolvedValue(null);
+    getOutfitFeedPage.mockResolvedValue(null);
     await expect(CollectionPage(props(undefined, 'nope'))).rejects.toThrow('NEXT_NOT_FOUND');
     await expect(generateMetadata(props(undefined, 'nope'))).rejects.toThrow('NEXT_NOT_FOUND');
   });
 
   it('calls notFound() when the page is beyond the last one', async () => {
-    getCollectionPage.mockResolvedValue(data(5, 999));
+    getOutfitFeedPage.mockResolvedValue(feedData(5, 999));
     await expect(CollectionPage(props('999'))).rejects.toThrow('NEXT_NOT_FOUND');
   });
 
   it('shows an empty message inside the page for a collection without outfits', async () => {
-    getCollectionPage.mockResolvedValue(data(0));
+    getOutfitFeedPage.mockResolvedValue(feedData(0));
     render(await CollectionPage(props()));
     expect(notFound).not.toHaveBeenCalled();
     expect(screen.getByText('Bộ sưu tập này chưa có outfit nào.')).toBeInTheDocument();
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(screen.queryByTestId('feed')).toBeNull();
   });
 
   it('builds metadata from the collection', async () => {

@@ -70,6 +70,27 @@
   --duration-base: 250ms;
   --easing-standard: cubic-bezier(0.2, 0, 0, 1);
 
+  /* Outfit feed (one lookbook per screen) */
+  --feed-preload-margin: 150%;
+  --feed-caption-height: 2.75rem;
+  --feed-more-height: 3rem;
+  --feed-step-button-size: 3rem;
+  --feed-step-button-gap: var(--space-3);
+  --feed-lookbook-max-width: 760px;
+  --feed-lookbook-pad-block: var(--space-3);
+  --feed-item-gap: var(--space-2);
+  --feed-item-image-min-height: var(--space-6);
+  /* Share of the slide width the model may take; the item columns split the rest. */
+  --feed-model-max-width: 46cqw;
+  --feed-item-name-size: clamp(11px, 1vw, 14px);
+  --feed-item-subtitle-size: clamp(11px, 0.9vw, 13px);
+  --feed-item-description-size: clamp(11px, 0.85vw, 12px);
+  --feed-item-description-lines: 2;
+  --feed-header-brand-size: 17px;
+  --feed-header-link-size: 11px;
+  --feed-header-link-tracking: 0.06em;
+  --feed-header-link-padding: 4px;
+
   /* Motion (page-load animation is CSS; see motion-primitives.module.css) */
   --duration-slow: 500ms;
   --duration-draw: 800ms;
