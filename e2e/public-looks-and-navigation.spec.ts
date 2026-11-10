@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 import { request as playwrightRequest, test, expect, type Page } from '@playwright/test';
-import { setLooksPageSize } from './support/admin-settings';
+import { FEED_SLIDE, scrollFeedToEnd, serverSlideCount } from './support/feed-helpers';
 import { readOutfitState } from './support/outfit-state';
 
 const HEADER_NAV = 'Điều hướng chính';
@@ -16,50 +16,51 @@ const headerOffsetY = (page: Page) =>
     return transform === 'none' ? 0 : new DOMMatrix(transform).m42;
   });
 
-test.describe('/looks pagination', () => {
-  // Dev data has 2-3 published outfits; a page size of 1 makes several pages without creating more data.
-  let previousPageSize: number | undefined;
+test.describe('/looks feed pagination', () => {
+  // The page size comes from settings, which other specs share, so it is read rather than changed.
+  // The batch math below uses the feed's own size and total; dev data has more outfits than one batch.
+  let size = 0;
+  let total = 0;
 
   test.beforeAll(async () => {
-    previousPageSize = await setLooksPageSize(1);
-    // Next applies revalidateTag after it has answered the revalidate call, so /looks can serve the old page size for a few hundred ms.
     const web = await playwrightRequest.newContext({ baseURL: test.info().project.use.baseURL });
     try {
-      await expect
-        .poll(async () => (await web.get('/looks')).text(), { timeout: 10_000, intervals: [100] })
-        .toContain('Trang 2');
+      const feed = (await (await web.get('/api/public/outfits/feed?page=1')).json()) as { total: number; size: number };
+      ({ total, size } = feed);
     } finally {
       await web.dispose();
     }
   });
 
-  test.afterAll(async () => {
-    await setLooksPageSize(previousPageSize);
-  });
+  const batchLength = (batch: number): number => Math.min(size, Math.max(0, total - (batch - 1) * size));
+  const requireTwoBatches = () => test.skip(total <= size, 'needs more outfits than one batch');
 
-  test('page 2 shows the next outfit and marks its number as current', async ({ page }) => {
+  test('batch 2 renders the rest of the outfits in the feed', async ({ page }) => {
+    requireTwoBatches();
+    const html = await (await page.request.get('/looks?page=2')).text();
+    expect(serverSlideCount(html)).toBe(batchLength(2));
+
     await page.goto('/looks?page=2');
-    await expect(page.getByRole('heading', { level: 1, name: 'Tất cả outfit', exact: true })).toBeVisible();
-    await expect(page.getByRole('navigation', { name: 'Phân trang' }).getByRole('link', { name: 'Trang 2' })).toHaveAttribute(
-      'aria-current',
-      'page',
-    );
-    await expect(page.locator('a[href^="/look/"]')).toHaveCount(1);
+    await expect(page.getByRole('heading', { level: 1, name: 'Tất cả outfit', exact: true })).toBeAttached();
+    await expect(page.locator(FEED_SLIDE).first()).toBeVisible();
   });
 
-  test('previous and next links move between pages', async ({ page }) => {
-    await page.goto('/looks?page=1');
-    await page.getByRole('link', { name: 'Sau', exact: true }).click();
-    await expect(page).toHaveURL(/\/looks\?page=2$/);
-    await page.getByRole('link', { name: 'Trước', exact: true }).click();
-    await expect(page).toHaveURL(/\/looks(\?page=1)?$/);
+  test('the server HTML links the next batch from page 1 and has no next link on the last page', async ({ page }) => {
+    requireTwoBatches();
+    const first = await (await page.request.get('/looks?page=1')).text();
+    expect(serverSlideCount(first)).toBe(batchLength(1));
+    expect(first).toContain('href="/looks?page=2"');
+
+    const lastPage = Math.ceil(total / size);
+    const last = await (await page.request.get(`/looks?page=${lastPage}`)).text();
+    expect(last).not.toContain('rel="next"');
   });
 
   test('invalid page values fall back to page 1', async ({ page }) => {
     for (const raw of ['abc', '0', '-1', '1.5']) {
-      const response = await page.goto(`/looks?page=${raw}`);
-      expect(response?.status(), `status for page=${raw}`).toBe(200);
-      await expect(page.getByRole('link', { name: 'Trang 1' }), `page=${raw}`).toHaveAttribute('aria-current', 'page');
+      const response = await page.request.get(`/looks?page=${raw}`);
+      expect(response.status(), `status for page=${raw}`).toBe(200);
+      expect(serverSlideCount(await response.text()), `page=${raw}`).toBe(batchLength(1));
     }
   });
 
@@ -92,6 +93,8 @@ test.describe('public navigation', () => {
 
   test('footer link opens the full outfit list', async ({ page }) => {
     await page.goto('/');
+    // The feed renders the footer only after its last outfit, so scroll there first.
+    await scrollFeedToEnd(page);
     await page.getByRole('navigation', { name: FOOTER_NAV }).getByRole('link', { name: LOOKS_LINK, exact: true }).click();
     await expect(page).toHaveURL(/\/looks$/);
   });

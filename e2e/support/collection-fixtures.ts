@@ -41,13 +41,14 @@ export async function createPublishedOutfit(api: APIRequestContext, slug: string
 
 export async function createCollection(
   api: APIRequestContext,
-  input: { slug: string; name: string; status: 'draft' | 'published'; coverImage?: ImageRef },
+  input: { slug: string; name: string; status: 'draft' | 'published'; coverImage?: ImageRef; description?: string },
 ): Promise<string> {
   const response = await api.post('/api/admin/collections', {
     data: {
       slug: input.slug,
       name: input.name,
       status: input.status,
+      ...(input.description ? { description: input.description } : {}),
       ...(input.coverImage ? { coverImage: stripUrl(input.coverImage) } : {}),
     },
   });

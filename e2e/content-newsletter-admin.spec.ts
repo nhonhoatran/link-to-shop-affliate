@@ -1,6 +1,5 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
 import { adminApi, signInContext } from './support/admin-api';
-import { updateSettings } from './support/admin-settings';
 import {
   CONSENT_TEXT,
   currentConsentVersion,
@@ -11,6 +10,7 @@ import {
   saveConsent,
   subscribeViaApi,
 } from './support/newsletter-fixtures';
+import { restoreSettings, updateSettings, type SettingsDocument } from './support/admin-settings';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -23,10 +23,13 @@ const UNSUBSCRIBED = 'Đã huỷ';
 const HISTORY = /subscribe \S+ \(self, v\d+\); unsubscribe \S+ \(admin\); subscribe \S+ \(self, v\d+\)/;
 
 let api: APIRequestContext;
+let previousSettings: SettingsDocument;
 let email: string;
 let version: number;
 
 test.beforeAll(async () => {
+  // Home sections render on '/' only when homeMode is 'sections'; afterAll puts the original value back.
+  previousSettings = await updateSettings({ homeMode: 'sections' });
   api = await adminApi();
   await saveConsent();
   version = await currentConsentVersion(api);
@@ -35,6 +38,7 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
+  await restoreSettings(previousSettings);
   await deleteE2eSubscribers(api);
   await api.dispose();
 });

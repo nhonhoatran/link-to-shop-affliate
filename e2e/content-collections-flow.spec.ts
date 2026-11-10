@@ -79,12 +79,10 @@ test('the published collection shows on /collections, its page and the header', 
   await page.goto('/collections');
   await page.getByRole('link', { name: nameA, exact: true }).click();
   await page.waitForURL(`**/collections/${slugA}`);
-  await expect(page.getByRole('heading', { level: 1, name: nameA, exact: true })).toBeVisible();
-  const crumbs = page.getByRole('navigation', { name: 'Đường dẫn trang' });
-  await expect(crumbs.getByRole('link', { name: 'Bộ sưu tập', exact: true })).toBeVisible();
-  await expect(crumbs.getByText(nameA, { exact: true })).toHaveAttribute('aria-current', 'page');
-  for (const title of outfitTitles) {
-    await expect(page.getByRole('heading', { level: 2, name: title, exact: true })).toBeVisible();
+  // The collection page has no visible breadcrumb: the name is only the sr-only h1.
+  await expect(page.getByRole('heading', { level: 1, name: nameA, exact: true })).toBeAttached();
+  for (const slug of outfitSlugs) {
+    await expect(page.locator(`[data-feed] a[href="/look/${slug}"]`)).toHaveCount(1);
   }
 
   await expect

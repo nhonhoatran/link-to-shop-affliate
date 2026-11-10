@@ -2,6 +2,7 @@ import { expect, test, type APIRequestContext, type Page } from '@playwright/tes
 import { adminApi } from './support/admin-api';
 import { CONTENT_SLUG_PREFIX, addOutfitsToCollection, createCollection, createPublishedOutfit, deleteContentFixtures, uploadMedia } from './support/collection-fixtures';
 import { publishLayout, resetHome, sevenTypeLayout } from './support/home-layout';
+import { restoreSettings, updateSettings, type SettingsDocument } from './support/admin-settings';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -15,8 +16,11 @@ const COLLECTION_NAMES = [`E2E Content Render Set A ${stamp}`, `E2E Content Rend
 const VIEWPORTS = [320, 390, 768, 1024, 1440];
 
 let api: APIRequestContext;
+let previousSettings: SettingsDocument;
 
 test.beforeAll(async () => {
+  // Home sections render on '/' only when homeMode is 'sections'; afterAll puts the original value back.
+  previousSettings = await updateSettings({ homeMode: 'sections' });
   api = await adminApi();
   await deleteContentFixtures(api);
   const image = await uploadMedia(api, 'model');
@@ -39,6 +43,7 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
+  await restoreSettings(previousSettings);
   await resetHome(api);
   await deleteContentFixtures(api);
   await api.dispose();

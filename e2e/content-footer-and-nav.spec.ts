@@ -1,6 +1,7 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
 import { adminApi, signInContext } from './support/admin-api';
 import { restoreSettings, updateSettings, type SettingsDocument } from './support/admin-settings';
+import { scrollFeedToEnd } from './support/feed-helpers';
 import { CONTENT_SLUG_PREFIX, createPublishedOutfit, deleteContentFixtures } from './support/collection-fixtures';
 
 test.describe.configure({ mode: 'serial' });
@@ -55,11 +56,24 @@ test('a footer column saved in settings shows on every public page', async ({ pa
   await page.getByLabel('Đường dẫn', { exact: true }).fill('/collections');
   await saveSettings(page);
 
-  for (const path of PUBLIC_PATHS) {
+  // The feed renders its footer only after the last outfit, so '/' and '/looks' are checked in the browser after scrolling.
+  for (const path of PUBLIC_PATHS.filter((item) => item !== '/' && item !== '/looks')) {
     await expectPublicToContain(page, path, FOOTER_LINK_LABEL, true);
   }
-  await page.goto('/looks');
-  await expect(footerLink(page, FOOTER_LINK_LABEL)).toHaveAttribute('href', '/collections');
+  for (const path of ['/', '/looks']) {
+    // Settings reach the feed footer after revalidation, so reload and scroll until the new link shows.
+    await expect
+      .poll(
+        async () => {
+          await page.goto(path);
+          await scrollFeedToEnd(page);
+          return footerLink(page, FOOTER_LINK_LABEL).count();
+        },
+        { timeout: 30_000, intervals: [1_000, 2_000] },
+      )
+      .toBe(1);
+    await expect(footerLink(page, FOOTER_LINK_LABEL), path).toHaveAttribute('href', '/collections');
+  }
 });
 
 test('a javascript: link is refused on its field', async ({ page }) => {

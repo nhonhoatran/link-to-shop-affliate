@@ -21,18 +21,43 @@ for (const width of VIEWPORTS) {
     }
   });
 
-  test(`header links stay inside the viewport at ${width}px`, async ({ page }) => {
+  // The feed is a fixed-height frame: the window stays put and only the feed scrolls.
+  test(`feed pages do not scroll the window at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    for (const path of ['/', '/looks']) {
+      await page.goto(path);
+      await expect(page.locator('[data-feed-slide]').first()).toBeVisible();
+      const metrics = await page.evaluate(() => ({
+        scrollHeight: document.scrollingElement?.scrollHeight ?? 0,
+        innerHeight: window.innerHeight,
+      }));
+      expect(metrics.scrollHeight, `${path} at ${width}px: window scrolls`).toBeLessThanOrEqual(metrics.innerHeight);
+    }
+  });
+
+  test(`header links fit the viewport, or the feed nav scrolls them, at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/looks');
     // Exact count is not asserted: the "Bộ sưu tập" nav link appears whenever a collection is published
-    // (settings absent = shown), so the number depends on the data. Every link must still fit the viewport.
+    // (settings absent = shown), so the number depends on the data.
+    // On feed pages the nav is a horizontal scroller, so links past the edge are reached by scrolling it.
     const links = page.getByRole('banner').getByRole('link');
     await expect(links.first()).toBeVisible();
     expect(await links.count()).toBeGreaterThanOrEqual(3);
-    const boxes = await links.evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
-    for (const box of boxes) {
-      expect(box.x, "link left edge").toBeGreaterThanOrEqual(0);
-      expect(box.x + box.width, 'link right edge').toBeLessThanOrEqual(width);
+    const items = await links.evaluateAll((els) =>
+      els.map((el) => {
+        const nav = el.closest('nav');
+        const box = el.getBoundingClientRect();
+        return {
+          x: box.x,
+          right: box.right,
+          scrollableNav: nav !== null && nav.scrollWidth > nav.clientWidth,
+        };
+      }),
+    );
+    for (const item of items) {
+      expect(item.x, 'link left edge').toBeGreaterThanOrEqual(0);
+      if (!item.scrollableNav) expect(item.right, 'link right edge').toBeLessThanOrEqual(width);
     }
   });
 }

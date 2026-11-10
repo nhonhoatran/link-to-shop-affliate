@@ -1,6 +1,7 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
 import { adminApi, signInContext } from './support/admin-api';
 import { resetHome } from './support/home-layout';
+import { restoreSettings, updateSettings, type SettingsDocument } from './support/admin-settings';
 
 test.use({ viewport: { width: 390, height: 844 } });
 test.describe.configure({ mode: 'serial' });
@@ -10,13 +11,17 @@ const DEFAULT_CARD_COUNT = 5;
 const MIN_TOUCH_TARGET_PX = 44;
 
 let api: APIRequestContext;
+let previousSettings: SettingsDocument;
 
 test.beforeAll(async () => {
+  // Home sections render on '/' only when homeMode is 'sections'; afterAll puts the original value back.
+  previousSettings = await updateSettings({ homeMode: 'sections' });
   api = await adminApi();
   await resetHome(api);
 });
 
 test.afterAll(async () => {
+  await restoreSettings(previousSettings);
   await resetHome(api);
   await api.dispose();
 });

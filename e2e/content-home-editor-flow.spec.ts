@@ -2,6 +2,7 @@ import { expect, test, type APIRequestContext, type Locator, type Page } from '@
 import { adminApi, signInContext } from './support/admin-api';
 import { CONTENT_SLUG_PREFIX, createPublishedOutfit, deleteContentFixtures } from './support/collection-fixtures';
 import { resetHome } from './support/home-layout';
+import { restoreSettings, updateSettings, type SettingsDocument } from './support/admin-settings';
 
 test.use({ viewport: { width: 1440, height: 900 } });
 test.describe.configure({ mode: 'serial' });
@@ -13,8 +14,11 @@ const tilesTitle = `E2E ${stamp} bộ sưu tập`;
 const ORIGINAL_CARD_COUNT = 5;
 
 let api: APIRequestContext;
+let previousSettings: SettingsDocument;
 
 test.beforeAll(async () => {
+  // Home sections render on '/' only when homeMode is 'sections'; afterAll puts the original value back.
+  previousSettings = await updateSettings({ homeMode: 'sections' });
   api = await adminApi();
   await deleteContentFixtures(api);
   await resetHome(api);
@@ -23,6 +27,7 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
+  await restoreSettings(previousSettings);
   await resetHome(api);
   await deleteContentFixtures(api);
   await api.dispose();

@@ -22,6 +22,8 @@ export interface SettingsDocument {
   uploadMaxMb?: number;
   looksPageSize?: number;
   relatedOutfitsCount?: number;
+  /** Absent means 'feed'. Home renders the home-builder sections only when this is 'sections'. */
+  homeMode?: 'feed' | 'sections';
   collectionsNavEnabled?: boolean;
   collectionsLabel?: string;
   footer?: FooterDocument;
@@ -39,6 +41,7 @@ const WRITABLE_KEYS: (keyof SettingsDocument)[] = [
   'uploadMaxMb',
   'looksPageSize',
   'relatedOutfitsCount',
+  'homeMode',
   'collectionsNavEnabled',
   'collectionsLabel',
   'footer',
@@ -88,7 +91,9 @@ export async function restoreSettings(previous: SettingsDocument): Promise<void>
     const read = await api.get('/api/admin/settings');
     expect(read.ok(), 'read admin settings').toBe(true);
     const current = (await read.json()) as SettingsDocument;
+    // Keys absent from `previous` are unset by the PUT, so an original 'absent' homeMode comes back absent.
     const chrome = {
+      homeMode: undefined,
       footer: undefined,
       announcement: undefined,
       collectionsNavEnabled: undefined,
@@ -100,12 +105,4 @@ export async function restoreSettings(previous: SettingsDocument): Promise<void>
   } finally {
     await api.dispose();
   }
-}
-
-/**
- * Sets looksPageSize and returns the previous value. Passing undefined unsets the key (env default applies).
- */
-export async function setLooksPageSize(value: number | undefined): Promise<number | undefined> {
-  const previous = await updateSettings({ looksPageSize: value });
-  return previous.looksPageSize;
 }

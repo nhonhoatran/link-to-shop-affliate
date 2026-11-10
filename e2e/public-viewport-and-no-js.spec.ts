@@ -57,6 +57,20 @@ for (const width of VIEWPORTS) {
   });
 }
 
+for (const width of VIEWPORTS) {
+  test(`mobile ${width}px: feed pages have no horizontal overflow and text is at least 11px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    for (const path of ['/', '/looks']) {
+      await page.goto(path);
+      await expect(page.locator('[data-feed-slide]').first()).toBeVisible();
+
+      const metrics = await measureLayout(page);
+      expect(metrics.scrollWidth, `${path}: horizontal overflow`).toBeLessThanOrEqual(metrics.innerWidth);
+      expect(metrics.tooSmall, `${path}: text under 11px`).toEqual([]);
+    }
+  });
+}
+
 test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
 

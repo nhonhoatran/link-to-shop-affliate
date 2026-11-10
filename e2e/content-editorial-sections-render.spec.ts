@@ -4,6 +4,7 @@ import { CONTENT_SLUG_PREFIX, addOutfitsToCollection, createCollection, createPu
 import { publishLayout, resetHome } from './support/home-layout';
 import { EDITORIAL_SECTION_IDS, editorialLayout } from './support/editorial-home-layout';
 import { saveConsent } from './support/newsletter-fixtures';
+import { restoreSettings, updateSettings, type SettingsDocument } from './support/admin-settings';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -15,9 +16,12 @@ const CTA_HREF = '/looks';
 const VIEWPORTS = [320, 390, 768, 1024, 1440];
 
 let api: APIRequestContext;
+let previousSettings: SettingsDocument;
 let outfitSlugs: string[] = [];
 
 test.beforeAll(async () => {
+  // Home sections render on '/' only when homeMode is 'sections'; afterAll puts the original value back.
+  previousSettings = await updateSettings({ homeMode: 'sections' });
   api = await adminApi();
   await deleteContentFixtures(api);
   const image = await uploadMedia(api, 'model');
@@ -41,6 +45,7 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
+  await restoreSettings(previousSettings);
   await resetHome(api);
   await deleteContentFixtures(api);
   await api.dispose();
@@ -73,7 +78,8 @@ test('the marquee moves and pauses while hovered', async ({ page }) => {
   await expect.poll(() => track.evaluate((el) => getComputedStyle(el).animationName)).not.toBe('none');
   await expect(marquee.locator('button, input, label')).toHaveCount(0);
 
-  await track.hover();
+  // The track never holds still, so Playwright cannot stabilise it for a hover; hover the static .marquee wrapper instead.
+  await track.locator('xpath=../..').hover();
   await expect.poll(() => track.evaluate((el) => getComputedStyle(el).animationPlayState)).toBe('paused');
   await page.mouse.move(0, 0);
   await expect.poll(() => track.evaluate((el) => getComputedStyle(el).animationPlayState)).toBe('running');

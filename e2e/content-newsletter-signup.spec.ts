@@ -8,6 +8,7 @@ import {
   findSubscriber,
   saveConsent,
 } from './support/newsletter-fixtures';
+import { restoreSettings, updateSettings, type SettingsDocument } from './support/admin-settings';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -18,14 +19,18 @@ const HOME_HEADING = 'Nhận tin mới';
 const SUCCESS = 'Cảm ơn bạn đã đăng ký';
 
 let api: APIRequestContext;
+let previousSettings: SettingsDocument;
 
 test.beforeAll(async () => {
+  // Home sections render on '/' only when homeMode is 'sections'; afterAll puts the original value back.
+  previousSettings = await updateSettings({ homeMode: 'sections' });
   api = await adminApi();
   await resetHome(api);
   await clearConsent();
 });
 
 test.afterAll(async () => {
+  await restoreSettings(previousSettings);
   await deleteE2eSubscribers(api);
   await api.dispose();
 });

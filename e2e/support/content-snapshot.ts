@@ -58,6 +58,18 @@ export async function takeContentSnapshot(api: APIRequestContext): Promise<Conte
   return snapshot;
 }
 
+/**
+ * A snapshot left on disk means the last teardown never finished restoring (a failed login, an aborted run), so the
+ * site still holds test values. Snapshotting again would record those as the original, so the old file is kept.
+ */
+export function hasPendingContentSnapshot(): boolean {
+  return fs.existsSync(SNAPSHOT_FILE);
+}
+
+export function clearContentSnapshot(): void {
+  fs.rmSync(SNAPSHOT_FILE, { force: true });
+}
+
 export function loadContentSnapshot(): ContentSnapshot {
   if (!fs.existsSync(SNAPSHOT_FILE)) throw new Error(`${SNAPSHOT_FILE} is missing, refusing to touch the home layout without it`);
   return JSON.parse(fs.readFileSync(SNAPSHOT_FILE, 'utf8')) as ContentSnapshot;
