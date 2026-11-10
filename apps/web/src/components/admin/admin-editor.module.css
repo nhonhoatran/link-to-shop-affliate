@@ -71,8 +71,11 @@
   min-width: 0;
 }
 
+/* Anchors are % of this box, so it must hug the image: an image narrower than the pane would otherwise skew x. */
 .canvas {
   position: relative;
+  width: fit-content;
+  max-width: 100%;
   cursor: crosshair;
   user-select: none;
   touch-action: none;

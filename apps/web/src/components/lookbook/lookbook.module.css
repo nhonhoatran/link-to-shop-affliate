@@ -85,6 +85,9 @@
   position: relative;
   /* Hotspots are positioned in % of this box, so it must be exactly the image's height, not the stretched row. */
   align-self: center;
+  justify-self: center;
+  width: fit-content;
+  max-width: 100%;
   min-width: 0;
   margin: 0;
 }
