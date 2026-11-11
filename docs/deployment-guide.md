@@ -91,6 +91,19 @@ Mở `http://localhost:8080`. Trang chủ sẽ báo chưa có outfit cho tới k
 
 Cổng chỉ bind vào loopback: Mongo `127.0.0.1:27017`, RustFS `127.0.0.1:9000`. `api`, `web` và console RustFS không publish ra host.
 
+#### Chia sẻ ra internet bằng Cloudflare quick tunnel
+
+```bash
+pnpm share              # build lại image nếu code đổi, rồi chạy
+pnpm share --no-build   # dùng image có sẵn, nhanh hơn
+```
+
+Script `scripts/share/start-public-tunnel.mjs` mở `cloudflared tunnel --url http://localhost:<CADDY_HTTP_PORT>`, lấy URL `*.trycloudflare.com`, rồi chạy compose với `SITE_URL`, `MEDIA_PUBLIC_BASE_URL`, `ALLOWED_ORIGIN` trỏ về URL đó (biến shell, không sửa `.env`). Không có `docker` trên PATH mà là Windows thì script gọi docker trong WSL.
+
+- Cần cài `cloudflared`. Giữ cửa sổ mở; `Ctrl+C` đóng tunnel, container vẫn chạy.
+- URL đổi mỗi lần chạy, chạy lại `pnpm share` thì gửi lại link mới.
+- Quick tunnel chỉ để demo: domain `trycloudflare.com` hay bị trình duyệt cảnh báo "trang nguy hiểm", và tài khoản admin lộ ra internet. Dùng lâu dài thì tạo Named Tunnel gắn domain riêng.
+
 ### 3. Cài dependency và tạo admin
 
 ```bash
