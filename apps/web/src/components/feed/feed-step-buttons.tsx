@@ -2,14 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FEED_COPY } from '@/components/public/public-copy';
+import { PHOTO_TRACK_SELECTOR, prefersReducedMotion, stepPhoto } from './feed-photo-scroll';
 import styles from './outfit-feed.module.css';
 
 const EDGE_TOLERANCE_PX = 2;
 const EDITABLE = 'input, textarea, select, [contenteditable=""], [contenteditable="true"]';
 const KEY_STEP: Record<string, -1 | 1> = { ArrowDown: 1, PageDown: 1, ArrowUp: -1, PageUp: -1 };
-
-const prefersReducedMotion = (): boolean =>
-  typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const KEY_PHOTO: Record<string, -1 | 1> = { ArrowRight: 1, ArrowLeft: -1 };
 
 const slideTop = (slide: Element, scroller: HTMLElement): number =>
   slide.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
@@ -29,7 +28,19 @@ function Chevron({ down }: { down: boolean }) {
   );
 }
 
-/** Round up/down buttons plus ArrowUp/ArrowDown/PageUp/PageDown, moving the feed one slide at a time. */
+const nearestSlide = (slides: readonly Element[], scroller: HTMLElement): { index: number; tops: number[] } => {
+  const tops = slides.map((slide) => slideTop(slide, scroller));
+  let index = 0;
+  tops.forEach((top, i) => {
+    if (Math.abs(top - scroller.scrollTop) < Math.abs(tops[index]! - scroller.scrollTop)) index = i;
+  });
+  return { index, tops };
+};
+
+/**
+ * Round up/down buttons plus ArrowUp/ArrowDown/PageUp/PageDown, moving the feed one slide at a time;
+ * ArrowLeft/ArrowRight move through the photos of the slide on screen.
+ */
 export function FeedStepButtons() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [edge, setEdge] = useState({ start: true, end: false });
@@ -45,17 +56,25 @@ export function FeedStepButtons() {
       if (!scroller) return;
       const slides = Array.from(scroller.querySelectorAll('[data-feed-slide]'));
       if (slides.length === 0) return;
-      const tops = slides.map((slide) => slideTop(slide, scroller));
-      let current = 0;
-      tops.forEach((top, index) => {
-        if (Math.abs(top - scroller.scrollTop) < Math.abs(tops[current]! - scroller.scrollTop)) current = index;
-      });
+      const { index: current, tops } = nearestSlide(slides, scroller);
       const target = current + direction;
       if (target < 0) return;
       scroller.scrollTo({
         top: target < tops.length ? tops[target]! : scroller.scrollHeight,
         behavior: prefersReducedMotion() ? 'auto' : 'smooth',
       });
+    },
+    [getScroller],
+  );
+
+  const stepCurrentPhoto = useCallback(
+    (direction: -1 | 1) => {
+      const scroller = getScroller();
+      if (!scroller) return;
+      const slides = Array.from(scroller.querySelectorAll('[data-feed-slide]'));
+      if (slides.length === 0) return;
+      const track = slides[nearestSlide(slides, scroller).index]!.querySelector<HTMLElement>(PHOTO_TRACK_SELECTOR);
+      if (track) stepPhoto(track, direction);
     },
     [getScroller],
   );
@@ -70,12 +89,14 @@ export function FeedStepButtons() {
       });
     const onKeyDown = (event: KeyboardEvent) => {
       const direction = KEY_STEP[event.key];
-      if (!direction || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      const photoDirection = KEY_PHOTO[event.key];
+      if ((!direction && !photoDirection) || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
       const target = event.target;
-      if (!(target instanceof Element) || target.closest(EDITABLE)) return;
+      if (!(target instanceof Element) || target.closest(EDITABLE) || target.closest('dialog')) return;
       if (target !== document.body && !rootRef.current?.parentElement?.contains(target)) return;
       event.preventDefault();
-      step(direction);
+      if (direction) step(direction);
+      else if (photoDirection) stepCurrentPhoto(photoDirection);
     };
     update();
     // A loaded batch grows the feed without a scroll event, which would leave the down button disabled.
@@ -88,7 +109,7 @@ export function FeedStepButtons() {
       scroller.removeEventListener('scroll', update);
       document.removeEventListener('keydown', onKeyDown);
     };
-  }, [getScroller, step]);
+  }, [getScroller, step, stepCurrentPhoto]);
 
   return (
     <div ref={rootRef} className={styles.steps}>

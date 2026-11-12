@@ -1,8 +1,10 @@
-import Link from 'next/link';
 import type { PublicOutfitDto } from '@under30ss/shared';
-import { LookbookLayout } from '@/components/lookbook';
-import { outfitPath } from '@/lib/seo/absolute-url';
+import { FeedActionRail } from './feed-action-rail';
+import { FeedPhotoNav } from './feed-photo-nav';
+import { FeedPhotoTrack, feedPhotoTotal } from './feed-photo-track';
+import { FeedPostCaption } from './feed-post-caption';
 import styles from './outfit-feed.module.css';
+import postStyles from './feed-post.module.css';
 
 interface OutfitFeedSlideProps {
   outfit: PublicOutfitDto;
@@ -10,17 +12,16 @@ interface OutfitFeedSlideProps {
   preload?: boolean;
 }
 
+/** One outfit as a photo post: swipe sideways through its photos, up/down to the next outfit. */
 export function OutfitFeedSlide({ outfit, preload = false }: OutfitFeedSlideProps) {
   return (
     <article className={styles.slide} data-feed-slide>
-      <div className={styles.fitArea}>
-        <LookbookLayout outfit={outfit} headingLevel="h2" preload={preload} fill />
+      <div className={postStyles.post}>
+        <FeedPhotoTrack outfit={outfit} preload={preload} />
+        <FeedPostCaption outfit={outfit} />
+        <FeedPhotoNav total={feedPhotoTotal(outfit)} />
+        <FeedActionRail outfit={outfit} />
       </div>
-      <p className={styles.caption}>
-        <Link href={outfitPath(outfit.slug)} className={styles.captionLink}>
-          {outfit.title}
-        </Link>
-      </p>
     </article>
   );
 }

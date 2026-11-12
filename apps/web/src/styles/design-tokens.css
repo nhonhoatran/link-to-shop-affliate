@@ -72,7 +72,6 @@
 
   /* Outfit feed (one lookbook per screen) */
   --feed-preload-margin: 150%;
-  --feed-caption-height: 2.75rem;
   --feed-more-height: 3rem;
   --feed-step-button-size: 3rem;
   --feed-step-button-gap: var(--space-3);
@@ -90,6 +89,34 @@
   --feed-header-link-size: 11px;
   --feed-header-link-tracking: 0.06em;
   --feed-header-link-padding: 4px;
+
+  /* Feed photo post (TikTok-style slide: swipeable photos, overlaid caption, action rail) */
+  --feed-post-bg: #000000;
+  --feed-post-ink: #ffffff;
+  --feed-post-ink-muted: rgba(255, 255, 255, 0.82);
+  --feed-post-scrim: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0));
+  /* Bottom band kept free on the lookbook photo so the caption never covers its item links. */
+  --feed-post-band-height: 7rem;
+  --feed-post-caption-lines: 2;
+  --feed-post-title-size: 15px;
+  --feed-post-text-size: 13px;
+  --feed-rail-button-size: var(--client-tap-target);
+  --feed-rail-gap: var(--space-2);
+  --feed-rail-button-bg: rgba(255, 255, 255, 0.16);
+  --feed-rail-badge-size: 18px;
+  --feed-dot-size: 6px;
+  --feed-dot-active-width: 16px;
+  --feed-dot-hit-size: 24px;
+  --feed-dot-color: rgba(255, 255, 255, 0.45);
+  --feed-dot-active-color: #ffffff;
+  --feed-photo-arrow-size: 2.5rem;
+  --feed-item-photo-max-height: 62%;
+  --feed-sheet-max-width: 480px;
+  --feed-sheet-max-height: 72dvh;
+  --feed-sheet-radius: 12px;
+  --feed-sheet-thumb-size: 56px;
+  --feed-sheet-backdrop: rgba(0, 0, 0, 0.5);
+  --feed-share-status-duration: 2000ms;
 
   /* Motion (page-load animation is CSS; see motion-primitives.module.css) */
   --duration-slow: 500ms;

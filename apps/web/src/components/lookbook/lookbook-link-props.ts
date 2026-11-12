@@ -10,6 +10,6 @@ export const AFFILIATE_REL = 'sponsored nofollow noopener noreferrer';
  */
 export function affiliateLinkProps(affiliateUrl: string): AnchorHTMLAttributes<HTMLAnchorElement> {
   const href = affiliateUrl.trim();
-  if (!href || !affiliateUrlSchema.safeParse(href).success) return { href: '#', 'aria-disabled': true };
+  if (!href || !affiliateUrlSchema.safeParse(href).success) return { href: '#', 'aria-disabled': true, tabIndex: -1 };
   return { href, target: '_blank', rel: AFFILIATE_REL };
 }

@@ -1,0 +1,190 @@
+/* Controls laid over a feed photo post: action rail, photo dots and side arrows. */
+.rail {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-2);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--feed-rail-gap);
+}
+
+.railButton {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--feed-rail-button-size);
+  height: var(--feed-rail-button-size);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--feed-rail-button-bg);
+  color: var(--feed-post-ink);
+  cursor: pointer;
+}
+
+.railButton:focus-visible,
+.dot:focus-visible {
+  outline: var(--focus-ring-width) solid var(--feed-post-ink);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.badge {
+  position: absolute;
+  top: calc(-1 * var(--space-1));
+  right: calc(-1 * var(--space-1));
+  min-width: var(--feed-rail-badge-size);
+  height: var(--feed-rail-badge-size);
+  padding-inline: var(--space-1);
+  border-radius: calc(var(--feed-rail-badge-size) / 2);
+  background: var(--feed-post-ink);
+  color: var(--feed-post-bg);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--feed-rail-badge-size);
+  text-align: center;
+}
+
+.shareWrap {
+  position: relative;
+}
+
+.shareStatus {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + var(--space-2));
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--client-radius-pill);
+  background: var(--feed-post-bg);
+  color: var(--feed-post-ink);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity var(--duration-fast) var(--easing-standard);
+  pointer-events: none;
+}
+
+.shareStatus[data-visible] {
+  opacity: 1;
+}
+
+.nav {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.dots {
+  position: absolute;
+  bottom: var(--space-2);
+  left: 50%;
+  display: flex;
+  align-items: center;
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+.dot {
+  display: grid;
+  place-items: center;
+  min-width: var(--feed-dot-hit-size);
+  min-height: var(--feed-dot-hit-size);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dot::before {
+  content: '';
+  width: var(--feed-dot-size);
+  height: var(--feed-dot-size);
+  border-radius: calc(var(--feed-dot-size) / 2);
+  background: var(--feed-dot-color);
+  transition: width var(--duration-fast) var(--easing-standard);
+}
+
+.dot[aria-current='true']::before {
+  width: var(--feed-dot-active-width);
+  background: var(--feed-dot-active-color);
+}
+
+.counter {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--client-radius-pill);
+  background: var(--feed-rail-button-bg);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  display: none;
+  place-items: center;
+  width: var(--feed-photo-arrow-size);
+  height: var(--feed-photo-arrow-size);
+  padding: 0;
+  border: 1px solid var(--client-border);
+  border-radius: 50%;
+  background: var(--client-surface);
+  color: var(--client-ink);
+  transform: translateY(-50%);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.arrowPrevious {
+  left: var(--space-2);
+}
+
+.arrowNext {
+  right: var(--space-2);
+}
+
+/* 768px = --bp-md: phones swipe; arrows are for pointer devices. */
+@media (min-width: 768px) {
+  .arrow {
+    display: grid;
+  }
+}
+
+/* 1024px = --bp-lg: enough room to move the arrows and the rail outside the photo, like TikTok on desktop. */
+@media (min-width: 1024px) {
+  .arrowPrevious {
+    right: calc(100% + var(--space-3));
+    left: auto;
+  }
+
+  .arrowNext {
+    right: auto;
+    left: calc(100% + var(--space-3));
+  }
+
+  .rail {
+    right: auto;
+    left: calc(100% + var(--space-3));
+  }
+}
+
+/* Without JavaScript the rail buttons and dots do nothing; the track still swipes and the caption links. */
+@media (scripting: none) {
+  .needsScript,
+  .nav {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot::before,
+  .shareStatus {
+    transition: none;
+  }
+}

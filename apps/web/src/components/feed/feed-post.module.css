@@ -1,0 +1,185 @@
+/* One outfit as a TikTok-style photo post: a sideways track of photos with the caption, dots and actions on top. */
+.post {
+  position: relative;
+  flex: 1 1 0;
+  width: min(100% - var(--feed-post-side-room, 0px), var(--feed-lookbook-max-width));
+  min-height: 0;
+  margin-inline: auto;
+  color: var(--feed-post-ink);
+}
+
+.track {
+  display: flex;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.photo {
+  position: relative;
+  display: flex;
+  flex: 0 0 100%;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  background: var(--feed-post-bg);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* Light photos keep the bottom band for the caption, so it never covers a link. */
+.lightPhoto {
+  padding-bottom: var(--feed-post-band-height);
+}
+
+.fitArea {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  container-type: size;
+  overflow-x: hidden;
+  /* Safety net only: a lookbook with very many items scrolls inside its photo instead of being cut off. */
+  overflow-y: auto;
+  background: var(--client-bg);
+  color: var(--client-ink);
+}
+
+.containImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.itemPhoto {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 0;
+  padding: var(--space-4);
+  background: var(--client-bg);
+  color: var(--client-ink);
+  text-align: center;
+}
+
+.itemImage {
+  flex: 0 1 auto;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: var(--feed-item-photo-max-height);
+  object-fit: contain;
+}
+
+.itemName {
+  margin: 0;
+  font-size: var(--body-size);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+}
+
+.itemSubtitle {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--client-ink-muted);
+}
+
+.buy {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--client-tap-target);
+  padding-inline: var(--space-5);
+  border-radius: var(--client-radius-pill);
+  background: var(--client-ink);
+  color: var(--client-on-ink);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.buy:focus-visible {
+  outline: var(--focus-ring-width) solid var(--client-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.buy[aria-disabled='true'] {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.caption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-1);
+  min-height: var(--feed-post-band-height);
+  /* Right: room for the action rail. Bottom: room for the dots. */
+  padding: var(--space-4) calc(var(--feed-rail-button-size) + 2 * var(--space-3)) calc(var(--feed-dot-hit-size) + var(--space-3)) var(--space-4);
+  background: var(--feed-post-scrim);
+  pointer-events: none;
+}
+
+.captionTitle {
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--feed-post-title-size);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.captionLink {
+  color: inherit;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.captionLink:hover {
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}
+
+.captionLink:focus-visible {
+  outline: var(--focus-ring-width) solid var(--feed-post-ink);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.captionText {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--feed-post-text-size);
+  line-height: var(--lookbook-line-height);
+  color: var(--feed-post-ink-muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--feed-post-caption-lines);
+}
+
+/* 1024px = --bp-lg: the action rail sits outside the photo, so the caption can use the full width. */
+@media (min-width: 1024px) {
+  .caption {
+    padding-right: var(--space-4);
+  }
+}

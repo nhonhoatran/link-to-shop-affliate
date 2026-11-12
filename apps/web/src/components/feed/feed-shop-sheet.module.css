@@ -1,0 +1,123 @@
+/* Bottom sheet listing an outfit's items with their shop links. Padding lives on .body so backdrop clicks hit the dialog. */
+.sheet {
+  width: 100%;
+  max-width: var(--feed-sheet-max-width);
+  max-height: var(--feed-sheet-max-height);
+  margin: auto auto 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--feed-sheet-radius) var(--feed-sheet-radius) 0 0;
+  background: var(--client-surface);
+  color: var(--client-ink);
+}
+
+.sheet::backdrop {
+  background: var(--feed-sheet-backdrop);
+}
+
+.sheet[open] {
+  animation: sheet-up var(--duration-base) var(--easing-out);
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-height: inherit;
+  padding: var(--space-4);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--body-size);
+  font-weight: var(--font-weight-bold);
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: var(--client-tap-target);
+  height: var(--client-tap-target);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.close:hover {
+  background: var(--client-surface-soft);
+}
+
+.close:focus-visible {
+  outline: var(--focus-ring-width) solid var(--client-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: var(--feed-sheet-thumb-size) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.thumb {
+  width: var(--feed-sheet-thumb-size);
+  height: var(--feed-sheet-thumb-size);
+  object-fit: contain;
+  background: var(--client-bg);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name,
+.subtitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.subtitle {
+  font-size: var(--text-xs);
+  color: var(--client-ink-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet[open] {
+    animation: none;
+  }
+}
