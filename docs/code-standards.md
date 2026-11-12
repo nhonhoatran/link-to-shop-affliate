@@ -201,7 +201,7 @@ Kiểm nhanh với bố cục mặc định: `curl -s http://localhost:3000/ | g
 
 ### Hộp thoại, drawer, toast
 
-- Mọi hộp thoại và drawer dùng `hooks/use-modal-dialog.ts` (`useModalDialog`) trên `<dialog>` với `showModal()`. Đóng thì trả focus về phần tử đã mở. Drawer mobile hiện dùng hook này (`components/admin/shell/admin-nav-drawer.tsx`).
+- Mọi hộp thoại và drawer dùng `hooks/use-modal-dialog.ts` (`useModalDialog`) trên `<dialog>` với `showModal()`. Đóng thì trả focus về phần tử đã mở. Drawer mobile hiện dùng hook này (`components/admin/shell/admin-nav-drawer.tsx`). Sheet "Mua đồ" của feed (`components/feed/feed-shop-sheet.tsx`) cũng dùng hook này.
 - **Toast chỉ báo thành công.** `toast.success(...)` qua `useAdminToast` (`components/admin/shell/use-admin-toast.ts`). Tự ẩn sau `--toast-duration`.
 - **Lỗi hiện inline** cạnh field hoặc form (`FormError`), không đưa vào toast. Một lỗi không được xuất hiện trên hai kênh cùng lúc, vì cả hai đều nằm trong vùng `role="alert"`.
 - **Xoá vĩnh viễn** trong admin (ví dụ người đăng ký bản tin): nút `btnDanger`, có hộp thoại xác nhận, và chữ nút đổi sang "Đang xoá…" khi đang chạy. Huỷ/huỷ đăng ký là thao tác đảo ngược được nên dùng nút thường.
@@ -212,6 +212,12 @@ Kiểm nhanh với bố cục mặc định: `curl -s http://localhost:3000/ | g
 - Vùng chạm tối thiểu **44px** cho điều khiển admin (`--admin-control-height`). Nav public cũng được kiểm ở 320 và 390px trong e2e.
 - Nút và link trong admin bo theo `--admin-radius`, focus ring theo `--admin-focus`.
 - Mọi URL admin lấy từ `ADMIN_PATHS` (xem [Route admin](./system-architecture.md#nhóm-admin-appadmin)).
+
+### Feed (bài Photo)
+
+- Chữ giao diện của feed nằm trong `FEED_COPY` (`components/public/public-copy.ts`). Màu, kích thước và thời gian là token `--feed-*`, không viết thẳng trong component.
+- `sizes` của `next/image` phải là chuỗi literal. Đặt hằng ở `components/feed/feed-photo-sizes.ts`, không ghép chuỗi trong JSX.
+- Điều khiển chỉ có ích khi có JS (nút chia sẻ, Mua đồ, chấm, mũi tên) thì ẩn bằng `@media (scripting: none)` trong `feed-post-controls.module.css`. Phần còn lại phải dùng được khi tắt JS (xem [Tắt JS](#tắt-js-và-giảm-chuyển-động)).
 
 ### Baseline visual của lookbook
 

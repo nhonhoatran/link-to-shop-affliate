@@ -4,6 +4,48 @@ Ghi lại các thay đổi đáng kể theo phiên bản. Mỗi mục ghi ngày,
 
 Liên quan: [Roadmap](./development-roadmap.md) · [Kiến trúc](./system-architecture.md) · [Triển khai](./deployment-guide.md)
 
+## Bài Photo kiểu TikTok trong feed (2026-11-12)
+
+Phạm vi: `apps/web` (`components/feed/`, `components/lookbook/lookbook-link-props.ts`, `components/public/public-copy.ts`, `styles/design-tokens.css`), `docs`. Kế hoạch: `plans/261112-0854-tiktok-photo-post-feed/`. Thay đổi chưa commit tại thời điểm viết mục này.
+
+Lý do: khách phản hồi phần bộ sưu tập trông chưa giống TikTok. Mỗi outfit nay là một bài Photo: nền tối, vuốt ngang qua nhiều ảnh, chữ đè góc dưới trái, cột nút bên phải.
+
+### Tính năng
+
+- Dải ảnh vuốt ngang (scroll-snap). Tấm 1 là lookbook, tấm 2 là ảnh người mẫu, từ tấm 3 mỗi món một tấm kèm nút "Mua ngay". Dựng từ data có sẵn, không đổi API.
+- Chấm tròn báo tấm đang xem, vùng chạm 24px. Quá 10 tấm thì đổi sang bộ đếm "i/n".
+- Từ 768px có mũi tên trái/phải. Từ 1024px mũi tên và cột nút nằm ngoài ảnh.
+- Chữ đè góc dưới trái: tên outfit (link tới `/look/[slug]`) và mô tả SEO tối đa 2 dòng. Tấm lookbook chừa đáy để chữ không che link món.
+- Cột nút bên phải:
+  - "Mua đồ" mở sheet dưới (`<dialog>`) liệt kê món, mỗi món có nút "Mua ngay".
+  - "Chia sẻ" gọi menu chia sẻ của máy (`navigator.share`). Không có thì chép link và báo "Đã chép link".
+- Phím ← → chuyển tấm trong outfit đang hiện. Bỏ qua khi đang gõ trong ô nhập hoặc khi focus nằm trong dialog.
+- Áp dụng cho cả ba chỗ dùng feed: `/`, `/looks`, `/collections/[slug]`.
+- Tắt JS: dải ảnh vẫn vuốt được và link outfit vẫn bấm được. Nút Mua đồ, Chia sẻ, chấm và mũi tên bị ẩn (`@media (scripting: none)`).
+
+### Thay đổi kỹ thuật
+
+- `affiliateLinkProps` thêm `tabIndex: -1` khi URL không hợp lệ, để link hỏng không nhận focus bàn phím.
+- Token mới trong `design-tokens.css`: `--feed-post-*`, `--feed-rail-*`, `--feed-dot-*`, `--feed-sheet-*`, `--feed-photo-arrow-size`, `--feed-share-status-duration`. Bỏ `--feed-caption-height`.
+- Chữ giao diện mới trong `FEED_COPY` (`public-copy.ts`).
+- Thành phần mới trong `apps/web/src/components/feed/`: `feed-photo-track.tsx`, `feed-item-photo.tsx`, `feed-photo-nav.tsx`, `feed-post-caption.tsx`, `feed-action-rail.tsx`, `feed-shop-sheet.tsx`, `feed-share-button.tsx`, cùng CSS và helper đi kèm.
+- `feed-step-buttons.tsx` thêm phím ArrowLeft/ArrowRight.
+
+### Không đổi
+
+- API, schema, DTO và database: không đổi.
+- Thứ tự outfit, phân trang và tải thêm: không đổi.
+- Trang `/look/[slug]` và lưới `/collections`: không đổi.
+
+### Lưu ý
+
+- Link chia sẻ dựng từ `window.location.origin`, không lấy `SITE_URL`. Vào qua tunnel hoặc host preview thì link chia sẻ trỏ về host đó. Đã chốt 2026-11-12 giữ hành vi này.
+
+### Kiểm chứng
+
+- Unit, e2e và snapshot: test: xem phase 02 (`plans/261112-0854-tiktok-photo-post-feed/phase-02-tests-and-docs.md`).
+- Code review: `plans/reports/code-reviewer-261112-0913-tiktok-photo-post-feed.md`. Không có lỗi Critical. Đã sửa các mục High và Medium cùng một số mục Low.
+
 ## Feed outfit kiểu TikTok (2026-11-10)
 
 Phạm vi: `packages/shared`, `apps/api`, `apps/web`, `docs`. Kế hoạch: `plans/261110-2143-tiktok-outfit-feed/` (phase 00 đến 04). Thay đổi chưa commit tại thời điểm viết mục này.

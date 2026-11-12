@@ -1,6 +1,6 @@
 # Roadmap Under30ss
 
-Trạng thái tính đến 2026-11-10. Chi tiết từng phase nằm trong `plans/261106-1201-under30ss-shop-the-look/` (v1) và `plans/261107-0913-professional-ui-refactor-client-admin/` (refactor giao diện).
+Trạng thái tính đến 2026-11-12. Chi tiết từng phase nằm trong `plans/261106-1201-under30ss-shop-the-look/` (v1) và `plans/261107-0913-professional-ui-refactor-client-admin/` (refactor giao diện).
 
 Liên quan: [Lịch sử thay đổi](./project-changelog.md) · [Kiến trúc](./system-architecture.md) · [Triển khai](./deployment-guide.md)
 
@@ -9,6 +9,7 @@ Liên quan: [Lịch sử thay đổi](./project-changelog.md) · [Kiến trúc](
 - [Refactor giao diện client và admin](#refactor-giao-diện-client-và-admin)
 - [Đợt editorial và bản tin](#đợt-editorial-và-bản-tin)
 - [Feed outfit kiểu TikTok](#feed-outfit-kiểu-tiktok)
+- [Photo post kiểu TikTok trong feed](#photo-post-kiểu-tiktok-trong-feed)
 - [Cột mốc](#cột-mốc)
 - [Việc chưa kiểm chứng](#việc-chưa-kiểm-chứng)
 - [Việc hoãn sang sau v1](#việc-hoãn-sang-sau-v1)
@@ -165,6 +166,25 @@ Chi tiết kỹ thuật: [Kiến trúc, mục Feed outfit](./system-architecture
 | Slug `featured`, `slugs`, `feed` trong dữ liệu thật | Schema đã từ chối slug này, chưa kiểm dữ liệu có sẵn | Truy vấn DB trước khi triển khai |
 | Demo seed không đặt `homeMode` | `pnpm seed:demo` không đổi `homeMode`, nên `/` hiện feed, không hiện bố cục 11 section | Đặt `homeMode` trong seed nếu muốn demo bố cục |
 
+## Photo post kiểu TikTok trong feed
+
+Plan: `plans/261112-0854-tiktok-photo-post-feed/`. Trạng thái: phase 01 code xong, chưa commit. Phase 02 (unit, e2e, snapshot, docs) đang làm; docs đã cập nhật 2026-11-12.
+
+| Phase | Nội dung | Trạng thái |
+|-------|----------|------------|
+| 01 | Khung bài Photo: dải ảnh vuốt ngang, chấm và mũi tên, chữ đè, cột nút, sheet "Mua đồ", "Chia sẻ", phím ← → | Code xong, chưa commit. Đã sửa theo [báo cáo review](../plans/reports/code-reviewer-261112-0913-tiktok-photo-post-feed.md) |
+| 02 | Unit test, e2e, chụp lại snapshot, docs | Docs xong. Test, e2e, snapshot: test: xem phase 02 |
+
+Chi tiết kỹ thuật: [Kiến trúc, mục Feed outfit](./system-architecture.md#feed-outfit). Thay đổi: [Lịch sử, mục 2026-11-12](./project-changelog.md#bài-photo-kiểu-tiktok-trong-feed-2026-11-12).
+
+### Việc còn mở
+
+| Việc | Lý do và bằng chứng | Hướng xử lý |
+|------|---------------------|-------------|
+| Unit, e2e, snapshot cho bài Photo | `apps/web/test/feed/` hiện chỉ có 3 file (`feed-load-more`, `feed-step-buttons`, `load-feed-page-action`). Phase 02 chưa xong | Làm phase 02 |
+| Lỗi Low còn lại từ review | Đơn vị token thời gian; bấm nhanh có thể nuốt một lần; focus rơi khi mũi tên bị disable; ngữ nghĩa carousel; kéo chọn chữ ra nền làm đóng sheet | Để sau, xem báo cáo review |
+| Header và thanh thông báo chiếm ~257px trên mobile | Câu hỏi mở trong `plan.md`. Chưa chốt | Chờ khách phản hồi |
+
 ## Cột mốc
 
 | Ngày | Cột mốc |
@@ -175,6 +195,7 @@ Chi tiết kỹ thuật: [Kiến trúc, mục Feed outfit](./system-architecture
 | 2026-11-07 | Refactor giao diện client và admin hoàn thành về code (7 phase). Cập nhật tài liệu `docs/` |
 | 2026-11-08 | Đợt editorial: token monochrome, Playfair, 4 section mới, bản tin (form, admin, CSV). Review, sửa vòng hai, e2e 111/111 xanh, smoke compose và số đo prod. Còn mở: axe, pixel hero, Q4 |
 | 2026-11-10 | Feed outfit kiểu TikTok: API `GET /api/public/outfits/feed`, setting `homeMode`, feed trên `/`, `/looks`, `/collections/[slug]`, ô cài đặt admin. Code xong, chưa commit. E2E và snapshot còn mở |
+| 2026-11-12 | Bài Photo kiểu TikTok trong feed: dải ảnh vuốt ngang, chấm, chữ đè, cột nút, sheet "Mua đồ", "Chia sẻ". Code xong, chưa commit. Test, e2e và snapshot theo phase 02 |
 
 ## Việc chưa kiểm chứng
 

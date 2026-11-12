@@ -286,7 +286,7 @@ Bố cục mặc định (`DEFAULT_HOME_CONTENT`, `packages/shared/src/home-sect
 
 ## Feed outfit
 
-Trang `/` (khi `homeMode` là `feed`), `/looks` và `/collections/[slug]` hiển thị outfit dạng feed: mỗi khung là một lookbook vừa màn hình, người dùng lướt dọc. Plan: `plans/261110-2143-tiktok-outfit-feed/`.
+Trang `/` (khi `homeMode` là `feed`), `/looks` và `/collections/[slug]` hiển thị outfit dạng feed: mỗi khung là một bài Photo vừa màn hình, người dùng lướt dọc và vuốt ngang qua các ảnh của outfit. Plan: `plans/261110-2143-tiktok-outfit-feed/` (khung feed) và `plans/261112-0854-tiktok-photo-post-feed/` (bài Photo).
 
 ### Luồng dữ liệu và render
 
@@ -308,12 +308,12 @@ sequenceDiagram
 - Mốc tải thêm là `<a href="?page=N+1">`. `FeedLoadMore` (client) theo dõi mốc bằng `IntersectionObserver` trên vùng cuộn `[data-feed]`, với `rootMargin` lấy từ `--feed-preload-margin` (150%). Khi JS chạy, bấm mốc gọi Server Action thay vì chuyển trang.
 - Server Action `loadFeedPage` (`apps/web/src/lib/feed/load-feed-page-action.tsx`) kiểm input bằng `publicOutfitFeedQuerySchema`, gọi loader, trả slide đã render và `nextPage`. Lỗi thì hiện nút thử lại.
 - Hết outfit (`nextPage` = null): feed render `SiteFooter` ở cuối. Shell ẩn footer riêng khi có feed.
-- Các file chính trong `apps/web/src/components/feed/`: `outfit-feed.tsx` (server), `outfit-feed-slide.tsx`, `feed-load-more.tsx` (client), `feed-step-buttons.tsx` (client, nút ▲▼ và phím mũi tên, PageUp, PageDown). Tokens `--feed-*` nằm trong `apps/web/src/styles/design-tokens.css`.
+- Các file chính trong `apps/web/src/components/feed/`: `outfit-feed.tsx` (server), `outfit-feed-slide.tsx` (server, khung một outfit), `feed-load-more.tsx` (client), `feed-step-buttons.tsx` (client, nút ▲▼ và phím ↑ ↓ PageUp PageDown, ← → cho ảnh). Các phần của bài Photo nằm ở mục [Bài Photo trong khung](#bài-photo-trong-khung). Tokens `--feed-*` nằm trong `apps/web/src/styles/design-tokens.css`.
 
 ### Điều hướng và bố cục khung
 
 - Shell có feed: `.shell:has([data-feed-wrap])` cao đúng `100dvh`, feed là vùng cuộn riêng, scroll-snap theo từng khung (`public-shell.module.css`, `outfit-feed.module.css`).
-- Nút ▲▼ hiện từ 768px trở lên (`.steps` trong `outfit-feed.module.css`). Phím mũi tên, PageUp và PageDown hoạt động khi focus không nằm trong ô nhập.
+- Nút ▲▼ hiện từ 768px trở lên (`.steps` trong `outfit-feed.module.css`). Phím mũi tên, PageUp và PageDown hoạt động khi focus không nằm trong ô nhập. Phím ← → đổi ảnh trong outfit đang hiện, không đổi outfit.
 - Dưới 768px, header thành một dòng (`site-header.module.css`, chỉ khi có feed). Nav cuộn ngang trong header trên các trang feed.
 - Lookbook chế độ `fill` (`apps/web/src/components/lookbook/lookbook-fill.module.css`), chỉ bằng CSS:
 
@@ -324,8 +324,36 @@ sequenceDiagram
 | Ẩn mô tả món | Một cột có từ 5 món trở lên | Selector `:has([data-side] > li:nth-child(5))` |
 | Ẩn phụ đề | Vùng chứa lookbook từ 520px trở xuống | `@container (max-height: 520px)`, không tính dòng tên outfit |
 
-- Dòng tên outfit dưới khung là link tới `/look/[slug]`. Bấm món đồ đi thẳng link affiliate (hành vi lookbook không đổi).
+- Tên outfit trong khối chữ góc dưới trái là link tới `/look/[slug]`. Bấm món đồ trong lookbook đi thẳng link affiliate (hành vi lookbook không đổi).
 - Số outfit mỗi lô là `looksPageSize`. Trần là `PUBLIC_PAGE_SIZE_MAX`.
+
+### Bài Photo trong khung
+
+Mỗi outfit là một `<article data-feed-slide>` nền đen. Dải ảnh là `ul[data-photo-track]` cuộn ngang, `scroll-snap-type: x mandatory`. Dữ liệu lấy từ `PublicOutfitDto` có sẵn (`modelImage`, `items[].image`, `items[].affiliateUrl`), không đổi API.
+
+```text
+OutfitFeedSlide (article, server)
+├── FeedPhotoTrack (ul, server)      tấm 1 lookbook · tấm 2 người mẫu · tấm 3+ mỗi món (FeedItemPhoto)
+├── FeedPostCaption (server)         tên outfit (link) + seoDescription, 2 dòng
+├── FeedPhotoNav (client)            chấm, hoặc "i/n" khi quá 10 tấm; mũi tên từ 768px
+└── FeedActionRail (server)
+    ├── FeedShopSheet (client)       "Mua đồ" mở <dialog> danh sách món
+    └── FeedShareButton (client)     "Chia sẻ": navigator.share → clipboard
+```
+
+| Hành vi | Quy tắc | Nơi xử lý |
+|---------|---------|-----------|
+| Thứ tự tấm | Tấm 1 lookbook (chừa đáy bằng `--feed-post-band-height` để chữ không che link món). Tấm 2 ảnh người mẫu, `contain`. Tấm 3+ theo thứ tự `items` của DTO | `feed-photo-track.tsx`, `feed-item-photo.tsx`, `feed-post.module.css` |
+| Chấm và bộ đếm | Chấm có vùng chạm `--feed-dot-hit-size` (24px). Quá 10 tấm (`MAX_DOTS`) thì hiện "i/n" | `feed-photo-nav.tsx` |
+| Mũi tên | Ẩn dưới 768px. Từ 1024px nằm ngoài ảnh, cùng cột nút | `feed-post-controls.module.css` |
+| Link mua | Qua `affiliateLinkProps`. URL xấu thành `aria-disabled` với `tabIndex: -1` | `lookbook-link-props.ts` |
+| Chia sẻ | `navigator.share({ title, url })`. Huỷ (AbortError) thì im lặng. Lỗi khác hoặc không có API thì chép link và báo qua `role="status"` trong `--feed-share-status-duration` | `feed-share-button.tsx` |
+| Link chia sẻ | `new URL(outfitPath, window.location.origin)`, không lấy `SITE_URL` (lệch có chủ ý, đã chốt 2026-11-12) | `feed-share-button.tsx` |
+| Phím | ← → đổi tấm của slide đang hiện. Bỏ qua khi target nằm trong ô nhập hoặc `dialog` | `feed-step-buttons.tsx` |
+| Tắt JS | Dải ảnh vẫn cuộn ngang, link outfit vẫn bấm được. Nút Mua đồ, Chia sẻ, chấm và mũi tên ẩn bằng `@media (scripting: none)` | `feed-post-controls.module.css` |
+
+- Sheet "Mua đồ" dùng `<dialog>` gốc qua `useModalDialog`: Esc, nút Đóng hoặc bấm nền ngoài để đóng; đóng xong focus trả về nút "Mua đồ".
+- Token của bài Photo: `--feed-post-*`, `--feed-rail-*`, `--feed-dot-*`, `--feed-sheet-*`, `--feed-photo-arrow-size`, `--feed-share-status-duration` trong `design-tokens.css`.
 
 ### Giới hạn đã biết
 
