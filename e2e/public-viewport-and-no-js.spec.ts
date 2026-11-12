@@ -157,3 +157,26 @@ test('unknown slug returns 404 with the not-found message', async ({ page }) => 
   expect(response?.status()).toBe(404);
   await expect(page.getByRole('heading', { name: 'Không tìm thấy trang' })).toBeVisible();
 });
+
+test.describe('feed photo posts without JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('the track holds every photo, "Xem tiếp" stays, and "Mua đồ" is hidden', async ({ page }) => {
+    await page.goto('/looks');
+    const slide = page.locator('[data-feed-slide]').first();
+    const items = await slide.locator('[data-photo-track] a[aria-label^="Mua ngay "]').count();
+    expect(items, 'items on the first outfit').toBeGreaterThan(0);
+
+    const photos = slide.locator('[data-photo-track] > li');
+    await expect(photos).toHaveCount(2 + items);
+    await expect(photos.last()).toHaveAttribute('aria-label', `Ảnh ${2 + items}/${2 + items}`);
+    await expect(slide.getByRole('button', { name: /^Mua đồ/ })).toBeHidden();
+
+    const next = page.locator('a[rel="next"]');
+    if ((await next.count()) > 0) {
+      await expect(next).toHaveText('Xem tiếp');
+    } else {
+      await expect(page.locator('[data-feed] footer')).toHaveCount(1);
+    }
+  });
+});
