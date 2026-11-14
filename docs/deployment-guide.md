@@ -96,7 +96,17 @@ Cổng chỉ bind vào loopback: Mongo `127.0.0.1:27017`, RustFS `127.0.0.1:9000
 ```bash
 pnpm share              # build lại image nếu code đổi, rồi chạy
 pnpm share --no-build   # dùng image có sẵn, nhanh hơn
+pnpm share --no-admin   # không tự tạo tài khoản admin
 ```
+
+Sau khi stack chạy, script lo tài khoản admin `SHARE_ADMIN_EMAIL` (mặc định `admin@under30ss.local`):
+
+- Có `SHARE_ADMIN_PASSWORD` (biến shell, rồi tới `.env`): mỗi lần chạy đều tạo admin hoặc đặt lại mật khẩu theo giá trị này. `.env` luôn là mật khẩu đúng.
+- Không có: tạo admin một lần với mật khẩu ngẫu nhiên, in **một lần** trong khung tổng kết. Các lần sau thấy admin đã có thì bỏ qua.
+
+Mật khẩu được truyền vào `create-admin.js --update-password` qua stdin, không qua tham số. Cần image api có cờ này: lần đầu sau khi cập nhật, chạy `pnpm share` không kèm `--no-build`.
+
+`pnpm create-admin --update-password` cũng dùng được trên host: email đã có thì đổi mật khẩu thay vì báo trùng.
 
 Script `scripts/share/start-public-tunnel.mjs` mở `cloudflared tunnel --url http://localhost:<CADDY_HTTP_PORT>`, lấy URL `*.trycloudflare.com`, rồi chạy compose với `SITE_URL`, `MEDIA_PUBLIC_BASE_URL`, `ALLOWED_ORIGIN` trỏ về URL đó (biến shell, không sửa `.env`). Không có `docker` trên PATH mà là Windows thì script gọi docker trong WSL.
 

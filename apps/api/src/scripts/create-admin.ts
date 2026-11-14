@@ -3,7 +3,7 @@ import { getEnv } from '../config/env-config';
 import { connectMongo, disconnectMongo } from '../db/mongo-connection';
 import { loadDotenv } from '../lib/load-dotenv';
 import { zodIssuesToFields } from '../lib/zod-fields';
-import { createAdmin } from '../services/admin-user-service';
+import { createAdmin, setAdminPassword } from '../services/admin-user-service';
 import { createPrompter } from './terminal-prompt';
 
 const readEmailArg = (argv: string[]): string | undefined => {
@@ -34,8 +34,16 @@ const main = async (): Promise<void> => {
   const env = getEnv();
   await connectMongo(env.MONGODB_URI);
   try {
-    const admin = await createAdmin(parsed.data.email, parsed.data.password);
-    console.log(`Created admin ${admin.email} (${admin.id})`);
+    // --update-password: an existing admin with this email gets the new password instead of a "duplicate" error.
+    const updated = process.argv.includes('--update-password')
+      ? await setAdminPassword(parsed.data.email, parsed.data.password)
+      : null;
+    if (updated) {
+      console.log(`Updated password of admin ${updated.email} (${updated.id})`);
+    } else {
+      const admin = await createAdmin(parsed.data.email, parsed.data.password);
+      console.log(`Created admin ${admin.email} (${admin.id})`);
+    }
   } finally {
     await disconnectMongo();
   }
