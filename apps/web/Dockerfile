@@ -13,7 +13,12 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 COPY tsconfig.base.json ./
 COPY packages/shared packages/shared
 COPY apps/web apps/web
-RUN mkdir -p apps/web/public && pnpm --filter @under30ss/shared run build && pnpm --filter @under30ss/web run build
+# Next evaluates server env validation during prerender. Use inert build-only values,
+# never production credentials; the runtime stage receives real settings from Compose.
+RUN mkdir -p apps/web/public && pnpm --filter @under30ss/shared run build && \
+    API_INTERNAL_URL=http://127.0.0.1:9 SITE_URL=http://localhost \
+    MEDIA_PUBLIC_BASE_URL=http://localhost/media REVALIDATE_SECRET=build-only-placeholder-not-for-runtime \
+    pnpm --filter @under30ss/web run build
 
 FROM node:24-bookworm-slim AS runtime
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 NEXT_TELEMETRY_DISABLED=1
