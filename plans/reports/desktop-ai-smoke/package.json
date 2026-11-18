@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-11-18T14:13:40.552Z",
+  "status": "passed",
+  "artifact": "apps\\desktop\\dist\\package\\under30ss-importer-0.1.0-x64.exe",
+  "bytes": 117786401,
+  "sha256": "71b5c5d06459b02c7ce685fb740c34d6b146d942a63c17f0f312ebaa5c60055f",
+  "packagedNativeSharp": {
+    "width": 2,
+    "height": 3,
+    "format": "png",
+    "bytes": 92
+  },
+  "signed": false,
+  "note": "Portable build and packaged native image dependency verified; no installer or signed release validation."
+}

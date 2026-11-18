@@ -1,0 +1,59 @@
+{
+  "startedAt": "2026-11-18T04:37:08.900Z",
+  "completedAt": "2026-11-18T04:41:09.573Z",
+  "target": "https://api.xingchiapi.com/v1",
+  "transport": "HTTPS using Node.js fetch; redirects disabled; no retries",
+  "credentialSource": "User-provided key; supplied as Authorization Bearer; not written to files",
+  "requests": [
+    {
+      "test": "authenticated-model-catalog",
+      "checkedAt": "2026-11-18T04:37:08.900Z",
+      "url": "https://api.xingchiapi.com/v1/models",
+      "status": 200,
+      "elapsedMs": 993,
+      "modelCount": 23,
+      "requestedModelListed": true,
+      "matchingModelIds": [
+        "gpt-6.1-sol"
+      ],
+      "error": null
+    },
+    {
+      "test": "poster-84-vision-structured-output",
+      "status": "finished",
+      "httpStatus": 403,
+      "elapsedMs": 3635,
+      "contentType": "application/json; charset=utf-8",
+      "responseStatus": null,
+      "responseModel": null,
+      "responseId": null,
+      "usage": null,
+      "parsedOutput": null,
+      "outputText": "",
+      "outputTypes": [],
+      "error": {
+        "code": "client_not_allowed",
+        "message": "本站仅支持编程客户端使用：Codex、Claude Code、OpenCode、ZCode、DeepSeek Harness、Hermes Agent、Minis、WorkBuddy、Cursor、pi/omp、Qoder、Kilo、Cline、Roo、Trae、GitHub Copilot、Grok CLI。脚本、SDK 直连和第三方聊天客户端暂不支持"
+      },
+      "incompleteDetails": null
+    }
+  ],
+  "attemptedImageRequest": {
+    "model": "gpt-6.1-sol",
+    "source": "User-provided poster with jersey number 84",
+    "imageDimensions": {
+      "width": 941,
+      "height": 1672
+    },
+    "input": "PNG base64 data URL",
+    "detail": "high",
+    "store": false,
+    "stream": false,
+    "reasoningEffort": "low",
+    "maxOutputTokens": 4096,
+    "strictJsonSchema": true,
+    "tools": [],
+    "extraProviderHeaders": []
+  },
+  "conclusion": "Model catalog authentication succeeded. Responses request was blocked by provider client restrictions before any model output was returned. Image understanding, JSON Schema compliance, usage and billing remain unverified."
+}

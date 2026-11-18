@@ -2,7 +2,7 @@
 
 Under30ss là trang lookbook "Shop the look": một ảnh người mẫu và các món đồ. Mỗi outfit có tuỳ chọn đường nối mũi tên, mặc định tắt; món có link affiliate thì bấm để mở link. Dữ liệu outfit nằm trong MongoDB, ảnh nằm trong bucket S3 (RustFS). Next.js render trang public phía server để phục vụ SEO (`/`, `/looks`, `/look/[slug]`); Express API riêng phục vụ dữ liệu và khu quản trị `/admin`.
 
-Tài liệu liên quan: [Quy chuẩn code](./code-standards.md) · [Triển khai](./deployment-guide.md) · [Lịch sử thay đổi](./project-changelog.md) · [Roadmap](./development-roadmap.md)
+Tài liệu liên quan: [Quy chuẩn code](./code-standards.md) · [Triển khai](./deployment-guide.md) · [Desktop nhập nháp](./desktop-import-guide.md) · [Lịch sử thay đổi](./project-changelog.md) · [Roadmap](./development-roadmap.md)
 
 ## Contents
 - [Dịch vụ và cổng](#dịch-vụ-và-cổng)
@@ -18,6 +18,7 @@ Tài liệu liên quan: [Quy chuẩn code](./code-standards.md) · [Triển khai
 - [Pipeline ảnh và media](#pipeline-ảnh-và-media)
 - [Xác thực và giới hạn đăng nhập](#xác-thực-và-giới-hạn-đăng-nhập)
 - [Lỗi, health check, cấu hình](#lỗi-health-check-cấu-hình)
+- [Desktop nhập nháp bằng AI](#desktop-nhập-nháp-bằng-ai)
 
 ## Dịch vụ và cổng
 
@@ -61,7 +62,7 @@ Cấu hình nằm ở `infra/caddy/Caddyfile`. Thứ tự khối `handle` quan t
 | Đường dẫn | Đích | Hành vi |
 |-----------|------|---------|
 | `/api/health*` | Không chuyển tiếp | Caddy trả 404 từ bên ngoài. Healthcheck của compose gọi thẳng `api:4000` |
-| `/api/admin/media*` | `api:4000` | Body tối đa `UPLOAD_MAX_MB_CEILING` + 1 MiB (phần overhead multipart). Vượt quá trả 413 JSON `PAYLOAD_TOO_LARGE` |
+| `/api/admin/media*`, `/api/import/sessions/*/media/*` | `api:4000` | Body tối đa `UPLOAD_MAX_MB_CEILING` + 1 MiB (phần overhead multipart). Vượt quá trả 413 JSON `PAYLOAD_TOO_LARGE` |
 | `/api/*` | `api:4000` | Chuyển tiếp nguyên trạng |
 | `/media/*` | `rustfs:9000`, đường dẫn `/{S3_BUCKET}{path}` | Chỉ `GET` và `HEAD`; method khác trả 405 kèm `Allow: GET, HEAD`. Thêm `X-Content-Type-Options: nosniff`. Query string bị bỏ |
 | còn lại | `web:3000` | Trang public, trang admin, asset Next.js |
@@ -605,6 +606,38 @@ Các biến này có trong `.env.example`, `apps/api/.env.example` và `infra/do
 - `/look/[slug]`: outfit đã publish theo slug. Không có hoặc là draft thì 404.
 - `/sitemap.xml`, `/robots.txt`: `robots` chặn `/admin` và `/api`.
 - `/admin/*`: giao diện quản trị. Xem [Nhóm admin](#nhóm-admin-app-admin) ở trên.
+
+## Desktop nhập nháp bằng AI
+
+`apps/desktop` là workspace Electron/React độc lập, không chạy trong Docker web và không được root `pnpm dev`/`pnpm build` tự chọn. Main giữ filesystem, Sharp, credential và mạng; preload chỉ đưa các operation đã parse input/output cho renderer qua `desktop-ipc-contract.ts`. Cửa sổ bật sandbox/context isolation, tắt Node integration; IPC kiểm sender, main frame và URL tài liệu. Ảnh chỉ đọc qua protocol `import-asset` với session/asset ID có trong manifest.
+
+Luồng: folder local → bản sao đã xoay EXIF → Codex CLI + `poster-analysis.v1` → sửa/crop/duyệt local → API `desktop-import.v1` → collection/outfit draft. Mỗi poster là một operation tạo một collection có cover và một outfit thành viên. CLI dùng cấu hình/profile hiện có mà không sửa global, nhưng adapter tắt và kiểm tra MCP kế thừa, shell/apps/plugins/hooks; workspace tạm chỉ có input cần phân tích và schema. Token website được mã hóa bằng hệ điều hành, không đưa vào môi trường hoặc prompt CLI. Ảnh vẫn được gửi tới provider AI của CLI.
+
+### API và dữ liệu importer
+
+| Endpoint | Xác thực | Mục đích |
+|---|---|---|
+| `GET/POST /api/admin/import-tokens`, `DELETE /api/admin/import-tokens/:id` | Cookie admin | Phân trang token của chính admin, tạo token rõ một lần, thu hồi |
+| `GET /api/import/capabilities` | Bearer `import:draft` | Hợp đồng và giới hạn upload/media/operation của phiên |
+| `PUT/GET /api/import/sessions/:clientSessionId` | Cùng token và owner | Tạo idempotent hoặc đọc receipt để phục hồi |
+| `PUT /api/import/sessions/:clientSessionId/media/:clientMediaId?kind=model\|item` | Cùng token và owner | Multipart `file`, SHA-256 đầu vào; server kiểm ảnh và cấp image reference |
+| `PUT /api/import/sessions/:clientSessionId/operations/:operationId` | Cùng token và owner | Commit hash nội dung, ép tạo draft, trả ID/kết quả từng operation |
+
+MongoDB bổ sung `ImportToken`, `ImportSession`, `ImportMedia`, `ImportOperation`. Token chỉ lưu hash, owner, scope, hạn và thu hồi; xác thực kiểm admin còn tồn tại. Namespace phiên bao gồm token, không chỉ client session ID. Bearer importer không thay thế cookie và không mở các route admin khác.
+
+Import lưu intent, IDs collection/outfit cố định, unique operation identity và lease trước side effect. `writeStarted` không reset để receipt có thể trả `retryOnly` khi worker cũ còn ghi; đọc receipt đối chiếu entity theo ID/import reference, không chỉ dựa cờ stage. Payload đổi cùng operation ID bị conflict. Upload dùng key do server tạo từ danh tính phiên/media và hash output; client không được chọn storage key. Quota/tần suất lấy từ env `IMPORT_*`; pipeline resize/WebP và giới hạn upload tiếp tục dùng cấu hình ảnh hiện có.
+
+Desktop đối chiếu union ID operation/media đã có với các mục duyệt trước khi thêm upload/commit, dừng sớm nếu vượt quota capabilities. Đây là preflight UX; server vẫn kiểm quota nguyên tử và có thể trả lỗi từng mục dưới tải đồng thời.
+
+### Duyệt, phục hồi và ranh giới nhất quán
+
+Manifest local có phiên bản, atomic write và `.bak`; trạng thái đang phân tích/gửi khi mở lại trở thành gián đoạn. Sửa bản nháp bỏ duyệt; chỉ revision đã duyệt được gửi. Trước commit, app lưu receipt đang xử lý để khóa dữ liệu khi mất phản hồi. Từ lần gửi đầu, checkpoint gắn với cả origin và fingerprint credential lưu riêng ở main; token khác cùng origin không được tiếp tục phiên. Single-instance lock tránh hai cache cùng ghi đè checkpoint.
+
+Credential mã hóa chỉ đọc file hiện tại, không fallback `.bak`; xóa/đổi token không được phục hồi token cũ khi file chính hỏng. Cấu hình thường và manifest vẫn có recovery từ bản sao. Nếu credential bị hỏng, app báo chưa cấu hình để người dùng lưu token mới hoặc xóa rõ ràng.
+
+Server luôn tạo `status=draft`, `featured=false`, `showArrows=false`; publish dùng editor web hiện có. Crop theo phần trăm ảnh nguồn đã xoay, anchor chuyển sang crop người mẫu; crop không xóa nét/chữ đã chồng lên ảnh. Chưa có transaction chung S3/MongoDB, TTL receipt hoặc job dọn orphan media. Hướng dẫn sử dụng, giới hạn và bằng chứng: [Desktop nhập nháp](./desktop-import-guide.md).
+
+Desktop là ứng dụng Windows độc lập, không nằm trong Docker Compose. Kiểm tra image server cuối xác nhận API và web build đạt, không resolve/đóng gói Electron và không lưu giá trị build-only vào môi trường runtime. Đây là kiểm tra image tĩnh một lần, không khởi động API, MongoDB hay object storage; xem [báo cáo image](../plans/reports/261118-desktop-server-images.json).
 
 ## Liên quan
 

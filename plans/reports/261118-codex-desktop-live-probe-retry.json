@@ -1,0 +1,253 @@
+{
+  "recordedAt": "2026-11-18T10:07:56.750Z",
+  "engine": "Codex CLI",
+  "version": "codex-cli 0.169.1",
+  "model": "gpt-6.1-sol",
+  "globalConfig": {
+    "model": "gpt-6-astra",
+    "provider": "OpenAI",
+    "baseUrl": "https://api.xingchiapi.com/v1"
+  },
+  "promptVersion": "vi-poster.v1",
+  "promptSha256": "39073e35daa9fad1b4762cf309e700a53a395233937c3cc108152613d011e1ef",
+  "schemaSha256": "6a77b77a4e53a7cb1392f1365edc7ef6efa938ebec45aa5116afcf0b625be0ef",
+  "isolation": {
+    "sandbox": "read-only",
+    "approvals": "never",
+    "ephemeral": true,
+    "shell": false,
+    "mcpVerifiedDisabled": [
+      "clickup",
+      "node_repl",
+      "notion",
+      "stitch"
+    ],
+    "websiteTokenForwarded": false,
+    "inputBasename": "input.png",
+    "toolEventsFailClosed": true,
+    "configUnchanged": true
+  },
+  "limits": {
+    "timeoutMs": 150000,
+    "maxOutputBytes": 1048576
+  },
+  "samples": [
+    {
+      "source": "assets-source/lookbook-samples/outfit-dramatic-reference.png",
+      "sourceSha256": "154f5c480fb536c8ab9955ffccb99a22c338c88b2c576f7fde96f28cbf3f94e3",
+      "status": "validated",
+      "exitCode": 0,
+      "durationMs": 48493,
+      "eventTypes": [
+        "thread.started",
+        "item.completed",
+        "item:error",
+        "turn.started",
+        "item:agent_message",
+        "turn.completed"
+      ],
+      "failure": null,
+      "stderr": "",
+      "eventNotes": [
+        {
+          "type": "thread.started",
+          "atMs": 2371,
+          "message": null
+        },
+        {
+          "type": "item:error",
+          "atMs": 2388,
+          "message": "Codex is ignoring 4 unrecognized configuration settings. Check for typos or deprecated settings.\n  user (%USERPROFILE%\\.codex\\config.toml): `disable_response_storage` is ignored.\n  user (%USERPROFILE%\\.codex\\config.toml): `model_providers.OpenAI.notify` is ignored.\n  user (%USERPROFILE%\\.codex\\config.toml): `network_access` is ignored.\n  ... and 1 more ignored settings."
+        },
+        {
+          "type": "item:error",
+          "atMs": 2388,
+          "message": "Codex is ignoring 4 unrecognized configuration settings. Check for typos or deprecated settings.\n  user (%USERPROFILE%\\.codex\\config.toml): `disable_response_storage` is ignored.\n  user (%USERPROFILE%\\.codex\\config.toml): `model_providers.OpenAI.notify` is ignored.\n  user (%USERPROFILE%\\.codex\\config.toml): `network_access` is ignored.\n  ... and 1 more ignored settings."
+        },
+        {
+          "type": "turn.started",
+          "atMs": 2389,
+          "message": null
+        },
+        {
+          "type": "turn.completed",
+          "atMs": 47527,
+          "message": null
+        }
+      ],
+      "turnCompletedAtMs": 47527,
+      "processExitAtMs": 48493,
+      "exitSignal": null,
+      "parseError": null,
+      "analysis": {
+        "version": "poster-analysis.v1",
+        "status": "needs_review",
+        "title": "Phối đồ streetwear tông kem và denim wash nâu",
+        "description": "Gợi ý phối đồ streetwear với áo thun kem, quần short jean rách, sneaker trắng xám và phụ kiện nâu, đỏ.",
+        "modelCrop": {
+          "x": 31,
+          "y": 14.2,
+          "width": 42.7,
+          "height": 78.2
+        },
+        "items": [
+          {
+            "id": "left-graphic-t-shirt",
+            "name": "ÁO THUN IN CHỮ",
+            "subtitle": "GRAPHIC T-SHIRT",
+            "description": "Chất liệu cotton mềm mại, form rộng, họa tiết chữ tạo điểm nhấn trẻ trung, phù hợp phong cách streetwear, vintage.",
+            "side": "left",
+            "order": 0,
+            "crop": {
+              "x": 0.8,
+              "y": 4.2,
+              "width": 36.8,
+              "height": 18.3
+            },
+            "sourceAnchor": {
+              "x": 41.6,
+              "y": 26.7
+            },
+            "reviewReasons": []
+          },
+          {
+            "id": "left-denim-shorts",
+            "name": "QUẦN SHORT JEAN RÁCH",
+            "subtitle": "DENIM SHORTS",
+            "description": "Chất liệu denim dày dặn, form rộng, màu wash nâu, chi tiết rách tạo phong cách bụi bặm, streetwear.",
+            "side": "left",
+            "order": 1,
+            "crop": {
+              "x": 1.9,
+              "y": 37.5,
+              "width": 28.5,
+              "height": 22.7
+            },
+            "sourceAnchor": {
+              "x": 36.6,
+              "y": 57.3
+            },
+            "reviewReasons": []
+          },
+          {
+            "id": "left-sneakers",
+            "name": "GIÀY SNEAKER TRẮNG XÁM",
+            "subtitle": "SNEAKERS",
+            "description": "Kiểu dáng thể thao, dễ phối đồ, phù hợp phong cách streetwear, năng động, thoải mái.",
+            "side": "left",
+            "order": 2,
+            "crop": {
+              "x": 1.9,
+              "y": 74.8,
+              "width": 31,
+              "height": 10
+            },
+            "sourceAnchor": {
+              "x": 42.1,
+              "y": 85.8
+            },
+            "reviewReasons": []
+          },
+          {
+            "id": "right-crossbody-bag",
+            "name": "TÚI ĐEO CHÉO",
+            "subtitle": "CROSSBODY BAG",
+            "description": "Thiết kế tối giản, tiện dụng, phù hợp đi học, đi chơi, mang lại phong cách trẻ trung, hiện đại.",
+            "side": "right",
+            "order": 0,
+            "crop": {
+              "x": 74.2,
+              "y": 5.4,
+              "width": 21.7,
+              "height": 13.5
+            },
+            "sourceAnchor": {
+              "x": 65.6,
+              "y": 26.8
+            },
+            "reviewReasons": []
+          },
+          {
+            "id": "right-necklace",
+            "name": "DÂY CHUYỀN BẠC",
+            "subtitle": "NECKLACE",
+            "description": "Phụ kiện tạo điểm nhấn nhẹ nhàng, dễ phối đồ, mang lại vẻ hiện đại, nam tính.",
+            "side": "right",
+            "order": 1,
+            "crop": {
+              "x": 81.7,
+              "y": 29.3,
+              "width": 11.5,
+              "height": 9
+            },
+            "sourceAnchor": {
+              "x": 55.8,
+              "y": 32.3
+            },
+            "reviewReasons": []
+          },
+          {
+            "id": "right-keychain",
+            "name": "MÓC KHÓA PHỤ KIỆN",
+            "subtitle": "KEYCHAIN",
+            "description": "Phụ kiện tạo điểm nhấn cá tính, dễ phối đồ, mang lại phong cách streetwear.",
+            "side": "right",
+            "order": 2,
+            "crop": {
+              "x": 79.8,
+              "y": 47.2,
+              "width": 13.2,
+              "height": 9.6
+            },
+            "sourceAnchor": null,
+            "reviewReasons": [
+              "Đường chỉ dẫn gần ô móc khóa hướng lên vùng eo; chưa xác định chắc điểm đích dành cho món này."
+            ]
+          },
+          {
+            "id": "right-leather-belt",
+            "name": "THẮT LƯNG DA NÂU",
+            "subtitle": "LEATHER BELT",
+            "description": "Phụ kiện giúp định hình form dáng, tạo điểm nhấn thời trang.",
+            "side": "right",
+            "order": 3,
+            "crop": {
+              "x": 78.5,
+              "y": 66.4,
+              "width": 18.3,
+              "height": 3.8
+            },
+            "sourceAnchor": null,
+            "reviewReasons": [
+              "Các đường chỉ dẫn ở vùng thắt lưng, móc khóa và khăn đi chéo nhau; chưa xác định chắc điểm đích tương ứng."
+            ]
+          },
+          {
+            "id": "right-bandana",
+            "name": "KHĂN BANDANA ĐỎ",
+            "subtitle": "BANDANA",
+            "description": "Phụ kiện mang phong cách streetwear, tạo điểm nhấn nổi bật cho tổng thể.",
+            "side": "right",
+            "order": 4,
+            "crop": {
+              "x": 78.4,
+              "y": 78.6,
+              "width": 16.2,
+              "height": 8.3
+            },
+            "sourceAnchor": null,
+            "reviewReasons": [
+              "Đường cong gần ô khăn nối về vùng quần; chưa xác định chắc đầu mũi tên tương ứng với khăn trên người mẫu."
+            ]
+          }
+        ],
+        "reviewReasons": [
+          "Poster có ba ô sản phẩm bên trái và năm ô bên phải.",
+          "Vùng người mẫu có nhiều đường chỉ dẫn đè lên áo, eo, quần và chân; crop hình chữ nhật không thể loại bỏ các nét này.",
+          "Một số đường chỉ dẫn phụ kiện bên phải chưa có điểm đích rõ ràng, cần duyệt lại trước khi biên tập."
+        ]
+      },
+      "unverifiedAnalysis": null
+    }
+  ]
+}

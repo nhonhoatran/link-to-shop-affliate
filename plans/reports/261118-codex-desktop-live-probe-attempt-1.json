@@ -1,0 +1,268 @@
+{
+  "recordedAt": "2026-11-18T09:58:41.894Z",
+  "engine": "Codex CLI",
+  "version": "codex-cli 0.169.1",
+  "model": "gpt-6.1-sol",
+  "globalConfig": {
+    "model": "gpt-6-astra",
+    "provider": "OpenAI",
+    "baseUrl": "https://api.xingchiapi.com/v1"
+  },
+  "promptVersion": "vi-poster.v1",
+  "promptSha256": "39073e35daa9fad1b4762cf309e700a53a395233937c3cc108152613d011e1ef",
+  "schemaSha256": "6a77b77a4e53a7cb1392f1365edc7ef6efa938ebec45aa5116afcf0b625be0ef",
+  "isolation": {
+    "sandbox": "read-only",
+    "approvals": "never",
+    "ephemeral": true,
+    "shell": false,
+    "mcpVerifiedDisabled": [
+      "clickup",
+      "node_repl",
+      "notion",
+      "stitch"
+    ],
+    "websiteTokenForwarded": false,
+    "inputBasename": "input.png",
+    "toolEventsFailClosed": true,
+    "configUnchanged": true
+  },
+  "limits": {
+    "timeoutMs": 240000,
+    "maxOutputBytes": 1048576
+  },
+  "samples": [
+    {
+      "source": "assets-source/lookbook-samples/outfit-mesh-84-reference.png",
+      "sourceSha256": "3022b4abd86388642e3a7bb1f733829e93bd13cdd7bdf26405cac5ea6dcf5321",
+      "status": "validated",
+      "exitCode": 0,
+      "durationMs": 51800,
+      "eventTypes": [
+        "thread.started",
+        "item.completed",
+        "item:error",
+        "turn.started",
+        "item:agent_message",
+        "turn.completed"
+      ],
+      "failure": null,
+      "stderr": "",
+      "parseError": null,
+      "analysis": {
+        "version": "poster-analysis.v1",
+        "status": "needs_review",
+        "title": "Phối đồ streetwear với áo mesh số 84",
+        "description": "Bản phối streetwear với áo mesh số 84, quần short denim rộng và phụ kiện, trình bày quanh người mẫu đứng giữa.",
+        "modelCrop": {
+          "x": 29.3,
+          "y": 13.3,
+          "width": 45.8,
+          "height": 80
+        },
+        "items": [
+          {
+            "id": "left-mesh-jersey",
+            "name": "ÁO MESH THỂ THAO",
+            "subtitle": "MESH JERSEY",
+            "description": "Chất liệu mesh thoáng mát, form rộng, mang phong cách thể thao, streetwear Y2K.",
+            "side": "left",
+            "order": 0,
+            "crop": {
+              "x": 2,
+              "y": 3.4,
+              "width": 34.8,
+              "height": 16.5
+            },
+            "sourceAnchor": {
+              "x": 38.4,
+              "y": 26.6
+            },
+            "reviewReasons": []
+          },
+          {
+            "id": "left-basic-t-shirt",
+            "name": "ÁO THUN TRẮNG",
+            "subtitle": "BASIC T-SHIRT",
+            "description": "Chất liệu cotton mềm mại, dễ mặc, phù hợp phối nhiều phong cách.",
+            "side": "left",
+            "order": 1,
+            "crop": {
+              "x": 4.3,
+              "y": 29.5,
+              "width": 24.5,
+              "height": 12.9
+            },
+            "sourceAnchor": {
+              "x": 46.3,
+              "y": 43.5
+            },
+            "reviewReasons": []
+          },
+          {
+            "id": "left-cargo-denim-shorts",
+            "name": "QUẦN SHORT JEAN RỘNG",
+            "subtitle": "CARGO DENIM SHORTS",
+            "description": "Chất liệu denim dày dặn, form rộng, túi hộp cá tính, mang phong cách streetwear hiện đại.",
+            "side": "left",
+            "order": 2,
+            "crop": {
+              "x": 3.1,
+              "y": 51.9,
+              "width": 26.4,
+              "height": 17.3
+            },
+            "sourceAnchor": {
+              "x": 35.2,
+              "y": 59.8
+            },
+            "reviewReasons": []
+          },
+          {
+            "id": "left-chunky-sneakers",
+            "name": "GIÀY SNEAKER ĐEN",
+            "subtitle": "CHUNKY SNEAKERS",
+            "description": "Kiểu dáng hầm hố, đế dày, phù hợp phong cách streetwear, tạo điểm nhấn mạnh mẽ.",
+            "side": "left",
+            "order": 3,
+            "crop": {
+              "x": 2.7,
+              "y": 80.8,
+              "width": 27.8,
+              "height": 9
+            },
+            "sourceAnchor": {
+              "x": 41.5,
+              "y": 87.9
+            },
+            "reviewReasons": []
+          },
+          {
+            "id": "right-sunglasses",
+            "name": "KÍNH MÁT ĐEN",
+            "subtitle": "SUNGLASSES",
+            "description": "Phụ kiện tạo điểm nhấn, mang lại phong cách cool ngầu, hiện đại.",
+            "side": "right",
+            "order": 0,
+            "crop": {
+              "x": 75.3,
+              "y": 5.3,
+              "width": 22.5,
+              "height": 4.1
+            },
+            "sourceAnchor": null,
+            "reviewReasons": [
+              "Mũi tên hướng vào vùng tóc; không thấy kính được đeo trên người mẫu nên chưa xác định được sourceAnchor phù hợp."
+            ]
+          },
+          {
+            "id": "right-necklace",
+            "name": "DÂY CHUYỀN BẠC",
+            "subtitle": "NECKLACE",
+            "description": null,
+            "side": "right",
+            "order": 1,
+            "crop": {
+              "x": 80.8,
+              "y": 18.5,
+              "width": 13.3,
+              "height": 12.5
+            },
+            "sourceAnchor": {
+              "x": 61.3,
+              "y": 29.3
+            },
+            "reviewReasons": [
+              "Dòng cuối mô tả sát mép phải và bị cắt; phần đọc rõ: “Phụ kiện đơn giản nhưng tạo điểm nhấn cá tính, phù hợp phong cách…”.",
+              "Đầu mũi tên nằm trên áo gần vai phải trong ảnh, lệch khỏi dây chuyền; cần duyệt điểm neo."
+            ]
+          },
+          {
+            "id": "right-leather-belt",
+            "name": "THẮT LƯNG DA",
+            "subtitle": "LEATHER BELT",
+            "description": "Phụ kiện giúp định hình form dáng, tạo điểm nhấn thời trang.",
+            "side": "right",
+            "order": 2,
+            "crop": {
+              "x": 79.2,
+              "y": 43.2,
+              "width": 17.8,
+              "height": 4
+            },
+            "sourceAnchor": {
+              "x": 68.5,
+              "y": 47.2
+            },
+            "reviewReasons": [
+              "Đầu mũi tên nằm gần cạnh hông và đồng hồ, thấp hơn thắt lưng; cần duyệt điểm neo."
+            ]
+          },
+          {
+            "id": "right-keychain",
+            "name": "MÓC KHÓA PHỤ KIỆN",
+            "subtitle": "KEYCHAIN",
+            "description": "Phụ kiện tạo điểm nhấn cá tính, mang phong cách streetwear.",
+            "side": "right",
+            "order": 3,
+            "crop": {
+              "x": 82.3,
+              "y": 55.1,
+              "width": 9.1,
+              "height": 13.9
+            },
+            "sourceAnchor": {
+              "x": 62.9,
+              "y": 53.8
+            },
+            "reviewReasons": []
+          },
+          {
+            "id": "right-crew-socks",
+            "name": "TẤT TRẮNG DÀI",
+            "subtitle": "CREW SOCKS",
+            "description": "Phụ kiện cơ bản, dễ phối đồ, phù hợp phong cách streetwear.",
+            "side": "right",
+            "order": 4,
+            "crop": {
+              "x": 78.6,
+              "y": 78.2,
+              "width": 16.3,
+              "height": 9.4
+            },
+            "sourceAnchor": {
+              "x": 62.6,
+              "y": 83.7
+            },
+            "reviewReasons": []
+          }
+        ],
+        "reviewReasons": [
+          "Bố cục gồm người mẫu ở giữa, bốn sản phẩm bên trái và năm sản phẩm bên phải.",
+          "Các mũi tên và đường chỉ dẫn chồng lên áo, quần và vùng quanh người mẫu. Crop giữ đủ cơ thể không thể loại bỏ các nét này.",
+          "Một phần mô tả dây chuyền bị cắt ở mép phải; một số mũi tên không trỏ chính xác vào phụ kiện tương ứng."
+        ]
+      }
+    },
+    {
+      "source": "assets-source/lookbook-samples/outfit-dramatic-reference.png",
+      "sourceSha256": "154f5c480fb536c8ab9955ffccb99a22c338c88b2c576f7fde96f28cbf3f94e3",
+      "status": "not_verified",
+      "exitCode": null,
+      "durationMs": 240041,
+      "eventTypes": [
+        "thread.started",
+        "item.completed",
+        "item:error",
+        "turn.started",
+        "error",
+        "item:agent_message",
+        "turn.completed"
+      ],
+      "failure": "Hết thời gian chờ Codex; chưa xác minh ảnh",
+      "stderr": "",
+      "parseError": null,
+      "analysis": null
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "isolated": true,
+  "next": "compiled production build",
+  "checks": [
+    "Cookie admin login and server-rendered token page against isolated API",
+    "Create once, hide secret, keep only metadata in server list, importer capability 200",
+    "390x844 page without horizontal overflow",
+    "Confirm revoke, refreshed status and immediate importer capability 401"
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screenshots": [
+    "empty-desktop.png",
+    "active-desktop.png",
+    "active-narrow.png",
+    "revoked-narrow.png"
+  ]
+}

@@ -4,6 +4,22 @@ Ghi lại các thay đổi đáng kể theo phiên bản. Mỗi mục ghi ngày,
 
 Liên quan: [Roadmap](./development-roadmap.md) · [Kiến trúc](./system-architecture.md) · [Triển khai](./deployment-guide.md)
 
+## Desktop nhập bộ sưu tập bằng AI (2026-11-18)
+
+Phạm vi: workspace `apps/desktop`, hợp đồng shared, importer API/token admin, Caddy/compose và tài liệu. Kế hoạch: `plans/261118-desktop-ai-import/plan.md`. Hướng dẫn: [Desktop nhập nháp](./desktop-import-guide.md).
+
+- Thêm Electron/React Windows: cấu hình native Codex CLI/profile/model, prompt tiếng Việt có phiên bản và reset, chọn folder, sao chép ảnh đã xoay EXIF, checkpoint local và tiếp tục các kết quả đã hoàn tất.
+- Thêm hợp đồng phân tích riêng, crop/anchor nullable, màn sửa crop/nội dung/link/thứ tự và duyệt theo revision. Số món do ảnh quyết định; crop không được coi là xóa mũi tên trên ảnh.
+- Thêm token scope `import:draft`: tạo/list/phân trang/thu hồi trong admin, token rõ chỉ xuất hiện lúc tạo. Desktop mã hóa token bằng hệ điều hành; adapter Codex không nhận token website, cookie hoặc bí mật DB/S3.
+- Đồng bộ qua HTTP API với media ID, operation ID/hash, intent/entity IDs cố định, lease và receipt phục hồi. Một poster tạo một collection và một outfit draft; server ép `featured=false`, `showArrows=false`; xuất bản tiếp tục trên web.
+- Review sửa các rủi ro đổi token cùng origin làm lệch namespace, hai tiến trình ghi đè checkpoint và lỗi schema phản hồi echo token. Phiên gắn cả origin lẫn fingerprint token, có single-instance lock, khóa sửa khi kết quả commit chưa rõ và che lỗi tại boundary credential.
+- Credential không fallback backup, tránh phục hồi token đã xóa/đổi sau lỗi file; giao diện cho nhập token mới hoặc xóa rõ ràng khi file hỏng. Đồng bộ kiểm quota operation/media trước khi gửi thêm dữ liệu.
+- Root `dev`/`build` chỉ chọn shared/API/web; desktop có script riêng, đích đóng gói Windows x64 portable chưa ký số. Import upload đi qua pipeline ảnh/giới hạn Caddy hiện có; hạn mức nhập cấu hình bằng env.
+
+Kiểm chứng cuối: shared 224/224, desktop 93/93 (31 suite), API 267/267 (102 suite), web 754/754 (287 suite), không lỗi/bỏ qua. Hai lượt Codex thật có kết quả hợp schema với một timeout ban đầu rồi retry; smoke HTTP riêng đạt 1/1 trên hai ảnh (9/8 item), tạo draft và replay không trùng. Smoke Electron Windows và package được chạy lại lúc 14:13; image Docker API/web build đạt và không chứa Electron hoặc build-only env. Chi tiết ở [hướng dẫn desktop](./desktop-import-guide.md) và các report trong `plans/reports/`. Review độc lập `9.5/10`, các High/Medium đã xác minh được sửa. Không dùng UI test hoặc storage recorder để khẳng định đã nhập website production.
+
+Chưa có chức năng làm sạch ảnh bằng AI, transaction chung S3/MongoDB hoặc tự dọn receipt/ảnh upload dở. Chưa commit/push hoặc triển khai production trong công việc này.
+
 ## Tìm collection, thông tin liên hệ và tuỳ chọn outfit (2026-11-18)
 
 Phạm vi: `packages/shared`, `apps/api`, `apps/web` và kiểm thử liên quan. Kế hoạch: `plans/261118-home-search-contact-outfit-options/plan.md`. Chưa commit tại thời điểm ghi nhận.

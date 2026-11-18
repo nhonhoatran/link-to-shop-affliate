@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-11-18T12:00:47.431Z",
+  "status": "passed",
+  "results": [
+    {
+      "tag": "under30ss-api:desktop-import-check",
+      "imageId": "sha256:8eef860f096cb37f4885a9a98c34f5009953e9dd390cd53a5dbef4fe05b96cc9",
+      "bytes": 214403747,
+      "electronPackages": [],
+      "electronResolves": false,
+      "buildOnlyValuesPersisted": false
+    },
+    {
+      "tag": "under30ss-web:desktop-import-check",
+      "imageId": "sha256:806424d391f529c470d9e65b8a01c26914ba3cbcf3d9354ad0a1321271e093a2",
+      "bytes": 95211841,
+      "electronPackages": [],
+      "electronResolves": false,
+      "buildOnlyValuesPersisted": false
+    }
+  ],
+  "scope": "Built server images; read-only one-shot Node checks. No API service, database, or object-storage connection started."
+}

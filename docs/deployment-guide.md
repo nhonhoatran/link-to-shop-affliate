@@ -1,12 +1,13 @@
 # Hướng dẫn triển khai và vận hành Under30ss
 
-Tài liệu gồm: chạy local bằng Docker, triển khai production trên VPS, sao lưu và khôi phục, bảng biến môi trường, và xử lý sự cố.
+Tài liệu gồm: chạy local bằng Docker, desktop nhập nháp, triển khai production trên VPS, sao lưu và khôi phục, bảng biến môi trường, và xử lý sự cố.
 
 Liên quan: [Kiến trúc hệ thống](./system-architecture.md) · [Quy chuẩn code](./code-standards.md) · [Roadmap](./development-roadmap.md)
 
 ## Contents
 - [Yêu cầu](#yêu-cầu)
 - [Chạy local để phát triển (`pnpm dev`)](#chạy-local-để-phát-triển-pnpm-dev)
+- [Desktop và API nhập nháp](#desktop-và-api-nhập-nháp)
 - [Chạy local bằng Docker](#chạy-local-bằng-docker)
 - [Dữ liệu mẫu](#dữ-liệu-mẫu)
 - [Triển khai production](#triển-khai-production)
@@ -56,6 +57,24 @@ Lưu ý:
 - Sửa `apps/web/next.config.ts` khi `pnpm dev` đang chạy: Next tự khởi động lại và trên Windows có lúc crash (`exit 3221226505`). Chạy lại `pnpm dev`.
 - `next dev` ghi lại `apps/web/next-env.d.ts` (trỏ `.next/dev/types`). Không commit thay đổi này; `next build` ghi lại bản gốc.
 - Chạy e2e trên dev: `E2E_BASE_URL=http://localhost:3000 pnpm e2e`.
+
+## Desktop và API nhập nháp
+
+Desktop được chạy/đóng gói riêng trên Windows bằng `pnpm desktop:dev`, `pnpm desktop:build`, `pnpm desktop:package`; không thêm service AI/desktop vào compose. Root `pnpm dev` và `pnpm build` chỉ chạy shared/API/web. Hướng dẫn CLI, token, folder và duyệt: [Desktop nhập nháp](./desktop-import-guide.md).
+
+Dockerfile web dùng các giá trị env vô hiệu chỉ trong lệnh build Next để vượt bước kiểm schema khi prerender; không lưu chúng bằng `ENV` sang runtime. Compose vẫn phải cấp `API_INTERNAL_URL`, `SITE_URL`, `MEDIA_PUBLIC_BASE_URL`, `REVALIDATE_SECRET` thực khi chạy. Không đưa secret production vào image để build. Nếu API chưa chạy trong lúc build, public shell có thể ghi cảnh báo fetch settings nhưng vẫn dùng fallback đã có; cảnh báo này không chứng minh kết nối runtime thành công.
+
+Phía website cần deploy đồng bộ shared/API/web để có hợp đồng `desktop-import.v1`, trang `/admin/import-tokens`, middleware importer và các model/index mới. API build index khi khởi động qua `connectMongo`; desktop chỉ gọi API. Giữ HTTPS ngoài loopback. Caddy đã áp giới hạn body cho cả `/api/admin/media*` và `/api/import/sessions/*/media/*`.
+
+Các biến `IMPORT_*` nằm trong `apps/api/.env.example`, `.env.example`, `infra/.env.prod.example`; base compose chuyển tiếp vào service API, compose production kế thừa. Chỉnh ở môi trường phù hợp rồi khởi động lại API. Giới hạn upload vẫn lấy từ settings, kẹp bởi `UPLOAD_MAX_MB_CEILING`; không có trần upload riêng bỏ qua pipeline ảnh.
+
+Token nhập chỉ có quyền `import:draft`, được tạo và thu hồi bằng cookie admin. Server chỉ lưu hash và trả token rõ một lần. Desktop lưu credential mã hóa bằng hệ điều hành, không cần website `SESSION_SECRET`, credential S3 hoặc MongoDB URI. Không đưa các bí mật này vào máy nhập hoặc prompt AI.
+
+Khi backup/restore, giữ cả các collection importer cùng outfit/collection hiện có: receipt và intent là lịch sử chống trùng. Server chưa TTL/xóa receipt hay tự dọn ảnh upload dở; không xóa chúng chỉ vì không thấy outfit trong một request lỗi. Đối chiếu ID/receipt trước khi dọn object hoặc tạo phiên thay thế. Sau khi phiên đã bắt đầu gửi, đổi token kể cả cùng website không phải cơ chế phục hồi; dùng token gốc hoặc kiểm tra kết quả trên web trước.
+
+Đích package hiện là Windows x64 portable, chưa ký số và dùng icon mặc định. Không cài Codex CLI/provider key lên API để chạy luồng này; CLI và credential AI thuộc máy desktop. Phân tích ảnh gửi dữ liệu tới provider của CLI; không khẳng định provider không lưu request chỉ từ cờ `--ephemeral` local.
+
+Kiểm tra image cuối ngày 2026-11-18 đạt cho cả API và web. Node one-shot xác nhận image không có Electron dependency và không giữ build-only env sau bước build; kiểm tra này không chạy service API, MongoDB hoặc object storage. Chi tiết ở [báo cáo kiểm tra image](../plans/reports/261118-desktop-server-images.json). Portable package và Sharp native được xác minh riêng trong [báo cáo package](../plans/reports/desktop-ai-smoke/package.json); package chưa ký số, chưa kiểm tra installer.
 
 ## Chạy local bằng Docker
 
@@ -393,6 +412,14 @@ Cột "Bắt buộc" theo code: **Có** nghĩa là schema hoặc compose báo l�
 | `PUBLIC_LOOKS_PAGE_SIZE` | 12 | Không | Số outfit mỗi lô feed (`/`, `/looks`, `/collections/[slug]`) và mỗi trang `/collections`. Admin có thể đặt khác trong settings. Không vượt `PUBLIC_PAGE_SIZE_MAX` |
 | `PUBLIC_RELATED_OUTFITS_COUNT` | 8 | Không | Số outfit ở mục "Outfit khác" trên trang look. Admin có thể đặt khác trong settings. Không vượt `PUBLIC_PAGE_SIZE_MAX` |
 | `PUBLIC_PAGE_SIZE_MAX` | 48 | Không | Trần cho `size` của `GET /api/public/outfits` và hai giá trị trên |
+| `IMPORT_TOKEN_MAX_AGE_DAYS` | 365 | Không | Hạn token nhập tối đa tính từ lúc tạo |
+| `IMPORT_ACTIVE_TOKENS_PER_ADMIN` | 20 | Không | Giới hạn token còn hiệu lực mỗi admin, có unique slot chống tạo đồng thời vượt quota |
+| `IMPORT_SESSIONS_PER_TOKEN` | 100 | Không | Số phiên server của một token; lịch sử hiện không tự dọn |
+| `IMPORT_SESSION_MAX_MEDIA` | 1000 | Không | Số receipt media tối đa trong một phiên |
+| `IMPORT_SESSION_MAX_OPERATIONS` | 100 | Không | Số operation tối đa trong một phiên; mỗi poster là một operation |
+| `IMPORT_LEASE_MS` | 120000 | Không | Lease xử lý media/commit; IDs và receipt vẫn giữ ổn định khi retry |
+| `IMPORT_RATE_LIMIT_WINDOW_MS` | 60000 | Không | Cửa sổ limiter importer theo IP, bộ đếm trong tiến trình API |
+| `IMPORT_RATE_LIMIT_MAX` | 120 | Không | Request importer tối đa mỗi cửa sổ, gồm kiểm tra kết nối/đọc/gửi |
 | `ADMIN_STATS_RECENT_COUNT` | 5 | Không | Số outfit sửa gần đây ở trang Tổng quan admin |
 | `LOGIN_RATE_LIMIT_WINDOW_MINUTES` | 15 | Không | Cửa sổ của cả ba limiter đăng nhập |
 | `LOGIN_RATE_LIMIT_MAX_FAILURES` | 5 | Không | Lần sai theo cặp IP + email |

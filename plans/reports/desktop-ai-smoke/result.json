@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-11-18T14:13:49.236Z",
+  "status": "passed",
+  "electronVersion": "45.3.4",
+  "security": {
+    "nodeIntegration": false,
+    "contextIsolation": true,
+    "sandbox": true
+  },
+  "checks": [
+    "native preload IPC",
+    "OS token encryption",
+    "native folder picker boundary (dialog stub)",
+    "real source normalization and crop asset protocol",
+    "approval invalidation",
+    "restart checkpoint and settings",
+    "single instance lock",
+    "narrow viewport",
+    "unknown asset denied"
+  ],
+  "analysis": "Uses previously recorded live Codex analysis; no website sync or new AI call in this smoke test",
+  "errors": []
+}

@@ -11,6 +11,7 @@ Liên quan: [Kiến trúc hệ thống](./system-architecture.md) · [Triển kh
 - [Phân lớp và cách tổ chức code](#phân-lớp-và-cách-tổ-chức-code)
 - [Giao diện (web)](#giao-diện-web)
 - [Hợp đồng dùng chung](#hợp-đồng-dùng-chung-packagesshared)
+- [Desktop và importer](#desktop-và-importer)
 - [Cấu hình, không fix cứng giá trị nghiệp vụ](#cấu-hình-không-fix-cứng-giá-trị-nghiệp-vụ)
 - [Danh sách lọc, tìm kiếm, phân trang](#danh-sách-lọc-tìm-kiếm-phân-trang)
 - [Comment](#comment)
@@ -22,7 +23,7 @@ Liên quan: [Kiến trúc hệ thống](./system-architecture.md) · [Triển kh
 
 ## Cấu trúc monorepo
 
-pnpm workspace (`pnpm-workspace.yaml`: `apps/*`, `packages/*`). Các lệnh ở gốc chạy trên mọi workspace.
+pnpm workspace (`pnpm-workspace.yaml`: `apps/*`, `packages/*`). Root `dev` và `build` chọn shared/API/web rõ ràng; desktop có lệnh riêng. `test` và `typecheck` vẫn chạy các workspace, gồm desktop.
 
 ```
 .
@@ -43,6 +44,12 @@ pnpm workspace (`pnpm-workspace.yaml`: `apps/*`, `packages/*`). Các lệnh ở 
 │   │   ├── test/             # test tích hợp (supertest + mongodb-memory-server)
 │   │   ├── Dockerfile
 │   │   └── .env.example
+│   ├── desktop/              # @under30ss/desktop: Electron main/preload, React renderer, Sharp, checkpoint local
+│   │   ├── src/main/         # filesystem, Codex CLI, OS credential, importer HTTP
+│   │   ├── src/preload/      # bridge IPC giới hạn, parse contract
+│   │   ├── src/renderer/     # giao diện và chỉnh bản nháp; không có Node/token đã lưu
+│   │   ├── scripts/          # build/dev, smoke Electron thật, đóng gói portable
+│   │   └── test/             # main (node), UI (jsdom)
 │   └── web/                  # @under30ss/web: Next.js 16 (App Router)
 │       ├── src/
 │       │   ├── app/          # route group (public)/ (/, /looks, /look/[slug]); admin/ (admin/(protected)/ là khu quản trị); api/revalidate; robots, sitemap
@@ -229,12 +236,25 @@ Kiểm nhanh với bố cục mặc định: `curl -s http://localhost:3000/ | g
 
 ## Hợp đồng dùng chung (`packages/shared`)
 
-- Mọi schema request/response, kiểu DTO, mã lỗi, đường dẫn API (`API_PATHS`, `apiUrl`) và hằng header (`REVALIDATE_SECRET_HEADER`) đều nằm trong `packages/shared/src`. API và web cùng import `@under30ss/shared`.
+- Mọi schema request/response, kiểu DTO, mã lỗi, đường dẫn API (`API_PATHS`, `apiUrl`, `IMPORT_API_PATHS`) và hằng header (`REVALIDATE_SECRET_HEADER`) đều nằm trong `packages/shared/src`. API, web và desktop cùng import `@under30ss/shared`.
 - Đừng định nghĩa lại kiểu hoặc đường dẫn API ở một workspace khác.
 - **Đổi hợp đồng phải báo trước** và cập nhật cả API lẫn web trong cùng thay đổi. Chạy `pnpm typecheck` và `pnpm test` để thấy lệch.
 - Cách nạp: typecheck và vitest dùng điều kiện `source` (đọc `src/*.ts` trực tiếp). Runtime (`node dist/...`, build Docker) dùng `dist/`. Sau khi đổi `packages/shared/src`, chạy `pnpm --filter @under30ss/shared build` trước khi chạy runtime trên host. `pnpm dev` và `pnpm build` đã build shared trước.
 - Fixtures mẫu cho test: `@under30ss/shared/fixtures` (`packages/shared/src/fixtures`).
 - Quy ước chuỗi: thông điệp lỗi cho người dùng viết tiếng Việt; tên trường, mã lỗi và khoá JSON viết tiếng Anh.
+
+## Desktop và importer
+
+- Hợp đồng AI `poster-analysis-schema.ts` tách khỏi outfit hoàn chỉnh; cho phép crop/anchor chưa xác định. JSON Schema ràng buộc cấu trúc; kiểm tra runtime còn kiểm biên crop và ID/thứ tự trùng. Không nhét đáp án ảnh mẫu vào prompt mặc định.
+- `desktop-settings-schema.ts`, `desktop-session-schema.ts`, `desktop-ipc-contract.ts` và `desktop-import-contract.ts` là nguồn dùng chung cho main/preload/renderer/API. Mỗi IPC parse cả input/output; không expose IPC tùy ý, filesystem path, raw token hoặc `shell.openExternal` trực tiếp cho renderer.
+- Main chịu trách nhiệm I/O, Sharp, gọi subprocess và mạng. Renderer chỉ chỉnh text/crop/anchor qua bridge; không import component phụ thuộc Next.js, không render HTML từ AI và không gọi provider/API với credential đã lưu.
+- Codex chạy bằng executable + argv/stdio, không shell; không chuyển toàn bộ `process.env`. Giữ quyền read-only, tắt công cụ/MCP kế thừa theo adapter và kiểm lại trước khi phân tích. Không giữ exception thô tại boundary có khả năng chứa credential; lý do redaction phải rõ trong comment.
+- Snapshot CLI/prompt/giới hạn nằm trong phiên; revision đã duyệt phải khớp revision gửi. Mất phản hồi commit cần giữ operation ID/hash và đối soát trước khi cho sửa. Binding website gồm origin và fingerprint token main-only; không chỉ so hostname.
+- Checkpoint ghi atomic, có recovery và chỉ một instance được ghi cùng userData. Đọc asset kiểm containment theo **đúng session**, không chỉ thư mục sessions cha; không cho symlink/junction vượt phạm vi. Credential mã hóa không dùng backup fallback để tránh phục hồi token đã xóa/đổi.
+- Backend importer theo lớp middleware → route → service → model, dùng Bearer scope riêng, IDs intent cố định, unique index/lease và receipt. Không dùng storage key từ desktop, upsert theo slug hay transaction giả định giữa MongoDB/S3.
+- Chạy kiểm tra riêng: `pnpm --filter @under30ss/desktop test`, `pnpm desktop:build`, `pnpm --filter @under30ss/desktop smoke`, `pnpm --filter @under30ss/desktop check-package`. Smoke dùng dữ liệu test phải ghi rõ phần nào là native runtime, dialog stub, analysis đã lưu và storage recorder; không suy ra thành công production.
+
+Hướng dẫn vận hành: [Desktop nhập nháp](./desktop-import-guide.md). Root Dockerfiles cài shared + API/web theo filter riêng; giữ desktop ngoài image web/API.
 
 ## Section trang chủ, bộ sưu tập, editor
 
