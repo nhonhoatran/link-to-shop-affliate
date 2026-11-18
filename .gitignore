@@ -22,6 +22,7 @@ assets-source/cut/**/raw/
 .cursor/
 .opencode/
 GEMINI.md
+opencode.jsonc
 
 # Stock originals for the demo seed (re-downloaded by scripts/demo-images)
 assets-source/demo/raw/
