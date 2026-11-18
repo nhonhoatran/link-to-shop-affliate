@@ -32,6 +32,17 @@ export const adminExists = async (id: string): Promise<boolean> => isObjectId(id
 export const listAdmins = async (): Promise<AdminUserDto[]> =>
   (await AdminUserModel.find().sort({ createdAt: 1 }).lean<AdminUserRecord[]>()).map(toDto);
 
+/** Replaces the password of an existing admin. Returns null when no admin has that email. */
+export const setAdminPassword = async (email: string, password: string): Promise<AdminUserDto | null> => {
+  const passwordHash = await hashPassword(password);
+  const updated = await AdminUserModel.findOneAndUpdate(
+    { email: email.trim().toLowerCase() },
+    { $set: { passwordHash } },
+    { returnDocument: 'after' },
+  ).lean<AdminUserRecord>();
+  return updated ? toDto(updated) : null;
+};
+
 export const createAdmin = async (email: string, password: string): Promise<AdminUserDto> => {
   const passwordHash = await hashPassword(password);
   try {
