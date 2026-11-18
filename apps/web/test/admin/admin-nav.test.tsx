@@ -8,6 +8,12 @@ vi.mock('next/navigation', () => ({ usePathname: pathname }));
 const current = () => screen.getAllByRole('link').filter((link) => link.getAttribute('aria-current') === 'page');
 
 describe('AdminNav', () => {
+  it('links the desktop token page and marks it active', () => {
+    pathname.mockReturnValue('/admin/import-tokens');
+    render(<AdminNav />);
+    expect(current().map((link) => link.textContent)).toEqual(['Token nhập desktop']);
+    expect(screen.getByRole('link', { name: 'Token nhập desktop' })).toHaveAttribute('href', '/admin/import-tokens');
+  });
   it('marks only Tổng quan on /admin', () => {
     pathname.mockReturnValue('/admin');
     render(<AdminNav />);

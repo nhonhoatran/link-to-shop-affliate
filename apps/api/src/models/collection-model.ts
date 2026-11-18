@@ -2,6 +2,7 @@ import { Schema, model, type Types } from 'mongoose';
 import type { ImageRef, OutfitStatus } from '@under30ss/shared';
 
 export interface CollectionDoc {
+  importReference?: string;
   slug: string;
   name: string;
   description?: string;
@@ -17,6 +18,7 @@ export type CollectionRecord = CollectionDoc & { _id: Types.ObjectId };
 
 const collectionSchema = new Schema<CollectionDoc>(
   {
+    importReference: { type: String, select: false },
     slug: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     description: String,
@@ -30,6 +32,7 @@ const collectionSchema = new Schema<CollectionDoc>(
 
 // Public list and `auto` tiles: published only, in display order.
 collectionSchema.index({ status: 1, order: 1, _id: 1 });
+collectionSchema.index({ importReference: 1 }, { unique: true, partialFilterExpression: { importReference: { $type: 'string' } } });
 
 export const CollectionModel = model<CollectionDoc>('Collection', collectionSchema);
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { LayoutDashboard, LayoutTemplate, Library, Mail, Package, Settings, Users, type LucideIcon } from 'lucide-react';
+import { KeyRound, LayoutDashboard, LayoutTemplate, Library, Mail, Package, Settings, Users, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { DecorativeIcon } from '@/components/ui/decorative-icon';
@@ -22,6 +22,7 @@ const ITEMS: NavItem[] = [
   { href: ADMIN_PATHS.newsletter, label: 'Đăng ký nhận tin', icon: Mail },
   { href: ADMIN_PATHS.settings, label: 'Cài đặt', icon: Settings },
   { href: ADMIN_PATHS.users, label: 'Quản trị viên', icon: Users },
+  { href: ADMIN_PATHS.importTokens, label: 'Token nhập desktop', icon: KeyRound },
 ];
 
 const isActive = (item: NavItem, pathname: string) =>

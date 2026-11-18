@@ -6,13 +6,14 @@ const hasBody = (headers: Record<string, string | string[] | undefined>): boolea
 
 /** Rejects non-JSON bodies, except multipart uploads on the explicitly allowed path. */
 export const createJsonOnly =
-  (multipartPath: string): RequestHandler =>
+  (multipartPath: string, importMultipartPath?: RegExp): RequestHandler =>
   (req, _res, next) => {
     if (!hasBody(req.headers) || req.is('json')) {
       next();
       return;
     }
-    if (req.path === multipartPath && req.is('multipart/form-data')) {
+    const allowedUpload = req.path === multipartPath || (req.method === 'PUT' && importMultipartPath?.test(req.path));
+    if (allowedUpload && req.is('multipart/form-data')) {
       next();
       return;
     }

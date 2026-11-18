@@ -12,6 +12,7 @@ import { badRequest, conflict } from '../lib/app-error';
 import { escapeRegex, isDuplicateKey } from '../lib/mongo-query-helpers';
 import { isObjectId } from '../lib/object-id';
 import { isPublicKey, PUBLIC_KEY_ERROR } from '../lib/public-key-prefix';
+import type { ImportEntityIdentity } from '../lib/import-entity-identity';
 import { OutfitModel, type OutfitRecord } from '../models/outfit-model';
 import { assertCollectionsExist } from './collection-membership-service';
 import { createMediaUrlResolver, toAdminListItem, toOutfit } from './outfit-mapper';
@@ -95,13 +96,13 @@ export const applyFeatured = async (id: string, featured: boolean): Promise<Outf
   return null;
 };
 
-export const createOutfit = async (input: OutfitInput): Promise<Outfit> => {
+export const createOutfit = async (input: OutfitInput, identity?: ImportEntityIdentity): Promise<Outfit> => {
   assertPublicImageKeys(input.modelImage, input.items);
   await assertCollectionsExist(input.collectionIds ?? []);
   if (input.featured && input.status !== 'published') {
     throw conflict(FEATURED_DRAFT_MESSAGE, { featured: FEATURED_DRAFT_MESSAGE });
   }
-  const created = await OutfitModel.create({ ...input, featured: false });
+  const created = await OutfitModel.create({ ...input, featured: false, ...(identity ? { _id: identity.id, importReference: identity.importReference } : {}) });
   if (input.featured) return (await applyFeatured(String(created._id), true)) ?? toOutfit(created.toObject() as OutfitRecord);
   return toOutfit(created.toObject() as OutfitRecord);
 };

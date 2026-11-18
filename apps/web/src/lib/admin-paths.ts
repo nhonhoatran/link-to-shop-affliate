@@ -13,5 +13,6 @@ export const ADMIN_PATHS = {
   homePreview: '/admin/home-preview',
   settings: '/admin/settings',
   users: '/admin/users',
+  importTokens: '/admin/import-tokens',
   login: LOGIN_PATH,
 } as const;

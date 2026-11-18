@@ -14,6 +14,7 @@ export interface OutfitItemDoc {
 }
 
 export interface OutfitDoc {
+  importReference?: string;
   slug: string;
   title: string;
   seoDescription?: string;
@@ -58,6 +59,7 @@ const itemSchema = new Schema<OutfitItemDoc>(
 
 const outfitSchema = new Schema<OutfitDoc>(
   {
+    importReference: { type: String, select: false },
     slug: { type: String, required: true, unique: true },
     title: { type: String, required: true },
     seoDescription: String,
@@ -81,5 +83,6 @@ outfitSchema.index({ status: 1, featured: -1, updatedAt: -1, _id: -1 });
 
 // Collection page and carousel tabs: published outfits of one collection, newest first.
 outfitSchema.index({ collectionIds: 1, status: 1, updatedAt: -1, _id: -1 });
+outfitSchema.index({ importReference: 1 }, { unique: true, partialFilterExpression: { importReference: { $type: 'string' } } });
 
 export const OutfitModel = model<OutfitDoc>('Outfit', outfitSchema);

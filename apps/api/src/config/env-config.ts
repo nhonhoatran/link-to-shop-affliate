@@ -38,6 +38,15 @@ export const envSchema = z.object({
   PUBLIC_RELATED_OUTFITS_COUNT: positiveInt.default(8),
   PUBLIC_PAGE_SIZE_MAX: positiveInt.default(48),
 
+  IMPORT_TOKEN_MAX_AGE_DAYS: positiveInt.default(365),
+  IMPORT_ACTIVE_TOKENS_PER_ADMIN: positiveInt.default(20),
+  IMPORT_SESSIONS_PER_TOKEN: positiveInt.default(100),
+  IMPORT_SESSION_MAX_MEDIA: positiveInt.default(1000),
+  IMPORT_SESSION_MAX_OPERATIONS: positiveInt.default(100),
+  IMPORT_LEASE_MS: positiveInt.default(120_000),
+  IMPORT_RATE_LIMIT_WINDOW_MS: positiveInt.default(60_000),
+  IMPORT_RATE_LIMIT_MAX: positiveInt.default(120),
+
   ALLOWED_ORIGIN: z.string().min(1),
 });
 

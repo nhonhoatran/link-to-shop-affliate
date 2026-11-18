@@ -1,0 +1,77 @@
+.desktop-app { min-height: 100dvh; display: flex; flex-direction: column; }
+.app-header { display: flex; align-items: center; gap: 30px; padding: 18px 28px; background: var(--app-surface); border-bottom: 1px solid var(--app-line); }
+.app-header p { margin-bottom: 0; }
+.wordmark { font: 26px Georgia, serif; letter-spacing: -0.04em; padding-right: 28px; border-right: 1px solid var(--app-line); white-space: nowrap; }
+.wordmark span { display: block; font: 10px 'Segoe UI', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; margin-top: 5px; color: var(--app-muted); }
+.connection-shortcut { display: flex; align-items: center; gap: 8px; margin-left: auto; font-weight: 400; max-width: 280px; overflow-wrap: anywhere; }
+.connection-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--app-line-strong); flex-shrink: 0; }
+.connection-dot.configured { background: var(--app-success); }
+.app-body { display: grid; grid-template-columns: 230px minmax(0, 1fr); flex: 1; }
+.app-main { min-width: 0; padding: 24px 28px 48px; }
+.app-main:focus { outline: none; }
+.app-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding: 12px 28px; border-top: 1px solid var(--app-line); color: var(--app-muted); font-size: 11px; background: var(--app-surface); }
+.session-sidebar { background: var(--app-surface); border-right: 1px solid var(--app-line); padding: 24px 16px; min-width: 0; }
+.sidebar-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.sidebar-heading h2 { font-size: 15px; margin: 0; }
+.sidebar-heading button { padding-inline: 10px; font-size: 12px; }
+.session-list { list-style: none; margin: 20px -16px 0; padding: 0; }
+.session-option { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; width: 100%; border: 0; border-bottom: 1px solid var(--app-line); border-radius: 0; padding: 16px; background: transparent; font-size: 11px; font-weight: 400; text-align: left; overflow-wrap: anywhere; }
+.session-option strong { font-size: 13px; }
+.session-option[aria-current='true'] { background: var(--app-bg); box-shadow: inset 3px 0 var(--app-ink); }
+.workflow-nav { margin-bottom: 12px; }
+.workflow-nav ol { list-style: none; display: flex; flex-wrap: wrap; padding: 0; margin: 0; border-bottom: 1px solid var(--app-line); }
+.workflow-nav button { display: flex; align-items: center; gap: 9px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--app-muted); padding: 12px 16px; font-weight: 400; }
+.workflow-nav button span { display: inline-grid; place-items: center; width: 23px; height: 23px; border: 1px solid var(--app-line-strong); font-size: 11px; }
+.workflow-nav button[aria-current='step'] { border-bottom-color: var(--app-ink); color: var(--app-ink); font-weight: 600; }
+.workflow-nav button[aria-current='step'] span { color: var(--app-on-primary); background: var(--app-primary); border-color: var(--app-primary); }
+.live-status { color: var(--app-muted); font-size: 13px; min-height: 24px; margin: 6px 0 14px; overflow-wrap: anywhere; }
+.workspace-panel { background: var(--app-surface); border: 1px solid var(--app-line); padding: 30px; max-width: 1040px; }
+.settings-panel { max-width: 960px; }
+.section-heading { margin-bottom: 22px; }
+.section-heading > p:not(.eyebrow) { max-width: 70ch; font-size: 14px; color: var(--app-muted); }
+.new-session-form { max-width: 650px; }
+.folder-target { display: flex; flex-direction: column; align-items: flex-start; padding: 28px; border: 1px dashed var(--app-line-strong); background: var(--app-bg); margin-bottom: 24px; }
+.folder-mark { color: var(--app-muted); margin-bottom: 12px; }
+.folder-target strong { margin-bottom: 8px; overflow-wrap: anywhere; }
+.folder-target .hint { max-width: 60ch; }
+.destination { display: flex; flex-direction: column; gap: 5px; border-left: 3px solid var(--app-ink); padding: 12px 20px; background: var(--app-bg); margin-block: 24px; }
+.destination .eyebrow { margin-bottom: 0; }
+.destination-url { font-family: Consolas, monospace; font-size: 13px; overflow-wrap: anywhere; }
+.session-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 28px 0; }
+.session-stats > div { border-right: 1px solid var(--app-line); }
+.session-stats > div:last-child { border-right: 0; }
+.session-stats dt { font-size: 12px; color: var(--app-muted); }
+.session-stats dd { font-size: 29px; margin: 4px 0 0; font-variant-numeric: tabular-nums; }
+.sync-panel + .file-browser { margin-top: 28px; }
+@media (max-width: 1099.98px) {
+  .app-header { gap: 20px; padding: 16px 20px; }
+  .app-body { grid-template-columns: 190px minmax(0, 1fr); }
+  .app-main { padding: 20px; }
+  .wordmark { font-size: 23px; padding-right: 20px; }
+  .app-header h1 { font-size: 16px; }
+  .connection-shortcut { max-width: 200px; }
+  .workflow-nav button { padding-inline: 10px; font-size: 12px; }
+  .workspace-panel { padding: 22px; }
+}
+@media (max-width: 799.98px) {
+  .app-body { grid-template-columns: minmax(0, 1fr); }
+  .session-sidebar { border-right: 0; border-bottom: 1px solid var(--app-line); padding: 16px 20px; }
+  .session-sidebar > .hint { margin-bottom: 0; }
+  .session-list { display: flex; overflow-x: auto; margin: 12px 0 0; }
+  .session-list li { flex: 0 0 200px; }
+  .session-option { height: 100%; border-bottom: 0; border-right: 1px solid var(--app-line); }
+  .session-option[aria-current='true'] { box-shadow: inset 0 -3px var(--app-ink); }
+  .app-header { flex-wrap: wrap; gap: 12px 20px; }
+  .connection-shortcut { margin-left: 0; }
+  .app-footer { padding-inline: 20px; }
+}
+@media (max-width: 479.98px) {
+  .app-main { padding: 16px 12px 28px; }
+  .app-header { padding-inline: 12px; }
+  .wordmark { border-right: 0; }
+  .workflow-nav button { gap: 5px; padding-inline: 6px; font-size: 11px; }
+  .workflow-nav button span { width: 20px; height: 20px; }
+  .workspace-panel { padding: 18px; }
+  .session-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+

@@ -31,6 +31,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ['apps/desktop/src/renderer/**/*.{ts,tsx}', 'apps/desktop/test/ui/**/*.{ts,tsx}'],
+    plugins: { 'react-hooks': reactHooks },
+    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+    rules: { 'react-hooks/rules-of-hooks': 'error', 'react-hooks/exhaustive-deps': 'warn' },
+  },
+  {
     files: ['apps/web/**/*.{ts,tsx}'],
     plugins: { 'react-hooks': reactHooks, '@next/next': nextPlugin },
     settings: { next: { rootDir: 'apps/web' } },

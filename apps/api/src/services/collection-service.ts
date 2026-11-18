@@ -11,6 +11,7 @@ import { badRequest, conflict } from '../lib/app-error';
 import { escapeRegex, isDuplicateKey } from '../lib/mongo-query-helpers';
 import { isObjectId } from '../lib/object-id';
 import { isPublicKey, PUBLIC_KEY_ERROR } from '../lib/public-key-prefix';
+import type { ImportEntityIdentity } from '../lib/import-entity-identity';
 import { CollectionModel, type CollectionRecord } from '../models/collection-model';
 import { OutfitModel } from '../models/outfit-model';
 import { toAdminCollectionDto, toAdminCollectionListItem } from './collection-mapper';
@@ -82,10 +83,12 @@ export const getAdminCollection = async (id: string, env: Env): Promise<AdminCol
   return toAdminCollectionDto(record, await collectionUsage(id), createMediaUrlResolver(env));
 };
 
-export const createCollection = async (input: CollectionInput, env: Env): Promise<AdminCollectionDto> => {
+export const createCollection = async (input: CollectionInput, env: Env, identity?: ImportEntityIdentity): Promise<AdminCollectionDto> => {
   assertCoverKey(input);
   const last = await CollectionModel.findOne().sort({ order: -1 }).select({ order: 1 }).lean<{ order: number }>();
-  const created = await withSlugConflict(() => CollectionModel.create({ ...input, order: (last?.order ?? -1) + 1 }));
+  const created = await withSlugConflict(() => CollectionModel.create({
+    ...input, order: (last?.order ?? -1) + 1, ...(identity ? { _id: identity.id, importReference: identity.importReference } : {}),
+  }));
   const usage = { outfitCount: 0, usedInDraft: false, usedInPublished: false };
   return toAdminCollectionDto(created.toObject() as CollectionRecord, usage, createMediaUrlResolver(env));
 };

@@ -5,6 +5,10 @@ import { NewsletterSubscriberModel } from '../models/newsletter-subscriber-model
 import { OutfitModel } from '../models/outfit-model';
 import { PageLayoutModel } from '../models/page-layout-model';
 import { SettingsModel } from '../models/settings-model';
+import { ImportTokenModel } from '../models/import-token-model';
+import { ImportSessionModel } from '../models/import-session-model';
+import { ImportMediaModel } from '../models/import-media-model';
+import { ImportOperationModel } from '../models/import-operation-model';
 
 export const connectMongo = async (uri: string): Promise<void> => {
   await mongoose.connect(uri, { serverSelectionTimeoutMS: 10_000 });
@@ -15,6 +19,10 @@ export const connectMongo = async (uri: string): Promise<void> => {
     CollectionModel.init(),
     PageLayoutModel.init(),
     NewsletterSubscriberModel.init(),
+    ImportTokenModel.init(),
+    ImportSessionModel.init(),
+    ImportMediaModel.init(),
+    ImportOperationModel.init(),
   ]);
   await ensureContentIndexes();
 };
@@ -26,7 +34,11 @@ export const connectMongo = async (uri: string): Promise<void> => {
  */
 export const ensureContentIndexes = async (): Promise<void> => {
   try {
-    await Promise.all([OutfitModel.createIndexes(), CollectionModel.createIndexes(), PageLayoutModel.createIndexes()]);
+    await Promise.all([
+      OutfitModel.createIndexes(), CollectionModel.createIndexes(), PageLayoutModel.createIndexes(),
+      ImportTokenModel.createIndexes(), ImportSessionModel.createIndexes(), ImportMediaModel.createIndexes(),
+      ImportOperationModel.createIndexes(),
+    ]);
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to build content indexes (check for duplicate featured outfits or slugs): ${reason}`, {

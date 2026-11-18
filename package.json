@@ -8,8 +8,11 @@
   },
   "scripts": {
     "dev:infra": "docker compose --env-file .env -f infra/docker-compose.yml up -d mongo rustfs-init",
-    "dev": "pnpm --filter @under30ss/shared build && pnpm -r --parallel --filter \"./apps/*\" --filter @under30ss/shared dev",
-    "build": "pnpm -r build",
+    "dev": "pnpm --filter @under30ss/shared build && pnpm -r --parallel --filter @under30ss/api --filter @under30ss/web --filter @under30ss/shared dev",
+    "build": "pnpm --filter @under30ss/shared build && pnpm --filter @under30ss/api build && pnpm --filter @under30ss/web build",
+    "desktop:dev": "pnpm --filter @under30ss/desktop dev",
+    "desktop:build": "pnpm --filter @under30ss/desktop build",
+    "desktop:package": "pnpm --filter @under30ss/desktop package",
     "lint": "eslint .",
     "typecheck": "pnpm -r typecheck && tsc -p tsconfig.json",
     "test": "pnpm -r test",

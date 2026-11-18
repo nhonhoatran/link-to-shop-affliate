@@ -1,0 +1,75 @@
+.file-browser { min-width: 0; background: var(--app-surface); border: 1px solid var(--app-line); padding: 22px; }
+.file-browser .section-heading { margin-bottom: 14px; }
+.file-browser h2 { font-size: 19px; overflow-wrap: anywhere; }
+.analysis-progress { display: grid; gap: 7px; font-size: 12px; }
+progress { width: 100%; height: 5px; accent-color: var(--app-ink); }
+.file-filter { margin: 22px 0 12px; }
+.file-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--app-line); }
+.file-option { width: 100%; display: flex; align-items: center; gap: 14px; padding: 14px 10px; border: 0; border-bottom: 1px solid var(--app-line); border-radius: 0; background: transparent; text-align: left; font-weight: 400; }
+.file-option[aria-pressed='true'] { background: var(--app-bg); box-shadow: inset 3px 0 var(--app-ink); }
+.file-option > img { flex-shrink: 0; object-fit: contain; background: var(--app-bg); }
+.file-option > span { display: grid; gap: 4px; min-width: 0; }
+.file-option strong { font-size: 13px; overflow-wrap: anywhere; }
+.status-text { font-size: 11px; color: var(--app-muted); }
+.status-approved, .status-synced { color: var(--app-success); }
+.status-error, .status-interrupted, .status-unsupported { color: var(--app-danger); }
+.review-workspace { display: grid; grid-template-columns: minmax(190px, 240px) minmax(0, 1fr); gap: 22px; align-items: start; }
+.review-workspace .file-browser { padding: 16px; }
+.review-workspace .file-browser .actions { flex-direction: column; align-items: stretch; }
+.review-workspace .file-browser .file-option { gap: 9px; padding-inline: 7px; }
+.review-workspace .file-browser .file-option img { width: 34px; height: 50px; }
+.review-workspace .file-browser .file-list { max-height: 60dvh; overflow: auto; }
+.review-workspace .file-browser .pagination { flex-wrap: wrap; justify-content: flex-start; }
+.file-review { background: var(--app-surface); border: 1px solid var(--app-line); padding: 22px; min-width: 0; }
+.review-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 18px; }
+.review-heading h2 { font-size: 19px; overflow-wrap: anywhere; }
+.status-label { font-size: 11px; color: var(--app-warning); padding: 6px 8px; border: 1px solid var(--app-line); flex-shrink: 0; }
+.status-label.is-approved { color: var(--app-success); }
+.review-columns { display: grid; grid-template-columns: minmax(190px, 0.8fr) minmax(280px, 1.2fr); gap: 24px; align-items: start; }
+.image-review-column { min-width: 0; position: sticky; top: 20px; }
+.image-review-column > .hint { margin: 8px 0 20px; }
+.draft-edit-column { min-width: 0; }
+.source-preview, .crop-preview { margin: 0; min-width: 0; }
+.source-canvas, .crop-canvas { position: relative; width: 100%; background: var(--app-bg); overflow: hidden; border: 1px solid var(--app-line); }
+.source-canvas img { display: block; width: 100%; height: auto; }
+.crop-canvas svg { display: block; width: 100%; height: 100%; position: absolute; inset: 0; }
+figcaption { margin-top: 7px; }
+.crop-outline { position: absolute; border: 2px solid var(--app-crop-line); background: var(--app-crop-fill); pointer-events: none; }
+.anchor-pin { position: absolute; width: 13px; height: 13px; border: 2px solid var(--app-surface); border-radius: 50%; background: var(--app-ink); transform: translate(-50%, -50%); box-shadow: 0 0 0 1px var(--app-ink); }
+.preview-empty { display: grid; place-items: center; padding: 32px 18px; min-height: 130px; background: var(--app-bg); border: 1px dashed var(--app-line-strong); font-size: 12px; color: var(--app-muted); text-align: center; }
+.crop-fields, .anchor-fields { padding: 14px 0 18px; margin: 16px 0; border: 0; border-top: 1px solid var(--app-line); }
+.crop-fields legend, .anchor-fields legend { font-weight: 600; font-size: 14px; padding: 0 10px 0 0; }
+.coordinate-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.coordinate-grid .field { margin-bottom: 6px; }
+.coordinate-grid input { padding-inline: 7px; }
+.item-editor-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 10px; }
+.item-editor-heading h3 { margin: 0; }
+.item-picker { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 18px; border-bottom: 1px solid var(--app-line); }
+.item-picker button { font-size: 11px; min-height: 40px; padding: 7px 10px; text-align: left; }
+.item-picker button[aria-pressed='true'] { background: var(--app-primary); color: var(--app-on-primary); border-color: var(--app-primary); }
+.item-edit-grid { display: grid; grid-template-columns: minmax(110px, 0.7fr) minmax(0, 1.3fr); gap: 18px; margin-top: 18px; align-items: start; }
+.review-actions { border-top: 1px solid var(--app-line); margin-top: 22px; padding-top: 16px; }
+.review-actions .actions { justify-content: flex-end; }
+.review-actions .hint { margin-bottom: 8px; }
+@media (max-width: 1499.98px) {
+  .review-columns { grid-template-columns: minmax(0, 1fr); }
+  .image-review-column { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 14px; position: static; }
+  .image-review-column > .hint { order: 2; margin: 0; }
+  .image-review-column > .crop-preview { grid-column: 2; grid-row: 1; }
+  .image-review-column > .notice { order: 3; grid-column: 1/-1; margin-block: 0; }
+}
+@media (max-width: 1099.98px) {
+  .review-workspace { grid-template-columns: minmax(0, 1fr); }
+  .review-workspace .file-browser .file-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: 240px; }
+  .review-workspace .file-browser .actions { flex-direction: row; }
+  .review-workspace .file-browser .file-filter { max-width: 320px; }
+  .review-workspace .file-browser .pagination { justify-content: space-between; }
+}
+@media (max-width: 639.98px) {
+  .file-review, .file-browser { padding: 16px; }
+  .review-heading { flex-direction: column; gap: 6px; }
+  .coordinate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .item-edit-grid { grid-template-columns: minmax(0, 1fr); }
+  .item-edit-grid > .crop-preview { max-width: 220px; }
+  .review-workspace .file-browser .file-list { grid-template-columns: minmax(0, 1fr); }
+}

@@ -15,6 +15,8 @@ import { createAdminOutfitRoutes } from './routes/admin-outfit-routes';
 import { createAdminSettingsRoutes } from './routes/admin-settings-routes';
 import { createAdminStatsRoutes } from './routes/admin-stats-routes';
 import { createAdminUserRoutes } from './routes/admin-user-routes';
+import { createAdminImportTokenRoutes } from './routes/admin-import-token-routes';
+import { createImportRoutes } from './routes/import-routes';
 import { createAuthRoutes } from './routes/auth-routes';
 import { createHealthRoutes } from './routes/health-routes';
 import { createPublicCollectionRoutes } from './routes/public-collection-routes';
@@ -34,7 +36,8 @@ export const createApp = (ctx: AppContext): Express => {
 
   app.use(helmet());
   app.use(createOriginCheck(ctx.env.ALLOWED_ORIGIN));
-  app.use(createJsonOnly(API_PATHS.admin.media));
+  const importUploadPath = /^\/api\/import\/sessions\/[A-Za-z0-9][A-Za-z0-9_-]{0,95}\/media\/[A-Za-z0-9][A-Za-z0-9_-]{0,95}$/;
+  app.use(createJsonOnly(API_PATHS.admin.media, importUploadPath));
   app.use(express.json({ limit: JSON_BODY_LIMIT }));
   app.use(createSessionMiddleware(ctx.env));
 
@@ -48,10 +51,12 @@ export const createApp = (ctx: AppContext): Express => {
   admin.use('/admins', createAdminUserRoutes());
   admin.use('/media', createAdminMediaRoutes(ctx));
   admin.use('/newsletter', createAdminNewsletterRoutes(ctx));
+  admin.use('/import-tokens', createAdminImportTokenRoutes(ctx));
 
   const api = Router();
   api.use('/health', createHealthRoutes());
   api.use('/auth', createAuthRoutes(ctx.env));
+  api.use('/import', createImportRoutes(ctx));
   api.use('/public', createPublicRoutes(ctx));
   api.use('/public', createPublicCollectionRoutes(ctx));
   api.use('/public', createPublicHomeRoutes(ctx));
