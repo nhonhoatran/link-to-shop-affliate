@@ -55,7 +55,7 @@ export function ItemEditForm({ item, errors, onChange, onDelete }: ItemEditFormP
       <AdminFormField
         id="item-link"
         label="Link affiliate"
-        hint="Bắt đầu bằng https://, bắt buộc khi đăng"
+        hint="Không bắt buộc. Nếu có link, dùng địa chỉ https://"
         error={errors.affiliateUrl}
       >
         {(control) => (

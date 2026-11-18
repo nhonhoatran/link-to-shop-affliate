@@ -48,15 +48,13 @@ describe('FeedPhotoTrack', () => {
     }
   });
 
-  it.each(['', 'javascript:alert(1)'])('disables the buy link when the affiliate URL is %j', (affiliateUrl) => {
+  it.each(['', 'javascript:alert(1)'])('keeps the photo and hides the buy link when the affiliate URL is %j', (affiliateUrl) => {
     const [first, ...rest] = samplePublicOutfit.items;
     const outfit: PublicOutfitDto = { ...samplePublicOutfit, items: [{ ...first!, affiliateUrl }, ...rest] };
-    renderTrack(outfit);
-    const link = screen.getByRole('link', { name: `Mua ngay ${first!.name}` });
-    expect(link).toHaveAttribute('href', '#');
-    expect(link).toHaveAttribute('aria-disabled', 'true');
-    expect(link).toHaveAttribute('tabindex', '-1');
-    expect(link).not.toHaveAttribute('target');
+    const { photos } = renderTrack(outfit);
+    expect(screen.queryByRole('link', { name: `Mua ngay ${first!.name}` })).not.toBeInTheDocument();
+    expect(within(photos[2]!).getByRole('img', { name: first!.name })).toBeInTheDocument();
+    expect(photos[2]).toHaveTextContent(first!.name);
   });
 
   it('still renders the lookbook and model photo for an outfit with no items', () => {

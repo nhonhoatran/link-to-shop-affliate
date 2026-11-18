@@ -1,5 +1,7 @@
 import { act, render, waitFor } from '@testing-library/react';
-import { samplePublicOutfit } from '@under30ss/shared/fixtures';
+import { samplePublicOutfit as sample } from '@under30ss/shared/fixtures';
+
+const samplePublicOutfit = { ...sample, showArrows: true };
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LookbookLayout } from '@/components/lookbook';
 

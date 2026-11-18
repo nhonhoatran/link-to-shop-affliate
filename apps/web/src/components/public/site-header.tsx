@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CollectionSearch } from './collection-search';
 import { HideOnScrollHeader } from './hide-on-scroll-header';
 import { SHELL_COPY } from './public-copy';
 import { HOME_PATH, type PublicNavItem } from './public-nav-items';
@@ -23,6 +24,7 @@ export function SiteHeader({ siteName, navItems }: SiteHeaderProps) {
           className={styles.nav}
           linkClassName={styles.navLink}
         />
+        <div className={styles.search}><CollectionSearch id="header-collection-search" /></div>
       </div>
     </HideOnScrollHeader>
   );

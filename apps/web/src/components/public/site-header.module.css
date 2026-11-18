@@ -10,11 +10,19 @@
   display: grid;
   grid-template-areas:
     'brand'
-    'nav';
+    'nav'
+    'search';
   justify-items: center;
   max-width: var(--client-container-max);
   margin-inline: auto;
   padding-inline: var(--space-4);
+}
+
+.search {
+  grid-area: search;
+  width: 100%;
+  min-width: 0;
+  margin-block: var(--space-2);
 }
 
 .brand {
@@ -70,10 +78,11 @@
   border-bottom-color: var(--client-ink);
 }
 
-/* 768px = --bp-md: nav on the left, wordmark centred, right column left empty to balance. */
+/* 768px = --bp-md: nav on the left, wordmark centred, search on the right. */
 @media (min-width: 768px) {
   .inner {
-    grid-template-areas: 'nav brand .';
+    grid-template-areas: 'nav brand search';
+    column-gap: var(--space-4);
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     justify-items: stretch;
@@ -101,10 +110,10 @@
   }
 }
 
-/* Feed pages: a single compact row so the first lookbook gets the screen. */
+/* Feed pages: compact navigation above the search row, leaving the remaining height to the photos. */
 @media (max-width: 767.98px) {
   body:has([data-feed-wrap]) .inner {
-    grid-template-areas: 'brand nav';
+    grid-template-areas: 'brand nav' 'search search';
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     justify-items: stretch;

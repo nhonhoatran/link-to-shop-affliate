@@ -62,13 +62,11 @@ describe('FeedShopSheet', () => {
     }
   });
 
-  it('disables the buy link of an item whose affiliate URL is unsafe', () => {
+  it.each(['', 'javascript:alert(1)'])('keeps an item visible without a buy link for URL %j', (affiliateUrl) => {
     const [first] = items;
-    const { dialog } = renderSheet([{ ...first!, affiliateUrl: 'javascript:alert(1)' }]);
-    const link = within(dialog).getByRole('link', { name: `Mua ngay ${first!.name}`, hidden: true });
-    expect(link).toHaveAttribute('href', '#');
-    expect(link).toHaveAttribute('aria-disabled', 'true');
-    expect(link).not.toHaveAttribute('target');
+    const { dialog } = renderSheet([{ ...first!, affiliateUrl }]);
+    expect(within(dialog).queryByRole('link', { name: `Mua ngay ${first!.name}`, hidden: true })).not.toBeInTheDocument();
+    expect(within(dialog).getByText(first!.name)).toBeInTheDocument();
   });
 
   it('closes from the close button and returns focus to the "Mua đồ" button', () => {

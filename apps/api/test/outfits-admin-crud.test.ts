@@ -51,13 +51,15 @@ describe('admin outfit CRUD', () => {
     expect((await agent.get('/api/admin/outfits/64b7f0c2a1b2c3d4e5f60718')).status).toBe(404);
   });
 
-  it('rejects publishing with a missing link, reporting the exact field', async () => {
+  it('publishes with a missing link and retains the item in the public response', async () => {
     const payload = buildOutfitPayload({ status: 'published' });
     payload.items[1] = { ...payload.items[1]!, affiliateUrl: '' };
     const response = await create(payload);
-    expect(response.status).toBe(400);
-    expect(response.body.error.code).toBe('VALIDATION_ERROR');
-    expect(response.body.error.fields).toHaveProperty(['items.1.affiliateUrl']);
+    expect(response.status).toBe(201);
+    expect(response.body.items[1].affiliateUrl).toBe('');
+    const publicResponse = await agent.get('/api/public/outfits/sample-look');
+    expect(publicResponse.status).toBe(200);
+    expect(publicResponse.body.items.find((item: { id: string }) => item.id === payload.items[1]!.id)?.affiliateUrl).toBe('');
   });
 
   it('rejects non-https links and image keys outside public/', async () => {

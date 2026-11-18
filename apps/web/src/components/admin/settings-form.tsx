@@ -25,6 +25,7 @@ import { useFocusFirstInvalid } from './settings/use-focus-first-invalid';
 import { SettingsNewsletterConsentFields } from './settings/settings-newsletter-consent-fields';
 import { SettingsListingFields } from './settings-listing-fields';
 import { SettingsHomeModeField } from './settings/settings-home-mode-field';
+import { SettingsContactFields } from './settings/settings-contact-fields';
 
 export function SettingsForm({ initial }: { initial: AdminSettingsDto }) {
   const [state, setState] = useState<SettingsFormState>(() => fromAdminSettings(initial));
@@ -121,6 +122,7 @@ export function SettingsForm({ initial }: { initial: AdminSettingsDto }) {
           </>
         ) : null}
       </AdminPanel>
+      <SettingsContactFields values={state} errors={errors} onChange={change} />
       <AdminPanel id="settings-announcement" title="Dải thông báo">
         <SettingsAnnouncementFields
           values={state.announcement}

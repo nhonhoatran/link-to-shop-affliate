@@ -48,11 +48,12 @@ const compose = (
   };
 };
 
-export const buildCollectionsMetadata = (input: BaseInput): Metadata => {
+export const buildCollectionsMetadata = (input: BaseInput & { query?: string }): Metadata => {
   const { settings, siteUrl, page, label } = input;
   const description = settings.seoDescription.trim() || COLLECTIONS_COPY.fallbackDescription(settings.siteName, label);
   const image = settings.ogImageUrl ? { url: absoluteUrl(siteUrl, settings.ogImageUrl), alt: settings.siteName } : null;
-  return compose(label, description, absoluteUrl(siteUrl, collectionsPagePath(page)), input, image);
+  const metadata = compose(label, description, absoluteUrl(siteUrl, collectionsPagePath(input.query ? 1 : page)), input, image);
+  return input.query ? { ...metadata, robots: { index: false, follow: true } } : metadata;
 };
 
 export const buildCollectionMetadata = (input: BaseInput & { collection: PublicCollectionDto }): Metadata => {

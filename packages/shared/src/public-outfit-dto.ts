@@ -20,6 +20,7 @@ export const publicOutfitSchema = z.object({
   seoDescription: z.string().optional(),
   modelImage: imageWithUrlSchema,
   updatedAt: z.string(),
+  showArrows: z.boolean().optional(),
   items: z.array(publicOutfitItemSchema),
 });
 
@@ -51,6 +52,7 @@ export const toPublicOutfitDto = (outfit: Outfit, resolveUrl: (key: string) => s
     ...(outfit.seoDescription ? { seoDescription: outfit.seoDescription } : {}),
     modelImage: { ...outfit.modelImage, url: resolveUrl(outfit.modelImage.key) },
     updatedAt: outfit.updatedAt,
+    showArrows: outfit.showArrows ?? false,
     items,
   };
 };

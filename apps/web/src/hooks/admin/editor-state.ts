@@ -22,6 +22,7 @@ export interface EditorState {
   modelImage: ImageWithUrl;
   status: OutfitStatus;
   featured: boolean;
+  showArrows: boolean;
   collectionIds: string[];
   /** Memberships as loaded or last saved; sent on save only when they differ. */
   initialCollectionIds: string[];
@@ -44,6 +45,7 @@ export type EditorAction =
   | { type: 'select'; id: string | null }
   | { type: 'collections'; ids: string[] }
   | { type: 'featured'; value: boolean }
+  | { type: 'showArrows'; value: boolean }
   | { type: 'saved'; status: OutfitStatus; snapshot: string };
 
 export const newItemId = (): string =>
@@ -72,6 +74,7 @@ export const toOutfitInput = (state: EditorState, status: OutfitStatus = state.s
   modelImage: imageRef(state.modelImage),
   status,
   featured: false,
+  showArrows: state.showArrows,
   ...(sameIds(state.collectionIds, state.initialCollectionIds) ? {} : { collectionIds: state.collectionIds }),
   items: state.items.map((item) => ({
     id: item.id,
@@ -108,6 +111,7 @@ export const fromAdminOutfit = (dto: AdminOutfitDto): EditorState => {
     modelImage: dto.modelImage,
     status: dto.status,
     featured: dto.featured,
+    showArrows: dto.showArrows ?? false,
     collectionIds: dto.collectionIds ?? [],
     initialCollectionIds: dto.collectionIds ?? [],
     items: dto.items.map((item) => ({
@@ -187,6 +191,8 @@ export const editorReducer = (state: EditorState, action: EditorAction): EditorS
       return { ...state, collectionIds: action.ids };
     case 'featured':
       return { ...state, featured: action.value };
+    case 'showArrows':
+      return { ...state, showArrows: action.value };
     case 'saved':
       return {
         ...state,

@@ -22,10 +22,10 @@ export function OverviewKpiGrid({ counts }: { counts: AdminStatsResponse['counts
         <strong className={styles.kpiValue}>{formatCount(counts.draft)}</strong>
       </Link>
       <div className={`${adminStyles.panel} ${styles.kpi}`}>
-        <span className={styles.kpiLabel}>Thiếu link affiliate</span>
+        <span className={styles.kpiLabel}>Món đồ chưa có link</span>
         <strong className={styles.kpiValue}>{formatCount(counts.publishedMissingAffiliate)}</strong>
         <span className={styles.kpiHint}>
-          Outfit đã đăng chưa có link. Bản nháp thiếu link: {formatCount(counts.draftMissingAffiliate)}
+          Outfit đã đăng có món chưa gắn link (không bắt buộc). Bản nháp có món chưa gắn link: {formatCount(counts.draftMissingAffiliate)}
         </span>
       </div>
     </section>

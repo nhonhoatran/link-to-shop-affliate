@@ -65,6 +65,8 @@ const outfitBaseSchema = z.object({
   modelImage: imageRefSchema,
   status: outfitStatusSchema,
   featured: z.boolean(),
+  // Missing on older records and clients: arrows are off by default.
+  showArrows: z.boolean().optional(),
   // Absent on PUT = keep the current memberships.
   collectionIds: z
     .array(objectIdSchema)
@@ -84,13 +86,6 @@ const checkPublishable = (outfit: PublishCheckInput, ctx: z.RefinementCtx): void
     }
     seen.add(item.id);
     if (outfit.status !== 'published') return;
-    if (item.affiliateUrl === '') {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['items', index, 'affiliateUrl'],
-        message: 'A published outfit needs an affiliate link on every item',
-      });
-    }
     if (!item.anchor) {
       ctx.addIssue({
         code: 'custom',

@@ -63,7 +63,7 @@ describe('admin overview page', () => {
     expect(screen.getByRole('link', { name: /Tổng outfit/ })).toHaveTextContent('12');
     expect(screen.getByRole('link', { name: /Đã đăng/ })).toHaveAttribute('href', '/admin/outfits?status=published');
     expect(screen.getByRole('link', { name: /Bản nháp/ })).toHaveAttribute('href', '/admin/outfits?status=draft');
-    expect(screen.getByText('Thiếu link affiliate').parentElement).toHaveTextContent('Bản nháp thiếu link: 3');
+    expect(screen.getByText('Món đồ chưa có link').parentElement).toHaveTextContent('Bản nháp có món chưa gắn link: 3');
   });
 
   it('lists recent outfits with edit links and the featured outfit', async () => {

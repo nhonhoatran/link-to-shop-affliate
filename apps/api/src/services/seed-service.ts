@@ -20,7 +20,7 @@ export interface SeedOptions {
   seedDir: string;
   /** Images must stay inside this directory (defaults to `seedDir`); lets the seed reuse assets kept beside it. */
   imageRoot?: string;
-  /** Local only: keep `published` status even when links or anchors are missing. */
+  /** Local only: keep `published` status even when anchors are missing. */
   publishWithPlaceholder: boolean;
 }
 
@@ -69,6 +69,7 @@ const buildInput = async (ctx: AppContext, options: SeedOptions, outfit: SeedOut
   modelImage: await uploadSeedImage(ctx, options, 'model', outfit.modelImage),
   status: outfit.status,
   featured: outfit.featured,
+  showArrows: outfit.showArrows ?? false,
   items: await Promise.all(
     outfit.items.map(async (item) => ({ ...item, image: await uploadSeedImage(ctx, options, 'item', item.image) })),
   ),

@@ -11,7 +11,7 @@ export const seedImageSchema = z.object({
 
 export const seedItemSchema = outfitItemSchema.extend({ image: seedImageSchema });
 
-// The publish rule is not enforced here: sample outfits may ship without links.
+// Anchor validation happens after media uploads, when the complete outfit input is available.
 export const seedOutfitSchema = z.object({
   slug: outfitSlugSchema,
   title: z.string().min(1).max(120),
@@ -19,6 +19,7 @@ export const seedOutfitSchema = z.object({
   modelImage: seedImageSchema,
   status: outfitStatusSchema,
   featured: z.boolean(),
+  showArrows: z.boolean().optional(),
   items: z.array(seedItemSchema),
 });
 

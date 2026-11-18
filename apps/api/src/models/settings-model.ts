@@ -4,6 +4,8 @@ import { HOME_MODES, type AnnouncementInput, type FooterInput, type HomeMode, ty
 export interface SettingsDoc {
   singleton: 'site';
   siteName: string;
+  contactEmail?: string;
+  contactPhone?: string;
   seoTitle: string;
   seoDescription: string;
   ogImage?: ImageRef;
@@ -25,6 +27,8 @@ const settingsSchema = new Schema<SettingsDoc>(
   {
     singleton: { type: String, enum: ['site'], default: 'site', unique: true },
     siteName: { type: String, required: true },
+    contactEmail: String,
+    contactPhone: String,
     seoTitle: { type: String, required: true },
     seoDescription: { type: String, default: '' },
     ogImage: new Schema<ImageRef>(

@@ -19,10 +19,7 @@ const translateIssue = (issue: Issue): string => {
   }
   if (issue.code === 'custom') {
     if (last === 'anchor') return 'Chưa đặt điểm trên người mẫu';
-    if (last === 'affiliateUrl') {
-      // The shared schema reuses `custom` for both "missing" and "not https".
-      return issue.message.includes('https') ? 'Link phải là địa chỉ https:// hợp lệ' : 'Thiếu link affiliate';
-    }
+    if (last === 'affiliateUrl') return 'Link phải là địa chỉ https:// hợp lệ';
     if (last === 'id') return 'Mã món bị trùng';
   }
   return 'Giá trị không hợp lệ';

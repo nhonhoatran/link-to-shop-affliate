@@ -1,0 +1,44 @@
+.form {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--client-border-strong);
+  border-radius: var(--client-radius-lg);
+  color: var(--client-ink);
+  background: var(--client-surface);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-sm);
+}
+
+.input::placeholder {
+  color: var(--client-ink-muted);
+}
+
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 var(--client-tap-target);
+  min-height: var(--client-tap-target);
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--client-border);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background: var(--client-bg);
+}

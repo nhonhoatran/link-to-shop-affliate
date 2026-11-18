@@ -36,6 +36,8 @@ export interface NewsletterConsentValues {
 
 export interface SettingsFormState {
   siteName: string;
+  contactEmail: string;
+  contactPhone: string;
   seoTitle: string;
   seoDescription: string;
   uploadMaxMb: string;
@@ -63,6 +65,8 @@ const toRow = (link: { label: string; href: string }): LinkRow => ({ key: newRow
 export function fromAdminSettings(initial: AdminSettingsDto): SettingsFormState {
   return {
     siteName: initial.siteName,
+    contactEmail: initial.contactEmail ?? '',
+    contactPhone: initial.contactPhone ?? '',
     seoTitle: initial.seoTitle,
     seoDescription: initial.seoDescription,
     uploadMaxMb: initial.uploadMaxMb?.toString() ?? '',
@@ -112,6 +116,8 @@ export function toSettingsInput(state: SettingsFormState): unknown {
   const privacyLabel = consent.privacyLabel.trim();
   const input: SettingsInput = {
     siteName: state.siteName,
+    contactEmail: state.contactEmail.trim(),
+    contactPhone: state.contactPhone.trim(),
     seoTitle: state.seoTitle,
     seoDescription: state.seoDescription,
     ...(state.ogImage

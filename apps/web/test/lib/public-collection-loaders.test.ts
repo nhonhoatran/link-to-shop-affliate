@@ -36,6 +36,11 @@ describe('getPublicCollectionPage', () => {
     expect(apiGet).toHaveBeenCalledWith('/api/public/collections?page=1&size=8', options);
   });
 
+  it('encodes the keyword for the server query', async () => {
+    await getPublicCollectionPage(2, 8, 'mùa hè & áo');
+    expect(apiGet).toHaveBeenCalledWith('/api/public/collections?page=2&size=8&q=m%C3%B9a+h%C3%A8+%26+%C3%A1o', options);
+  });
+
   it('lets API failures reach the caller', async () => {
     const failure = new Error('boom');
     apiGet.mockRejectedValue(failure);

@@ -6,3 +6,30 @@
   line-height: var(--line-height-tight);
   color: var(--client-ink);
 }
+
+.search {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.search > form {
+  flex: 1 1 16rem;
+  max-width: var(--client-prose-max-width);
+}
+
+.clear {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--client-tap-target);
+  color: var(--client-ink);
+  font-size: var(--text-sm);
+}
+
+.summary {
+  margin: 0 0 var(--space-5);
+  color: var(--client-ink-muted);
+  overflow-wrap: anywhere;
+}

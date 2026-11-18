@@ -25,7 +25,7 @@ export function LookbookLayout({ outfit, headingLevel = 'h1', preload = true, fi
       <LookbookItemColumn side="left" items={left} itemHeading={itemHeading} />
       <LookbookModelFigure outfit={{ ...outfit, items: sorted }} preload={preload} />
       <LookbookItemColumn side="right" items={right} itemHeading={itemHeading} indexOffset={left.length} />
-      <LookbookInteractions />
+      <LookbookInteractions showArrows={outfit.showArrows ?? false} />
     </section>
   );
 }

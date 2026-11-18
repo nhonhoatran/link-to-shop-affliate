@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { samplePublicOutfit } from '@under30ss/shared/fixtures';
 import type { PublicOutfitDto } from '@under30ss/shared';
@@ -10,8 +10,22 @@ const card = (container: HTMLElement, id: string) =>
 const root = (container: HTMLElement) => container.querySelector<HTMLElement>('[data-lookbook]')!;
 
 describe('LookbookInteractions', () => {
+  it('hides connectors by default and updates the live preview when toggled', async () => {
+    const { container, rerender } = render(<LookbookLayout outfit={samplePublicOutfit} />);
+    expect(container.querySelectorAll('svg path[data-item-id]')).toHaveLength(0);
+    expect(container.querySelector('marker')).toBeNull();
+    rerender(<LookbookLayout outfit={{ ...samplePublicOutfit, showArrows: true }} />);
+    await waitFor(() => expect(container.querySelectorAll('svg path[data-item-id]')).toHaveLength(samplePublicOutfit.items.length));
+    const arrow = container.querySelector('marker path');
+    expect(arrow).not.toBeNull();
+    expect(arrow?.getAttribute('d')).not.toMatch(/Z$/i);
+    rerender(<LookbookLayout outfit={{ ...samplePublicOutfit, showArrows: false }} />);
+    expect(container.querySelectorAll('svg path[data-item-id]')).toHaveLength(0);
+    expect(container.querySelector('marker')).toBeNull();
+  });
+
   it('draws one connector path per item', () => {
-    const { container } = render(<LookbookLayout outfit={samplePublicOutfit} />);
+    const { container } = render(<LookbookLayout outfit={{ ...samplePublicOutfit, showArrows: true }} />);
     expect(container.querySelectorAll('svg path[data-item-id]')).toHaveLength(samplePublicOutfit.items.length);
   });
 
@@ -22,7 +36,6 @@ describe('LookbookInteractions', () => {
     expect(card(container, 'bag')).toHaveAttribute('data-active');
     expect(screen.getByLabelText('Tui deo cheo')).toHaveAttribute('data-active');
     expect(card(container, 'tee')).not.toHaveAttribute('data-active');
-    expect(container.querySelector('svg path[data-item-id="bag"]')).toHaveAttribute('data-active');
 
     fireEvent.pointerOut(card(container, 'bag'), { pointerType: 'mouse', relatedTarget: document.body });
     expect(root(container)).not.toHaveAttribute('data-active-id');

@@ -60,6 +60,7 @@ beforeEach(async () => {
 describe('seed service', () => {
   it('is idempotent: a second run updates in place with identical keys', async () => {
     const seed = buildSeed({ link: 'https://shop.example.com/x' });
+    seed.outfits[0]!.showArrows = true;
     const first = await seedOutfits(testApp.ctx, seed, { seedDir, publishWithPlaceholder: false });
     const before = await OutfitModel.findOne({ slug: 'seeded-look' }).lean();
     await seedOutfits(testApp.ctx, seed, { seedDir, publishWithPlaceholder: false });
@@ -70,6 +71,7 @@ describe('seed service', () => {
     expect(after?.modelImage.key).toBe(before?.modelImage.key);
     expect(after?.modelImage.key).toMatch(/^public\/model\/seed\/[0-9a-f]{24}\.webp$/);
     expect(after?.featured).toBe(true);
+    expect(after?.showArrows).toBe(true);
     expect(after?.items.map((item) => item.image.key)).toEqual(before?.items.map((item) => item.image.key));
     expect(testApp.s3Puts.every((put) => String(put.Key).startsWith('public/'))).toBe(true);
   });
@@ -80,10 +82,20 @@ describe('seed service', () => {
     expect(stored?.items.find((item) => item.id === 'b')?.image).toMatchObject({ width: 140, height: 100 });
   });
 
-  it('saves a publish-requested outfit without links as a draft', async () => {
+  it('publishes a seed outfit without links', async () => {
     const [result] = await seedOutfits(testApp.ctx, buildSeed(), { seedDir, publishWithPlaceholder: false });
-    expect(result).toMatchObject({ status: 'draft', downgradedToDraft: true });
+    expect(result).toMatchObject({ status: 'published', downgradedToDraft: false });
+    expect((await OutfitModel.findOne({ slug: 'seeded-look' }).lean())?.status).toBe('published');
+  });
+
+  it('downgrades a seed without anchors unless the local placeholder option is used', async () => {
+    const seed = buildSeed();
+    delete seed.outfits[0]!.items[0]!.anchor;
+    const [draft] = await seedOutfits(testApp.ctx, seed, { seedDir, publishWithPlaceholder: false });
+    expect(draft).toMatchObject({ status: 'draft', downgradedToDraft: true });
     expect((await OutfitModel.findOne({ slug: 'seeded-look' }).lean())?.status).toBe('draft');
+    const [published] = await seedOutfits(testApp.ctx, seed, { seedDir, publishWithPlaceholder: true });
+    expect(published).toMatchObject({ status: 'published', downgradedToDraft: false });
   });
 
   it('keeps published status with --publish-with-placeholder, but refuses it in production', async () => {

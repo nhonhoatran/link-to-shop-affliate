@@ -13,11 +13,11 @@ import { nullOnNotFound, safetyRevalidate } from './public-data-loaders';
 const cacheOptions = () => ({ ...safetyRevalidate(), tags: [PUBLIC_CACHE_TAGS.collections] });
 
 /** `size` omitted: the API applies the page size configured in settings. */
-const pageQuery = (page: number, size?: number): string =>
-  new URLSearchParams({ page: String(page), ...(size === undefined ? {} : { size: String(size) }) }).toString();
+const pageQuery = (page: number, size?: number, q = ''): string =>
+  new URLSearchParams({ page: String(page), ...(size === undefined ? {} : { size: String(size) }), ...(q ? { q } : {}) }).toString();
 
-export const getPublicCollectionPage = cache((page: number, size?: number) =>
-  apiGet<PublicCollectionListResponse>(`${API_PATHS.public.collections}?${pageQuery(page, size)}`, cacheOptions()),
+export const getPublicCollectionPage = cache((page: number, size?: number, q = '') =>
+  apiGet<PublicCollectionListResponse>(`${API_PATHS.public.collections}?${pageQuery(page, size, q)}`, cacheOptions()),
 );
 
 /** Null for an unknown or draft slug (API 404); other failures propagate. */

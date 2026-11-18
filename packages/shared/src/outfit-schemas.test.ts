@@ -74,12 +74,12 @@ describe('outfitInputSchema', () => {
     expect(result.error?.issues[0]?.path).toEqual(['items', 0, 'anchor', 'x']);
   });
 
-  it('blocks publishing when an item has no link and reports the item path', () => {
+  it('allows publishing when an item has no link', () => {
     const result = outfitInputSchema.safeParse(
       makeOutfit({ status: 'published', items: [makeItem(), makeItem({ id: 'item-2', affiliateUrl: '' })] }),
     );
-    expect(result.success).toBe(false);
-    expect(result.error?.issues.map((i) => i.path.join('.'))).toEqual(['items.1.affiliateUrl']);
+    expect(result.success).toBe(true);
+    expect(result.data?.items[1]?.affiliateUrl).toBe('');
   });
 
   it('blocks publishing when an item has no anchor', () => {
@@ -110,7 +110,9 @@ describe('outfitUpdateSchema', () => {
     const { featured: _featured, ...body } = makeOutfit();
     expect(outfitUpdateSchema.safeParse(body).success).toBe(true);
     const published = outfitUpdateSchema.safeParse({ ...body, status: 'published', items: [makeItem({ affiliateUrl: '' })] });
-    expect(published.error?.issues[0]?.path).toEqual(['items', 0, 'affiliateUrl']);
+    expect(published.success).toBe(true);
+    const invalid = outfitUpdateSchema.safeParse({ ...body, status: 'published', items: [makeItem({ affiliateUrl: 'http://example.com' })] });
+    expect(invalid.error?.issues.some((issue) => issue.path.join('.') === 'items.0.affiliateUrl')).toBe(true);
   });
 });
 

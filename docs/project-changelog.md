@@ -4,6 +4,18 @@ Ghi lại các thay đổi đáng kể theo phiên bản. Mỗi mục ghi ngày,
 
 Liên quan: [Roadmap](./development-roadmap.md) · [Kiến trúc](./system-architecture.md) · [Triển khai](./deployment-guide.md)
 
+## Tìm collection, thông tin liên hệ và tuỳ chọn outfit (2026-11-18)
+
+Phạm vi: `packages/shared`, `apps/api`, `apps/web` và kiểm thử liên quan. Kế hoạch: `plans/261118-home-search-contact-outfit-options/plan.md`. Chưa commit tại thời điểm ghi nhận.
+
+- Thêm thanh tìm collection vào header public. Gửi form GET và lọc tên/slug, đếm, phân trang tại server; giữ từ khoá khi chuyển trang, có xoá tìm kiếm và trạng thái không có kết quả.
+- Thêm email/số điện thoại trong Cài đặt → Liên hệ. Giá trị lưu động trong MongoDB, hiển thị ở footer trang thường và feed; bỏ trống thì ẩn, không tự điền dữ liệu mẫu.
+- Cho đăng outfit có món không có link sản phẩm. Link được nhập vẫn phải hợp lệ với HTTPS. Món không link vẫn hiện ảnh/tên, không tạo liên kết giả và ẩn nút Mua ngay.
+- Tuỳ chọn Có mũi tên/Không có mũi tên ở cấp outfit, có tại màn hình tạo, sửa và preview. Mặc định tắt cho cả bản ghi mới và bản ghi cũ thiếu trường. Khi bật, đường nối dùng nét mảnh và đầu mũi tên mở; độ dày/kích thước nằm trong token CSS.
+- Không đổi quy tắc anchor khi đăng, không sửa dữ liệu DB cấu hình hay triển khai production. MongoDB nhận trường bổ sung qua schema/fallback; không dùng Prisma.
+
+Kiểm chứng tập trung của reviewer: 4 file web, 23 tests đạt; `git diff --check` đạt. Kết quả toàn bộ suite/build/browser được phiên chính tổng hợp trong plan và báo cáo kiểm thử. Review: `plans/reports/code-reviewer-261118.md`.
+
 ## Bài Photo kiểu TikTok trong feed (2026-11-12)
 
 Phạm vi: `apps/web` (`components/feed/`, `components/lookbook/lookbook-link-props.ts`, `components/public/public-copy.ts`, `styles/design-tokens.css`), `docs`. Kế hoạch: `plans/261112-0854-tiktok-photo-post-feed/`. Thay đổi chưa commit tại thời điểm viết mục này.

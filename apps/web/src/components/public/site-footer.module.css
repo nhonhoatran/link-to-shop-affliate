@@ -91,3 +91,11 @@
     padding-inline: var(--space-6);
   }
 }
+
+.contact {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-style: normal;
+  overflow-wrap: anywhere;
+}

@@ -18,6 +18,8 @@ export interface SettingsDocument {
   siteName: string;
   seoTitle: string;
   seoDescription: string;
+  contactEmail?: string;
+  contactPhone?: string;
   ogImageUrl?: string | null;
   uploadMaxMb?: number;
   looksPageSize?: number;
@@ -38,6 +40,8 @@ const WRITABLE_KEYS: (keyof SettingsDocument)[] = [
   'siteName',
   'seoTitle',
   'seoDescription',
+  'contactEmail',
+  'contactPhone',
   'uploadMaxMb',
   'looksPageSize',
   'relatedOutfitsCount',
@@ -93,6 +97,8 @@ export async function restoreSettings(previous: SettingsDocument): Promise<void>
     const current = (await read.json()) as SettingsDocument;
     // Keys absent from `previous` are unset by the PUT, so an original 'absent' homeMode comes back absent.
     const chrome = {
+      contactEmail: undefined,
+      contactPhone: undefined,
       homeMode: undefined,
       footer: undefined,
       announcement: undefined,

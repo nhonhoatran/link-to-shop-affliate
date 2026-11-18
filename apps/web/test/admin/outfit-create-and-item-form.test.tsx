@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ItemEditForm } from '@/components/admin/item-edit-form';
 import { OutfitCreateForm } from '@/components/admin/outfit-create-form';
@@ -11,6 +11,16 @@ vi.mock('next/navigation', () => ({ useRouter: () => router, usePathname: () => 
 beforeEach(() => vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>(() => undefined))));
 
 describe('OutfitCreateForm', () => {
+  it('defaults arrows to off and allows selecting either display option', () => {
+    render(<OutfitCreateForm />);
+    const select = screen.getByRole('combobox', { name: 'Mũi tên nối sản phẩm' });
+    expect(select).toHaveValue('false');
+    fireEvent.change(select, { target: { value: 'true' } });
+    expect(select).toHaveValue('true');
+    fireEvent.change(select, { target: { value: 'false' } });
+    expect(select).toHaveValue('false');
+  });
+
   it('uses the same "Tạo outfit" label as the page title and list button', () => {
     render(<OutfitCreateForm />);
     expect(screen.getByRole('button', { name: 'Tạo outfit' })).toBeInTheDocument();

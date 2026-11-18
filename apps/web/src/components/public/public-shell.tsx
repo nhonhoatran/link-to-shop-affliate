@@ -10,6 +10,8 @@ import styles from './public-shell.module.css';
 
 interface ShellSettings {
   siteName: string;
+  contactEmail?: string | undefined;
+  contactPhone?: string | undefined;
   description: string;
   navItems: PublicNavItem[];
   footer: FooterInput;
@@ -22,6 +24,8 @@ async function loadShellSettings(): Promise<ShellSettings> {
     const settings = await getPublicSettings();
     return {
       siteName: settings.siteName,
+      contactEmail: settings.contactEmail,
+      contactPhone: settings.contactPhone,
       description: settings.seoDescription,
       navItems: buildPublicNavItems(settings),
       footer: settings.footer ?? { columns: [], social: [] },
@@ -40,7 +44,7 @@ async function loadShellSettings(): Promise<ShellSettings> {
 }
 
 export async function PublicShell({ children }: { children: ReactNode }) {
-  const { siteName, description, navItems, footer, announcement } = await loadShellSettings();
+  const { siteName, description, navItems, footer, announcement, contactEmail, contactPhone } = await loadShellSettings();
   return (
     <div className={styles.shell}>
       <a href="#main" className={styles.skipLink}>
@@ -52,7 +56,7 @@ export async function PublicShell({ children }: { children: ReactNode }) {
         {children}
       </main>
       <div className={styles.footerSlot}>
-        <SiteFooter siteName={siteName} description={description} navItems={navItems} footer={footer} />
+        <SiteFooter siteName={siteName} description={description} navItems={navItems} footer={footer} contactEmail={contactEmail} contactPhone={contactPhone} />
       </div>
     </div>
   );

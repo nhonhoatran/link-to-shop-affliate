@@ -63,9 +63,11 @@ export function FeedShopSheet({ items }: { items: readonly PublicOutfitItemDto[]
                   <span className={sheetStyles.name}>{item.name}</span>
                   {item.subtitle ? <span className={sheetStyles.subtitle}>{item.subtitle}</span> : null}
                 </span>
-                <a {...affiliateLinkProps(item.affiliateUrl)} className={postStyles.buy} aria-label={FEED_COPY.buyLabel(item.name)}>
-                  {FEED_COPY.buy}
-                </a>
+                {affiliateLinkProps(item.affiliateUrl).href ? (
+                  <a {...affiliateLinkProps(item.affiliateUrl)} className={postStyles.buy} aria-label={FEED_COPY.buyLabel(item.name)}>
+                    {FEED_COPY.buy}
+                  </a>
+                ) : null}
               </li>
             ))}
           </ul>

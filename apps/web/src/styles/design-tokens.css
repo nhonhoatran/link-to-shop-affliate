@@ -1,7 +1,7 @@
 /*
  * Design tokens, measured from assets-source/lookbook-samples/*-reference.png (941 x 1672).
  * Reference px -> ratio of the 941px canvas: title 20px (2.1%, set to 1.9% as Be Vietnam Pro is wider than the reference font), description 17px (1.8%),
- * columns tuned by screenshot comparison to 31/44/25 (left items / model / right items), connector stroke ~1.5px.
+ * columns tuned by screenshot comparison to 31/44/25 (left items / model / right items), connector stroke 1px.
  * Values here are defaults; change them here only, never inline in components.
  */
 :root {
@@ -54,9 +54,9 @@
   --lookbook-item-image-ratio: 1 / 1;
 
   /* Connector (SVG thread from item to anchor on the model) */
-  --lookbook-connector-width: 1.5px;
+  --lookbook-connector-width: 1px;
   --lookbook-curve-ratio: 0.45;
-  --lookbook-arrow-size: 10px;
+  --lookbook-arrow-size: 8px;
   --lookbook-connector-halo: 1px;
   --lookbook-hotspot-size: var(--space-5);
   --lookbook-hotspot-ring-size: var(--space-3);

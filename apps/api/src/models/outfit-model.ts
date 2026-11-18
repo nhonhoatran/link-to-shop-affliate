@@ -20,6 +20,7 @@ export interface OutfitDoc {
   modelImage: ImageRef;
   status: OutfitStatus;
   featured: boolean;
+  showArrows?: boolean;
   // Absent on documents created before collections existed.
   collectionIds?: Types.ObjectId[];
   items: OutfitItemDoc[];
@@ -63,6 +64,7 @@ const outfitSchema = new Schema<OutfitDoc>(
     modelImage: { type: imageSchema, required: true },
     status: { type: String, enum: ['draft', 'published'], required: true, index: true },
     featured: { type: Boolean, default: false },
+    showArrows: { type: Boolean, default: false },
     collectionIds: { type: [Schema.Types.ObjectId], default: [] },
     items: { type: [itemSchema], default: [] },
   },

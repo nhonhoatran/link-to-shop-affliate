@@ -49,12 +49,13 @@ describe('LookbookLayout', () => {
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(6);
   });
 
-  it('renders an empty affiliate link as a disabled "#" link without target', () => {
+  it('keeps an unlinked item visible without href, target or keyboard navigation', () => {
     const first = samplePublicOutfit.items[0]!;
     const outfit: PublicOutfitDto = { ...samplePublicOutfit, items: [{ ...first, affiliateUrl: '' }] };
     const { container } = render(<LookbookLayout outfit={outfit} />);
     for (const a of container.querySelectorAll<HTMLAnchorElement>(`a[data-item-id="${first.id}"]`)) {
-      expect(a).toHaveAttribute('href', '#');
+      expect(a).not.toHaveAttribute('href');
+      expect(a).toHaveAttribute('tabindex', '-1');
       expect(a).toHaveAttribute('aria-disabled', 'true');
       expect(a).not.toHaveAttribute('target');
     }

@@ -1,6 +1,6 @@
 # Kiến trúc hệ thống Under30ss (v1)
 
-Under30ss là trang lookbook "Shop the look": một ảnh người mẫu, các món đồ nối bằng đường chỉ tới từng món, bấm vào món để mở link affiliate. Dữ liệu outfit nằm trong MongoDB, ảnh nằm trong bucket S3 (RustFS). Next.js render trang public phía server để phục vụ SEO (`/`, `/looks`, `/look/[slug]`); Express API riêng phục vụ dữ liệu và khu quản trị `/admin`.
+Under30ss là trang lookbook "Shop the look": một ảnh người mẫu và các món đồ. Mỗi outfit có tuỳ chọn đường nối mũi tên, mặc định tắt; món có link affiliate thì bấm để mở link. Dữ liệu outfit nằm trong MongoDB, ảnh nằm trong bucket S3 (RustFS). Next.js render trang public phía server để phục vụ SEO (`/`, `/looks`, `/look/[slug]`); Express API riêng phục vụ dữ liệu và khu quản trị `/admin`.
 
 Tài liệu liên quan: [Quy chuẩn code](./code-standards.md) · [Triển khai](./deployment-guide.md) · [Lịch sử thay đổi](./project-changelog.md) · [Roadmap](./development-roadmap.md)
 
@@ -81,7 +81,7 @@ Web dùng Next.js 16 App Router với hai route group, mỗi nhóm có layout ri
 | Đường dẫn | File | Vai trò |
 |-----------|------|---------|
 | `/` | `(public)/page.tsx` | Mặc định (`homeMode` không đặt hoặc `feed`): [feed outfit](#feed-outfit), outfit nổi bật đứng đầu. Khi `homeMode` = `sections`: trang dựng từ bố cục section (xem [Trang chủ và bộ sưu tập](#trang-chủ-và-bộ-sưu-tập)), có `h1` ẩn lấy tên SEO. Nhận query `?newsletter=` sau khi gửi form bản tin. Không có outfit nào thì hiện thông báo trống. `?page` vượt tổng số trang trả 404 |
-| `/collections?page=n` | `(public)/collections/page.tsx` | Danh sách bộ sưu tập đã đăng (lưới, không đổi), phân trang theo `looksPageSize`. Tên trang lấy từ setting `collectionsLabel` |
+| `/collections?q=...&page=n` | `(public)/collections/page.tsx` | Danh sách bộ sưu tập đã đăng, tìm theo tên/slug và phân trang phía server theo `looksPageSize`. Giữ từ khoá khi chuyển trang; có trạng thái rỗng và xoá tìm kiếm. Tên trang lấy từ setting `collectionsLabel` |
 | `/collections/[slug]` | `(public)/collections/[slug]/page.tsx` | [Feed outfit](#feed-outfit) lọc theo bộ sưu tập. Không còn ảnh bìa, mô tả hay breadcrumb hiển thị; tên bộ sưu tập là `h1` ẩn. Slug sai định dạng, không tồn tại hoặc chưa đăng trả 404. `?page=n` vượt tổng trả 404 |
 | `/looks?page=n` | `(public)/looks/page.tsx` | [Feed outfit](#feed-outfit) toàn bộ outfit đã publish, nổi bật đứng đầu. `?page=n` bắt đầu từ lô n. `page` không hợp lệ được đưa về trang 1. `page` lớn hơn tổng số trang trả 404. Không có outfit nào thì hiện thông báo trống |
 | `/look/[slug]` | `(public)/look/[slug]/page.tsx` | Một lookbook, breadcrumb về `/looks`, mục "Outfit khác" (loại outfit đang xem) |
@@ -100,7 +100,7 @@ Số outfit mỗi lô feed, mỗi trang `/collections` và số outfit "Outfit k
 | `/admin` | `admin/(protected)/page.tsx` | Tổng quan: số liệu, outfit nổi bật, outfit sửa gần đây. Có `q`, `status` hoặc `page` trên URL thì redirect 307 sang `/admin/outfits?...` |
 | `/admin/outfits` | `admin/(protected)/outfits/page.tsx` | Danh sách outfit: lọc và phân trang phía server (`q`, `status`, `page`) |
 | `/admin/outfits/new`, `/admin/outfits/[id]` | `outfits/new/page.tsx`, `outfits/[id]/page.tsx` | Tạo và sửa outfit |
-| `/admin/settings` | `settings/page.tsx` | Cài đặt site, SEO, upload, số outfit mỗi trang, link Bộ sưu tập, footer, dải thông báo |
+| `/admin/settings` | `settings/page.tsx` | Cài đặt site, liên hệ email/số điện thoại, SEO, upload, số outfit mỗi trang, link Bộ sưu tập, footer, dải thông báo |
 | `/admin/collections`, `/admin/collections/new`, `/admin/collections/[id]` | `collections/page.tsx`, `collections/new/page.tsx`, `collections/[id]/page.tsx` | Danh sách, tạo và sửa bộ sưu tập (ảnh bìa, outfit trong bộ sưu tập, Lên/Xuống, xoá) |
 | `/admin/home` | `home/page.tsx` | Trình soạn trang chủ: thêm, sắp xếp, ẩn, sửa section; lưu nháp, đăng, hoàn tác |
 | `/admin/home-preview` | `home-preview/page.tsx` | Xem trước bản nháp (ngoài nhóm `(protected)`, có banner "Bản xem trước, chưa đăng"). Không đổi những gì khách thấy |
@@ -128,7 +128,7 @@ Hai endpoint mới trong refactor giao diện. Hợp đồng nằm trong `packag
 | `GET /api/admin/stats` | Admin (sau `requireAdmin`) | `counts` gồm `total`, `published`, `draft`, `publishedMissingAffiliate`, `draftMissingAffiliate`; `featured` là outfit nổi bật đã publish hoặc `null`; `recent` gồm số outfit sửa gần đây theo `ADMIN_STATS_RECENT_COUNT` |
 
 Ghi chú:
-- "Thiếu link affiliate" đếm outfit có ít nhất một món với `affiliateUrl` rỗng. Không có bộ lọc riêng trong danh sách admin (quyết định trong plan).
+- "Món đồ chưa có link" đếm outfit có ít nhất một món với `affiliateUrl` rỗng. Không có bộ lọc riêng trong danh sách admin (quyết định trong plan).
 - Danh sách public dùng index `{ status: 1, updatedAt: -1, _id: -1 }` (xem [Outfit](#outfit)).
 
 ## Mô hình dữ liệu
@@ -145,6 +145,7 @@ Các model Mongoose nằm trong `apps/api/src/models/`. Kiểu dữ liệu chia 
 | `modelImage` | ImageRef | `{ key, width, height }`, key bắt đầu bằng `public/` |
 | `status` | `draft` \| `published` | Có index đơn |
 | `featured` | boolean | Tối đa một outfit `true` (xem [Bất biến featured](#bất-biến-featured)) |
+| `showArrows` | boolean? | Mặc định `false` cho bản ghi mới và bản ghi cũ chưa có field. Bật/tắt toàn bộ đường nối; admin tạo/sửa và preview dùng chung giá trị. PUT cũ không gửi field giữ giá trị đã lưu |
 | `items` | mảng, tối đa 30 | Mỗi món: `id`, `name` (1–80), `subtitle`?, `description`? (≤240), `image`, `side` (`left` \| `right`), `order`, `anchor`?, `affiliateUrl` (mặc định chuỗi rỗng) |
 | `createdAt`, `updatedAt` | Date | Tự động (timestamps) |
 
@@ -161,7 +162,9 @@ Index `{ status, updatedAt, _id }` được thêm trong refactor giao diện. AP
 
 - `anchor` là `{ x, y }` với mỗi giá trị từ 0 đến 100 (tỉ lệ phần trăm trên ảnh người mẫu).
 - `affiliateUrl` là chuỗi rỗng hoặc URL `https://`.
-- Quy tắc publish: outfit `published` bắt buộc mọi món có `affiliateUrl` https và có `anchor`. Outfit `draft` được lưu dở dang.
+- Quy tắc publish: outfit `published` bắt buộc mọi món có `anchor`. Link `affiliateUrl` được để rỗng ở cả bản nháp và bản đã đăng; nếu có nhập thì vẫn phải là URL `https://`.
+- Món thiếu link vẫn hiển thị ảnh/tên. Card/hotspot không có `href`; nút mua ở ảnh món và sheet Mua đồ được ẩn. Không tạo `href="#"`.
+- Mũi tên bật thì dùng đường Bézier và đầu chevron mở. Nét 1px và đầu mũi tên 8px là giá trị mặc định trong `styles/design-tokens.css`, có thể chỉnh tại đó; hover không làm nét dày hơn.
 - `id` của món phải duy nhất trong outfit.
 - Public chỉ trả món có `anchor` (món không anchor không vẽ được lên lookbook).
 
@@ -171,7 +174,7 @@ Collection của model `AdminUser`. Trường: `email` (duy nhất, lowercase, t
 
 ### Settings
 
-Collection của model `Settings`, đúng một bản ghi với `singleton: 'site'`. Trường: `siteName`, `seoTitle`, `seoDescription`, `ogImage?` (`{ key, width, height }`, key phải thuộc `public/`), `uploadMaxMb?`, `looksPageSize?`, `relatedOutfitsCount?`, `homeMode?`, `updatedAt`.
+Collection của model `Settings`, đúng một bản ghi với `singleton: 'site'`. Trường: `siteName`, `seoTitle`, `seoDescription`, `ogImage?` (`{ key, width, height }`, key phải thuộc `public/`), `uploadMaxMb?`, `looksPageSize?`, `relatedOutfitsCount?`, `homeMode?`, `contactEmail?`, `contactPhone?`, `updatedAt`.
 
 - Khi chưa có bản ghi, API dùng giá trị từ env `DEFAULT_SITE_NAME`, `DEFAULT_SEO_TITLE`, `DEFAULT_SEO_DESCRIPTION`.
 - `uploadMaxMb` nếu có được kẹp về `UPLOAD_MAX_MB_CEILING` khi đọc. Hạ trần sau này cũng siết giới hạn đã lưu trước đó.
@@ -221,7 +224,7 @@ Bố cục chỉ hiện trên `/` khi `homeMode` = `sections`. Ở chế độ f
 
 | Phương thức, đường dẫn | Quyền | Nội dung |
 |------------------------|-------|----------|
-| `GET /api/public/collections?page&size` | Công khai | Bộ sưu tập đã đăng, phân trang theo `looksPageSize` |
+| `GET /api/public/collections?q&page&size` | Công khai | Bộ sưu tập đã đăng có ảnh bìa; `q` tìm tên/slug không phân biệt hoa thường, escape regex, trim và giới hạn kỹ thuật 100 ký tự. Query và count dùng cùng filter trước phân trang theo `looksPageSize` |
 | `GET /api/public/collections/slugs` | Công khai | Slug và `updatedAt` cho sitemap |
 | `GET /api/public/collections/:slug` | Công khai | Một bộ sưu tập kèm outfit đã đăng, mới nhất trước. Không có hoặc chưa đăng: 404 |
 | `GET /api/public/home` | Công khai | Các section đã resolve từ bản đăng; chưa đăng thì trả bố cục mặc định (`DEFAULT_HOME_CONTENT`, năm section). Section lỗi dữ liệu bị lọc khỏi danh sách |
@@ -262,6 +265,8 @@ Tag `public-home` gắn vào fetch bố cục trong `apps/web/src/lib/seo/public
 
 Các trường mới của `Settings` (đều optional, API luôn điền khi đọc):
 
+- Form tìm collection nằm trong header public, gửi GET sang `/collections?q=...`; desktop ở cột phải và mobile thành hàng riêng. Hoạt động khi tắt JavaScript. Kết quả tìm có `noindex, follow`, canonical về `/collections`; link phân trang giữ `q`.
+- `contactEmail`, `contactPhone`: cấu hình trong nhóm Liên hệ ở admin settings, không có dữ liệu mặc định. Bỏ trống ẩn từng dòng. API validate khi lưu/đọc; footer thường và footer trong feed cùng render mailto/tel an toàn.
 - `collectionsNavEnabled`: mặc định bật. Link "Bộ sưu tập" trên header và footer chỉ hiện khi có ít nhất một bộ sưu tập đã đăng.
 - `collectionsLabel`: tên hiển thị của link và trang bộ sưu tập, mặc định `DEFAULT_COLLECTIONS_LABEL`.
 - `footer`: `{ columns: [{ title, links: [{ label, href }] }], social: [{ label, href }] }`. Tối đa 4 cột, 8 link mỗi cột, 8 link mạng xã hội. `href` nội bộ (`/...`) hoặc `https://`; link `javascript:` bị từ chối (schema `safeHrefSchema`, `packages/shared/src/safe-href.ts`; e2e kiểm tra tại ô nhập).
@@ -346,7 +351,7 @@ OutfitFeedSlide (article, server)
 | Thứ tự tấm | Tấm 1 lookbook (chừa đáy bằng `--feed-post-band-height` để chữ không che link món). Tấm 2 ảnh người mẫu, `contain`. Tấm 3+ theo thứ tự `items` của DTO | `feed-photo-track.tsx`, `feed-item-photo.tsx`, `feed-post.module.css` |
 | Chấm và bộ đếm | Chấm có vùng chạm `--feed-dot-hit-size` (24px). Quá 10 tấm (`MAX_DOTS`) thì hiện "i/n" | `feed-photo-nav.tsx` |
 | Mũi tên | Ẩn dưới 768px. Từ 1024px nằm ngoài ảnh, cùng cột nút | `feed-post-controls.module.css` |
-| Link mua | Qua `affiliateLinkProps`. URL xấu thành `aria-disabled` với `tabIndex: -1` | `lookbook-link-props.ts` |
+| Link mua | Qua `affiliateLinkProps`. Link rỗng hoặc URL xấu không có `href`; card/hotspot có `aria-disabled`, `tabIndex: -1`; nút Mua ngay được ẩn | `lookbook-link-props.ts` |
 | Chia sẻ | `navigator.share({ title, url })`. Huỷ (AbortError) thì im lặng. Lỗi khác hoặc không có API thì chép link và báo qua `role="status"` trong `--feed-share-status-duration` | `feed-share-button.tsx` |
 | Link chia sẻ | `new URL(outfitPath, window.location.origin)`, không lấy `SITE_URL` (lệch có chủ ý, đã chốt 2026-11-12) | `feed-share-button.tsx` |
 | Phím | ← → đổi tấm của slide đang hiện. Bỏ qua khi target nằm trong ô nhập hoặc `dialog` | `feed-step-buttons.tsx` |

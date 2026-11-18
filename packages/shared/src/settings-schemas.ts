@@ -10,6 +10,13 @@ export const MAX_ANNOUNCEMENT_TEXT = 160;
 export const MAX_NEWSLETTER_CONSENT_TEXT = 1000;
 export const MAX_PRIVACY_LABEL_LENGTH = 40;
 
+// Technical length guards; contact values remain editable in site settings.
+export const contactEmailSchema = z.string().trim().pipe(z.union([z.literal(''), z.email().max(254)]));
+export const contactPhoneSchema = z.string().trim().max(40).refine(
+  (value) => value === '' || /^\+?[0-9][0-9 ().-]*$/.test(value),
+  'Phone must contain digits and optional separators',
+);
+
 export const footerLinkSchema = z.object({
   label: z.string().min(1).max(40),
   href: safeHrefSchema,
@@ -76,6 +83,8 @@ export const homeModeSchema = z.enum(HOME_MODES);
 
 export const settingsInputSchema = z.object({
   siteName: z.string().min(1).max(80),
+  contactEmail: contactEmailSchema.optional(),
+  contactPhone: contactPhoneSchema.optional(),
   seoTitle: z.string().min(1).max(120),
   seoDescription: z.string().max(300),
   ogImage: imageRefSchema.optional(),
@@ -105,6 +114,8 @@ export const adminSettingsSchema = settingsInputSchema
 // The chrome fields are optional only so the type can land before the API fills them; the API always sets them.
 export const publicSettingsSchema = z.object({
   siteName: z.string(),
+  contactEmail: contactEmailSchema.optional(),
+  contactPhone: contactPhoneSchema.optional(),
   seoTitle: z.string(),
   seoDescription: z.string(),
   ogImageUrl: z.string().nullable(),

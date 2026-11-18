@@ -24,7 +24,10 @@ describe('SiteHeader', () => {
     expect(screen.getByRole('link', { name: 'Shop' })).toHaveAttribute('href', '/');
     expect(screen.getByRole('link', { name: 'Tất cả outfit' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('link', { name: 'Trang chủ' })).not.toHaveAttribute('aria-current');
-    expect(screen.queryByRole('button')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Tìm kiếm' })).toHaveAttribute('type', 'submit');
+    expect(screen.getByRole('search')).toHaveAttribute('action', '/collections');
+    expect(screen.getByRole('search')).toHaveAttribute('method', 'get');
+    expect(screen.getByRole('searchbox', { name: 'Tìm bộ sưu tập' })).toHaveAttribute('name', 'q');
     expect(screen.getAllByRole('link')).toHaveLength(3);
   });
 

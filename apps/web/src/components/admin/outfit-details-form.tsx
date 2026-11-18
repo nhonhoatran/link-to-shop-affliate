@@ -46,6 +46,19 @@ export function OutfitDetailsForm({ state, errors, dispatch }: OutfitDetailsForm
           />
         )}
       </AdminFormField>
+      <AdminFormField
+        id="outfit-arrows"
+        label="Mũi tên nối sản phẩm"
+        hint="Chọn có mũi tên để nối từng món với vị trí trên người mẫu"
+        error={errors.showArrows}
+      >
+        {(control) => (
+          <select {...control} value={String(state.showArrows)} onChange={(e) => dispatch({ type: 'showArrows', value: e.target.value === 'true' })}>
+            <option value="false">Không có mũi tên</option>
+            <option value="true">Có mũi tên</option>
+          </select>
+        )}
+      </AdminFormField>
       <CollectionPicker
         value={state.collectionIds}
         error={errors.collectionIds}

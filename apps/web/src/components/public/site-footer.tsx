@@ -4,10 +4,13 @@ import type { PublicNavItem } from './public-nav-items';
 import { PublicNavLinks } from './public-nav-links';
 import { SiteFooterColumns } from './site-footer-columns';
 import { SiteSocialLinks } from './site-social-links';
+import { SiteContactLinks } from './site-contact-links';
 import styles from './site-footer.module.css';
 
 interface SiteFooterProps {
   siteName: string;
+  contactEmail?: string | undefined;
+  contactPhone?: string | undefined;
   description: string;
   navItems: readonly PublicNavItem[];
   footer?: FooterInput | undefined;
@@ -15,7 +18,7 @@ interface SiteFooterProps {
   insideMain?: boolean;
 }
 
-export function SiteFooter({ siteName, description, navItems, footer, insideMain = false }: SiteFooterProps) {
+export function SiteFooter({ siteName, description, navItems, footer, contactEmail, contactPhone, insideMain = false }: SiteFooterProps) {
   return (
     <footer className={styles.footer} role={insideMain ? 'contentinfo' : undefined}>
       <div className={styles.inner}>
@@ -26,6 +29,7 @@ export function SiteFooter({ siteName, description, navItems, footer, insideMain
           className={styles.nav}
           linkClassName={styles.navLink}
         />
+        <SiteContactLinks email={contactEmail} phone={contactPhone} />
         {footer ? (
           <div className={styles.extra}>
             <SiteFooterColumns columns={footer.columns} />

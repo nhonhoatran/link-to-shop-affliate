@@ -6,6 +6,7 @@ import { FEED_PHOTO_SIZES } from './feed-photo-sizes';
 import styles from './feed-post.module.css';
 
 export function FeedItemPhoto({ item, label }: { item: PublicOutfitItemDto; label: string }) {
+  const link = affiliateLinkProps(item.affiliateUrl);
   return (
     <li className={`${styles.photo} ${styles.lightPhoto}`} aria-roledescription="slide" aria-label={label}>
       <div className={styles.itemPhoto}>
@@ -19,9 +20,9 @@ export function FeedItemPhoto({ item, label }: { item: PublicOutfitItemDto; labe
         />
         <p className={styles.itemName}>{item.name}</p>
         {item.subtitle ? <p className={styles.itemSubtitle}>{item.subtitle}</p> : null}
-        <a {...affiliateLinkProps(item.affiliateUrl)} className={styles.buy} aria-label={FEED_COPY.buyLabel(item.name)}>
+        {link.href ? <a {...link} className={styles.buy} aria-label={FEED_COPY.buyLabel(item.name)}>
           {FEED_COPY.buy}
-        </a>
+        </a> : null}
       </div>
     </li>
   );

@@ -24,6 +24,8 @@ async function FeedFooter() {
     <div className={styles.footerSnap}>
       <SiteFooter
         siteName={settings.siteName}
+        contactEmail={settings.contactEmail}
+        contactPhone={settings.contactPhone}
         description={settings.seoDescription}
         navItems={buildPublicNavItems(settings)}
         footer={settings.footer ?? { columns: [], social: [] }}

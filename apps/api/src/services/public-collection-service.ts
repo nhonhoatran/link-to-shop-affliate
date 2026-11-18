@@ -7,6 +7,7 @@ import type {
   PublicCollectionPageResponse,
 } from '@under30ss/shared';
 import type { Env } from '../config/env-config';
+import { escapeRegex } from '../lib/mongo-query-helpers';
 import { CollectionModel, PUBLISHED_COLLECTION_FILTER, type CollectionRecord } from '../models/collection-model';
 import { OutfitModel } from '../models/outfit-model';
 import { toPublicCollection, toPublicCollectionCard } from './collection-mapper';
@@ -22,13 +23,18 @@ export const listPublishedCollections = async (
   env: Env,
 ): Promise<PublicCollectionListResponse> => {
   const size = await pageSize(query.size, env);
+  const filter: Record<string, unknown> = { ...PUBLISHED_COLLECTION_FILTER };
+  if (query.q) {
+    const pattern = new RegExp(escapeRegex(query.q), 'i');
+    filter.$or = [{ name: pattern }, { slug: pattern }];
+  }
   const [records, total] = await Promise.all([
-    CollectionModel.find(PUBLISHED_COLLECTION_FILTER)
+    CollectionModel.find(filter)
       .sort({ order: 1, _id: 1 })
       .skip((query.page - 1) * size)
       .limit(size)
       .lean<CollectionRecord[]>(),
-    CollectionModel.countDocuments(PUBLISHED_COLLECTION_FILTER),
+    CollectionModel.countDocuments(filter),
   ]);
   const resolveUrl = createMediaUrlResolver(env);
   return { items: records.map((record) => toPublicCollectionCard(record, resolveUrl)), total, page: query.page, size };

@@ -28,8 +28,12 @@ export const collectionOutfitsRequestSchema = z.object({
 });
 export type CollectionOutfitsRequest = z.infer<typeof collectionOutfitsRequestSchema>;
 
+// Technical guard shared with the public search input.
+export const MAX_COLLECTION_SEARCH_LENGTH = 100;
+
 // Page size comes from the `looksPageSize` setting, like the outfit list.
 export const publicCollectionListQuerySchema = z.object({
+  q: z.string().trim().max(MAX_COLLECTION_SEARCH_LENGTH).optional(),
   page: z.coerce.number().int().min(1).max(MAX_LIST_PAGE).default(1),
   size: z.coerce.number().int().min(1).optional(),
 });

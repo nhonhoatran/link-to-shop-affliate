@@ -78,6 +78,9 @@ test('admin creates, places and publishes an outfit that shows on the public pag
     await expect(page.getByRole('button', { name: `Điểm của ${item.name}` })).toBeVisible();
   }
 
+  await page.getByRole('tab', { name: 'Thông tin', exact: true }).click();
+  await expect(page.getByLabel('Mũi tên nối sản phẩm')).toHaveValue('false');
+  await page.getByLabel('Mũi tên nối sản phẩm').selectOption('true');
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Đăng', exact: true }).click();

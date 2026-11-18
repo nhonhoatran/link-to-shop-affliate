@@ -49,6 +49,28 @@ describe('public collections', () => {
     expect(clamped.body.items).toHaveLength(3);
   });
 
+  it('searches name and slug case-insensitively before counting and paginating, without drafts', async () => {
+    await createCollectionVia(agent, { slug: 'summer-a', name: 'First' });
+    await createCollectionVia(agent, { slug: 'second', name: 'Summer second' });
+    await createCollectionVia(agent, { slug: 'summer-c', name: 'Third' });
+    await createCollectionVia(agent, { slug: 'winter', name: 'Winter' });
+    await createCollectionVia(agent, { slug: 'summer-draft', status: 'draft' });
+    const response = await publicApi().get('/api/public/collections').query({ q: '  SUMMER  ', page: 2 });
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({ total: 3, page: 2, size: 2 });
+    expect(response.body.items.map((item: { slug: string }) => item.slug)).toEqual(['summer-c']);
+  });
+
+  it('treats regex characters literally and bounds the search length', async () => {
+    await createCollectionVia(agent, { slug: 'literal', name: 'Summer [edit]' });
+    await createCollectionVia(agent, { slug: 'plain', name: 'Summer edit' });
+    const literal = await publicApi().get('/api/public/collections').query({ q: '[edit]' });
+    expect(literal.body.items.map((item: { slug: string }) => item.slug)).toEqual(['literal']);
+    const missing = await publicApi().get('/api/public/collections').query({ q: '.*' });
+    expect(missing.body).toMatchObject({ total: 0, items: [] });
+    expect((await publicApi().get('/api/public/collections').query({ q: 'x'.repeat(101) })).status).toBe(400);
+  });
+
   it('serves slugs for the sitemap before the :slug route and skips drafts', async () => {
     await createCollectionVia(agent, { slug: 'live' });
     await createCollectionVia(agent, { slug: 'wip', status: 'draft', coverImage: undefined });

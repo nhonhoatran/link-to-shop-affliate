@@ -146,11 +146,11 @@
 }
 
 .arrow {
-  fill: var(--color-line);
-}
-
-.connector[data-active] {
-  stroke-width: calc(var(--lookbook-connector-width) * 2);
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: var(--lookbook-connector-width);
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* Dim everything except the active item. data-active-id / data-active are set by lookbook-interactions. */

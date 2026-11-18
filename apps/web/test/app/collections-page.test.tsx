@@ -39,7 +39,7 @@ beforeEach(() => {
 describe('/collections', () => {
   it('asks for page 1 with the configured page size and uses the default label as h1', async () => {
     render(await CollectionsPage(search()));
-    expect(getPublicCollectionPage).toHaveBeenCalledWith(1, settings.looksPageSize);
+    expect(getPublicCollectionPage).toHaveBeenCalledWith(1, settings.looksPageSize, '');
     expect(screen.getByRole('heading', { level: 1, name: 'Bộ sưu tập' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Streetwear' })).toHaveAttribute('href', '/collections/streetwear');
   });
@@ -53,7 +53,7 @@ describe('/collections', () => {
   it('paginates with /collections?page=n links', async () => {
     getPublicCollectionPage.mockResolvedValue(list(5, 2));
     render(await CollectionsPage(search('2')));
-    expect(getPublicCollectionPage).toHaveBeenCalledWith(2, settings.looksPageSize);
+    expect(getPublicCollectionPage).toHaveBeenCalledWith(2, settings.looksPageSize, '');
     expect(screen.getByRole('link', { name: 'Trang 2' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('link', { name: 'Sau' })).toHaveAttribute('href', '/collections?page=3');
     expect(screen.getByRole('link', { name: 'Trước' })).toHaveAttribute('href', '/collections');
@@ -61,7 +61,7 @@ describe('/collections', () => {
 
   it.each(['abc', '0', '-3'])('treats page=%j as page 1', async (raw) => {
     render(await CollectionsPage(search(raw)));
-    expect(getPublicCollectionPage).toHaveBeenCalledWith(1, settings.looksPageSize);
+    expect(getPublicCollectionPage).toHaveBeenCalledWith(1, settings.looksPageSize, '');
   });
 
   it('calls notFound() beyond the last page', async () => {
@@ -73,7 +73,30 @@ describe('/collections', () => {
     getPublicCollectionPage.mockResolvedValue({ items: [], total: 0, page: 1, size: 2 });
     render(await CollectionsPage(search('4')));
     expect(notFound).not.toHaveBeenCalled();
-    expect(screen.getByRole('heading', { level: 1, name: 'Chưa có bộ sưu tập nào' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Chưa có bộ sưu tập nào' })).toBeInTheDocument();
+  });
+
+  it('keeps the keyword in the server query, input and pagination links', async () => {
+    render(await CollectionsPage({ searchParams: Promise.resolve({ q: '  summer & sun  ', page: '2' }) }));
+    expect(getPublicCollectionPage).toHaveBeenCalledWith(2, settings.looksPageSize, 'summer & sun');
+    expect(screen.getByRole('searchbox')).toHaveValue('summer & sun');
+    expect(screen.getByRole('link', { name: 'Sau' })).toHaveAttribute('href', '/collections?page=3&q=summer+%26+sun');
+    expect(screen.getByRole('link', { name: 'Trước' })).toHaveAttribute('href', '/collections?q=summer+%26+sun');
+    expect(screen.getByRole('link', { name: 'Xoá tìm kiếm' })).toHaveAttribute('href', '/collections');
+  });
+
+  it('keeps the search form and clear link when no collection matches', async () => {
+    getPublicCollectionPage.mockResolvedValue({ items: [], total: 0, page: 1, size: 2 });
+    render(await CollectionsPage({ searchParams: Promise.resolve({ q: 'none' }) }));
+    expect(screen.getByRole('heading', { level: 2, name: 'Không tìm thấy bộ sưu tập' })).toBeInTheDocument();
+    expect(screen.getByRole('searchbox')).toHaveValue('none');
+    expect(screen.getByRole('link', { name: 'Xoá tìm kiếm' })).toHaveAttribute('href', '/collections');
+  });
+
+  it('keeps searched pages out of the index and canonicalises to the collection list', async () => {
+    const metadata = await generateMetadata({ searchParams: Promise.resolve({ q: 'summer', page: '2' }) });
+    expect(metadata.robots).toMatchObject({ index: false, follow: true });
+    expect(metadata.alternates?.canonical).toBe('https://shop.example.test/collections');
   });
 
   it('builds canonical /collections for page 1 and ?page=n otherwise', async () => {

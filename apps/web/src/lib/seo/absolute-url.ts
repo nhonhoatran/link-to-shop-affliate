@@ -12,7 +12,10 @@ const withPage = (path: string, page: number): string => (page <= 1 ? path : `${
 
 export const looksPagePath = (page: number): string => withPage(LOOKS_PAGE_PATH, page);
 
-export const collectionsPagePath = (page: number): string => withPage(COLLECTIONS_PAGE_PATH, page);
+export const collectionsPagePath = (page: number, q = ''): string => {
+  const query = new URLSearchParams({ ...(page > 1 ? { page: String(page) } : {}), ...(q ? { q } : {}) });
+  return query.size ? `${COLLECTIONS_PAGE_PATH}?${query}` : COLLECTIONS_PAGE_PATH;
+};
 
 export const collectionPath = (slug: string): string => `${COLLECTIONS_PAGE_PATH}/${encodeURIComponent(slug)}`;
 

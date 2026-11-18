@@ -85,7 +85,6 @@ describe('validation messages', () => {
     expect(result.success).toBe(false);
     if (result.success) return;
     expect(issuesToFieldErrors(result.error.issues)).toEqual({
-      'items.1.affiliateUrl': 'Thiếu link affiliate',
       'items.1.anchor': 'Chưa đặt điểm trên người mẫu',
       'items.2.anchor': 'Chưa đặt điểm trên người mẫu',
     });

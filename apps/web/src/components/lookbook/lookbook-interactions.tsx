@@ -35,7 +35,7 @@ const isKeyboardFocus = (el: EventTarget | null): boolean => {
 };
 
 /** Draws the connector threads and drives the two-way card/hotspot highlight. Renders only the SVG overlay. */
-export function LookbookInteractions() {
+export function LookbookInteractions({ showArrows = false }: { showArrows?: boolean }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const markerId = `lookbook-arrow-${useId().replace(/:/g, '')}`;
   const [measurement, setMeasurement] = useState<ConnectorMeasurement>({ paths: [], arrowSize: 0 });
@@ -50,7 +50,7 @@ export function LookbookInteractions() {
 
   useEffect(() => {
     const root = getRoot();
-    if (!root) return;
+    if (!root || !showArrows) return;
     const measure = () => {
       const next = measureConnectors(root);
       setMeasurement((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
@@ -73,12 +73,12 @@ export function LookbookInteractions() {
       observer?.disconnect();
       root.removeEventListener('load', measure, true);
     };
-  }, [getRoot]);
+  }, [getRoot, showArrows]);
 
   // Items finished moving, so re-measure once before the threads are drawn.
   // Arrows wait for the draw; animationend can be missed (hidden tab), so a timer backs it up.
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || !showArrows) return;
     measureRef.current();
     if (prefersReducedMotion()) {
       setArrowsOn(true);
@@ -87,7 +87,7 @@ export function LookbookInteractions() {
     const style = getComputedStyle(svgRef.current ?? document.documentElement);
     const timer = setTimeout(() => setArrowsOn(true), readMs(style, '--duration-draw') + readMs(style, '--duration-base'));
     return () => clearTimeout(timer);
-  }, [ready]);
+  }, [ready, showArrows]);
 
   useEffect(() => {
     const root = getRoot();
@@ -144,7 +144,7 @@ export function LookbookInteractions() {
       aria-hidden="true"
       focusable="false"
     >
-      <defs>
+      {showArrows ? <defs>
         <marker
           id={markerId}
           markerUnits="userSpaceOnUse"
@@ -153,11 +153,12 @@ export function LookbookInteractions() {
           refX={arrowSize}
           refY={arrowSize / 2}
           orient="auto"
+          overflow="visible"
         >
-          <path d={`M 0 0 L ${arrowSize} ${arrowSize / 2} L 0 ${arrowSize} Z`} className={styles.arrow} />
+          <path d={`M 0 0 L ${arrowSize} ${arrowSize / 2} L 0 ${arrowSize}`} className={styles.arrow} />
         </marker>
-      </defs>
-      {paths.map((p) => (
+      </defs> : null}
+      {(showArrows ? paths : []).map((p) => (
         <path
           key={p.id}
           d={p.d}

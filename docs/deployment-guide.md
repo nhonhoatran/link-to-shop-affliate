@@ -146,11 +146,11 @@ Cờ (truyền sau tên script, ví dụ `pnpm seed:samples --publish-with-place
 |----|----------|---------|
 | `--file <đường dẫn>` | `seed/sample-outfits.json` | File seed khác |
 | `--image-root <thư mục>` | Gốc repo | Ảnh phải nằm trong thư mục này. Đường dẫn `file` trong seed tính từ thư mục chứa file seed |
-| `--publish-with-placeholder` | Tắt | Giữ `published` dù thiếu link hoặc anchor. **Chỉ dùng local**, bị từ chối khi `NODE_ENV=production` |
+| `--publish-with-placeholder` | Tắt | Giữ `published` dù thiếu anchor. **Chỉ dùng local**, bị từ chối khi `NODE_ENV=production` |
 
 Hành vi quan trọng:
-- `seed/sample-outfits.json` đặt `status: draft` cho cả hai outfit mẫu, vì link affiliate đang để trống. Outfit `draft` không hiện trên public. Điền link https và anchor cho mọi món rồi publish từ admin, hoặc dùng `--publish-with-placeholder` ở local để xem thử.
-- Mỗi dòng kết quả có dạng `<slug>: <status>`. Dòng kèm `(saved as draft: links or anchors missing)` nghĩa là bị hạ về draft.
+- `seed/sample-outfits.json` đặt `status: draft` cho cả hai outfit mẫu. Outfit `draft` không hiện trên public. Đặt anchor cho mọi món rồi publish từ admin; link được để trống, nếu nhập thì phải là HTTPS. `--publish-with-placeholder` chỉ dành cho dữ liệu local còn thiếu anchor.
+- Mỗi dòng kết quả có dạng `<slug>: <status>`. Dòng kèm `(saved as draft: links or anchors missing)` nghĩa là bị hạ về draft vì thiếu anchor; chuỗi log cũ vẫn nhắc link nhưng link rỗng đã được phép từ 2026-11-18.
 - Script gọi revalidate tới `WEB_REVALIDATE_URL` trong `apps/api/.env` (mặc định `http://localhost:3000/api/revalidate`). Khi `pnpm dev` đang chạy thì lời gọi thành công. Nếu chỉ chạy stack Docker, web không publish cổng 3000 ra host nên lời gọi thất bại (đã biết). Trang public vẫn làm mới trong `PUBLIC_REVALIDATE_SECONDS` (mặc định 300 giây), hoặc ngay sau khi admin lưu.
 
 ## Dữ liệu demo
@@ -440,7 +440,7 @@ Cột "Bắt buộc" theo code: **Có** nghĩa là schema hoặc compose báo l�
 | Upload trả 400 `Tệp không phải ảnh hợp lệ` | Định dạng ngoài JPEG, PNG, WebP, AVIF | Đổi sang định dạng được hỗ trợ |
 | Trang public vẫn hiện nội dung cũ | Revalidate lỗi, hoặc chưa tới hạn `PUBLIC_REVALIDATE_SECONDS` | Xem log api tìm `[revalidate]`. Đợi tối đa `PUBLIC_REVALIDATE_SECONDS`, hoặc lưu lại outfit từ admin |
 | `pnpm seed:samples` in cảnh báo revalidate thất bại | Đúng hành vi đã biết: web không publish ra host | Không cần xử lý. Trang tự làm mới trong `PUBLIC_REVALIDATE_SECONDS` |
-| Outfit không hiện trên public | Đang `draft`, hoặc còn món thiếu link https hoặc anchor | Điền đủ link và anchor cho mọi món rồi publish |
+| Outfit không hiện trên public | Đang `draft`, hoặc còn món thiếu anchor/link nhập không phải HTTPS | Đặt đủ anchor; để trống link hoặc dùng HTTPS hợp lệ rồi publish |
 | Đặt nổi bật bị disable hoặc trả 409 cho outfit | Outfit đang `draft` | Publish trước rồi mới đặt nổi bật |
 | `/api/health` trả 404 từ ngoài | Đúng thiết kế: Caddy chặn | Kiểm tra từ trong mạng compose (healthcheck dùng `127.0.0.1:4000`) |
 | Container api ở trạng thái unhealthy | Mongo không ping được (sai mật khẩu prod, mongo chưa healthy) | `docker compose ... logs api mongo`. Kiểm tra `MONGO_ROOT_*` và `MONGODB_URI` |

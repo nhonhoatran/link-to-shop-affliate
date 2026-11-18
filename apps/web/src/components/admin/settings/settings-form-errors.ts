@@ -22,6 +22,8 @@ export function localizeSettingsErrors(errors: FieldErrors, state: SettingsFormS
 }
 
 function specificMessage(key: string, state: SettingsFormState): string {
+  if (key === 'contactEmail') return 'Nhập địa chỉ email hợp lệ';
+  if (key === 'contactPhone') return 'Nhập số điện thoại, có thể dùng dấu +, khoảng trắng, dấu ngoặc, dấu chấm hoặc gạch ngang';
   if (key === 'announcement.text') return ANNOUNCEMENT_TEXT_REQUIRED;
   if (key === 'announcement.href') {
     return state.announcement.href.trim() === '' ? ANNOUNCEMENT_HREF_REQUIRED : INTERNAL_OR_HTTP_MESSAGE;

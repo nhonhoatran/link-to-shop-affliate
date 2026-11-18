@@ -227,6 +227,6 @@ describe('SettingsForm', () => {
   it('groups the fields into labelled sections', () => {
     render(<SettingsForm initial={settings} />);
     const names = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
-    expect(names).toEqual(['Thông tin site', 'Dải thông báo', 'Danh sách', 'Bộ sưu tập', 'Bản tin', 'Chân trang']);
+    expect(names).toEqual(['Thông tin site', 'Liên hệ', 'Dải thông báo', 'Danh sách', 'Bộ sưu tập', 'Bản tin', 'Chân trang']);
   });
 });

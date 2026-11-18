@@ -27,23 +27,19 @@ describe('OutfitEditor: publish without a link', () => {
       outfit.items[2]!.affiliateUrl = '';
     });
 
-  it('blocks publishing, marks only the offending item and shows its message', async () => {
+  it('publishes with an empty link and keeps the value empty in the request', async () => {
     const user = userEvent.setup();
+    fetchMock.mockResolvedValue(jsonResponse({}));
     const { container } = render(<OutfitEditor initial={withoutLink()} />);
 
     await user.click(screen.getByRole('button', { name: 'Đăng' }));
 
-    expect(fetchMock).not.toHaveBeenCalled();
-    expect(screen.getByRole('alert')).toHaveTextContent('Chưa đăng được');
-    const rows = invalidRows(container);
-    expect(rows).toHaveLength(1);
-    expect(rows[0]).toHaveTextContent('Giay sneaker');
-
-    const link = screen.getByLabelText('Link affiliate');
-    expect(link).toHaveAttribute('aria-invalid', 'true');
-    expect(link).toHaveValue('');
-    const errorId = link.getAttribute('aria-describedby')!.split(' ').find((id) => id.endsWith('-error'))!;
-    expect(document.getElementById(errorId)).toHaveTextContent('Thiếu link affiliate');
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Ẩn' })).toBeInTheDocument());
+    const payload = JSON.parse(fetchMock.mock.calls[0]![1].body);
+    expect(payload.status).toBe('published');
+    expect(payload.items[2].affiliateUrl).toBe('');
+    expect(invalidRows(container)).toHaveLength(0);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('flags a missing anchor on the right item as well', async () => {
@@ -143,7 +139,7 @@ describe('OutfitEditor: error tabs', () => {
     render(
       <OutfitEditor
         initial={makeAdminOutfit((outfit) => {
-          outfit.items[2]!.affiliateUrl = '';
+          outfit.items[2]!.affiliateUrl = 'http://example.com/unsafe';
         })}
       />,
     );

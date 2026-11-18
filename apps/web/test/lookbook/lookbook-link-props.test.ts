@@ -18,6 +18,6 @@ describe('affiliateLinkProps', () => {
     ['relative', '/a/b'],
     ['not a URL', 'shop.example.com'],
   ])('renders %s as a disabled link', (_name, value) => {
-    expect(affiliateLinkProps(value)).toEqual({ href: '#', 'aria-disabled': true, tabIndex: -1 });
+    expect(affiliateLinkProps(value)).toEqual({ 'aria-disabled': true, tabIndex: -1 });
   });
 });

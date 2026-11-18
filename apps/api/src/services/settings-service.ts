@@ -18,6 +18,8 @@ export interface ListingSettings {
 const loadSettings = (): Promise<SettingsRecord | null> => SettingsModel.findOne({ singleton: 'site' }).lean<SettingsRecord>();
 
 const OPTIONAL_KEYS = [
+  'contactEmail',
+  'contactPhone',
   'uploadMaxMb',
   'looksPageSize',
   'relatedOutfitsCount',

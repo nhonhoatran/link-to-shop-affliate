@@ -24,6 +24,7 @@ export function OutfitCreateForm() {
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [slugEdited, setSlugEdited] = useState(false);
+  const [showArrows, setShowArrows] = useState(false);
   const [modelImage, setModelImage] = useState<ImageWithUrl | undefined>();
   const { pending, formError, fieldErrors, handle } = useFormSubmit();
 
@@ -31,7 +32,7 @@ export function OutfitCreateForm() {
     outfitInputSchema,
     () => {
       const ref = modelImage && { key: modelImage.key, width: modelImage.width, height: modelImage.height };
-      return { slug, title, modelImage: ref, status: 'draft', featured: false, items: [] };
+      return { slug, title, modelImage: ref, status: 'draft', featured: false, showArrows, items: [] };
     },
     async (data) => {
       const created = await apiFetch<OutfitResponse>(API_PATHS.admin.outfits, { method: 'POST', json: data });
@@ -71,6 +72,14 @@ export function OutfitCreateForm() {
               setSlugEdited(true);
             }}
           />
+        )}
+      </AdminFormField>
+      <AdminFormField id="create-arrows" label="Mũi tên nối sản phẩm" error={fieldErrors.showArrows}>
+        {(control) => (
+          <select {...control} value={String(showArrows)} onChange={(event) => setShowArrows(event.target.value === 'true')}>
+            <option value="false">Không có mũi tên</option>
+            <option value="true">Có mũi tên</option>
+          </select>
         )}
       </AdminFormField>
       <MediaDropzone
