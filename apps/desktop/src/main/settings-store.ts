@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { rm } from 'node:fs/promises';
 import { z } from 'zod';
-import { DEFAULT_DESKTOP_SETTINGS, DEFAULT_POSTER_PROMPT, DEFAULT_POSTER_PROMPT_VERSION, desktopSettingsSchema, type DesktopSettings, type DesktopSettingsView } from '@under30ss/shared';
+import { DEFAULT_DESKTOP_SETTINGS, DEFAULT_POSTER_PROMPT, DEFAULT_POSTER_PROMPT_VERSION, desktopSettingsSchema, resolveCodexModel, type DesktopSettings, type DesktopSettingsView } from '@under30ss/shared';
 import { readBoundedText, readRecoverableJson, writeAtomicJson } from './atomic-json';
 
 export interface CredentialEncryption {
@@ -12,12 +12,22 @@ export interface CredentialEncryption {
 }
 const credentialSchema = z.strictObject({ version: z.literal(1), origin: z.string(), encrypted: z.string(), mask: z.string() }).nullable();
 const absent = (error: unknown) => (error as NodeJS.ErrnoException).code === 'ENOENT';
+const migrateCodexModel = (settings: DesktopSettings): boolean => {
+  const model = resolveCodexModel(settings.cli.model);
+  if (settings.cli.model === model) return false;
+  settings.cli.model = model;
+  return true;
+};
 
 export class SettingsStore {
   constructor(private readonly root: string, private readonly encryption: CredentialEncryption) {}
   private file(name: string) { return path.join(this.root, name); }
   async settings(): Promise<DesktopSettings> {
-    try { return await readRecoverableJson(this.file('settings.json'), desktopSettingsSchema, 128 * 1024); }
+    try {
+      const settings = await readRecoverableJson(this.file('settings.json'), desktopSettingsSchema, 128 * 1024);
+      if (migrateCodexModel(settings)) await writeAtomicJson(this.file('settings.json'), settings);
+      return settings;
+    }
     catch (error) {
       if (absent(error)) return structuredClone(DEFAULT_DESKTOP_SETTINGS);
       // eslint-disable-next-line preserve-caught-error -- Parser causes can echo private local configuration.
@@ -49,6 +59,7 @@ export class SettingsStore {
   }
   async save(settings: DesktopSettings, token?: string, clearToken = false): Promise<DesktopSettingsView> {
     const next = desktopSettingsSchema.parse(settings);
+    migrateCodexModel(next);
     if (token && clearToken) throw new Error('Không thể vừa xóa vừa lưu token');
     if (next.siteUrl) next.siteUrl = new URL(next.siteUrl).origin;
     next.prompt.version = next.prompt.text === DEFAULT_POSTER_PROMPT ? DEFAULT_POSTER_PROMPT_VERSION

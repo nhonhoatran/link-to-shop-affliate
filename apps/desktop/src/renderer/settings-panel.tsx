@@ -53,8 +53,8 @@ export function SettingsPanel({ initial, busy, onSave, onCheck }: {
         <div className="field-grid">
           <TextField label="Profile Codex" value={value.cli.profile} onChange={(profile) => setValue({ ...value, cli: { ...value.cli, profile } })}
             hint="Để trống để dùng profile hiện có. Không sửa cấu hình global." maxLength={100} />
-          <TextField label="Model" value={value.cli.model} onChange={(model) => setValue({ ...value, cli: { ...value.cli, model } })}
-            hint="Để trống để dùng model trong cấu hình CLI." maxLength={100} />
+          <TextField label="Model" value={value.cli.model} required onChange={(model) => setValue({ ...value, cli: { ...value.cli, model } })}
+            hint="Mặc định: gpt-6.1-sol. Nhập model khác nếu provider đang dùng có hỗ trợ." maxLength={100} />
         </div>
         <details className="advanced">
           <summary>Prompt phân tích · đã có sẵn</summary>

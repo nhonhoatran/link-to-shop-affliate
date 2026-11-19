@@ -1,6 +1,7 @@
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { DEFAULT_CODEX_MODEL } from '@under30ss/shared';
 import { runBoundedProcess } from '../../src/main/bounded-process';
 import { analyzePoster } from '../../src/main/codex-adapter';
 import { isolateCodex } from '../../src/main/codex-isolation';
@@ -46,6 +47,12 @@ describe('Codex image analysis adapter', () => {
     expect(path.basename(input.args[input.args.indexOf('--image') + 1]!)).toBe('input.png');
     expect(await readdir(fixture.workRoot)).toEqual([]);
     expect((await readFile(fixture.source)).length).toBeGreaterThan(0);
+  });
+  it.each(['', 'gpt-6-astra'])('always passes the supported default model explicitly for legacy model %s', async (model) => {
+    const fixture = await setup(); answer(); fixture.settings.cli.model = model;
+    await analyzePoster(fixture.source, fixture.settings, fixture.workRoot, fixture.signal);
+    const args = vi.mocked(runBoundedProcess).mock.calls[0]![0].args;
+    expect(args).toEqual(expect.arrayContaining(['--model', DEFAULT_CODEX_MODEL]));
   });
   it('accepts a nonfatal error item but rejects fatal stream errors even when a final file exists', async () => {
     const fixture = await setup();

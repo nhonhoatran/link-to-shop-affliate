@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { DEFAULT_POSTER_PROMPT, DEFAULT_POSTER_PROMPT_VERSION } from '@under30ss/shared';
+import { DEFAULT_CODEX_MODEL, DEFAULT_POSTER_PROMPT, DEFAULT_POSTER_PROMPT_VERSION } from '@under30ss/shared';
 import { SettingsStore } from '../../src/main/settings-store';
 import { cleanupDirectories, settingsFixture, temporaryDirectory, testEncryption } from './test-fixtures';
 
@@ -90,11 +90,21 @@ describe('OS credential boundary', () => {
     settings.prompt.text = DEFAULT_POSTER_PROMPT;
     expect((await store.save(settings)).settings.prompt.version).toBe(DEFAULT_POSTER_PROMPT_VERSION);
   });
+  it.each(['', 'gpt-6-astra'])('migrates the old default Codex model %s to the supported model', async (legacyModel) => {
+    const directory = await temporaryDirectory();
+    const settings = settingsFixture(); settings.cli.model = legacyModel;
+    await writeFile(path.join(directory, 'settings.json'), JSON.stringify(settings));
+    const store = new SettingsStore(directory, testEncryption());
+    expect((await store.settings()).cli.model).toBe(DEFAULT_CODEX_MODEL);
+    expect(JSON.parse(await readFile(path.join(directory, 'settings.json'), 'utf8')).cli.model).toBe(DEFAULT_CODEX_MODEL);
+    settings.cli.model = '';
+    expect((await store.save(settings)).settings.cli.model).toBe(DEFAULT_CODEX_MODEL);
+  });
   it('returns defensive default copies and recovers a corrupted settings file from its backup', async () => {
     const directory = await temporaryDirectory();
     const store = new SettingsStore(directory, testEncryption());
     const defaults = await store.settings(); defaults.cli.model = 'mutated';
-    expect((await store.settings()).cli.model).toBe('');
+    expect((await store.settings()).cli.model).toBe(DEFAULT_CODEX_MODEL);
     const first = settingsFixture(); first.siteName = 'Cấu hình đầu'; await store.save(first);
     const second = settingsFixture(); second.siteName = 'Cấu hình sau'; await store.save(second);
     await writeFile(path.join(directory, 'settings.json'), '{interrupted');

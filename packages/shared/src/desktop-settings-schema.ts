@@ -1,6 +1,13 @@
 import { z } from 'zod';
 import { DEFAULT_POSTER_PROMPT, DEFAULT_POSTER_PROMPT_VERSION } from './poster-analysis-prompt';
 
+export const DEFAULT_CODEX_MODEL = 'gpt-6.1-sol';
+export const LEGACY_DEFAULT_CODEX_MODELS = ['gpt-6-astra'] as const;
+export const resolveCodexModel = (value: string): string => {
+  const model = value.trim();
+  return !model || LEGACY_DEFAULT_CODEX_MODELS.some((legacy) => legacy === model) ? DEFAULT_CODEX_MODEL : model;
+};
+
 export const websiteOriginSchema = z.string().max(2048).refine((value) => {
   if (value === '') return true;
   try {
@@ -17,8 +24,8 @@ export const desktopSettingsSchema = z.strictObject({
   cli: z.strictObject({
     executable: z.string().trim().min(1).max(2048).default('codex'),
     profile: z.string().trim().max(100).default(''),
-    model: z.string().trim().max(100).default(''),
-  }).default({ executable: 'codex', profile: '', model: '' }),
+    model: z.string().trim().max(100).default(DEFAULT_CODEX_MODEL),
+  }).default({ executable: 'codex', profile: '', model: DEFAULT_CODEX_MODEL }),
   prompt: z.strictObject({
     version: z.string().trim().min(1).max(80).default(DEFAULT_POSTER_PROMPT_VERSION),
     text: z.string().trim().min(1).max(30_000).default(DEFAULT_POSTER_PROMPT),

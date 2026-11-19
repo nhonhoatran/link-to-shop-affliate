@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { approvedDesktopDraftSchema, desktopDraftSchema } from './desktop-session-schema';
-import { DEFAULT_DESKTOP_SETTINGS, desktopSettingsSchema, websiteOriginSchema } from './desktop-settings-schema';
+import { DEFAULT_CODEX_MODEL, DEFAULT_DESKTOP_SETTINGS, desktopSettingsSchema, resolveCodexModel, websiteOriginSchema } from './desktop-settings-schema';
 import { desktopCommandSchemas } from './desktop-ipc-contract';
 import { DESKTOP_IMPORT_VERSION, importCommitSchema, serializeImportPayload } from './desktop-import-contract';
 
@@ -27,6 +27,10 @@ describe('desktop settings and IPC contracts', () => {
   });
   it('has an editable complete prompt and configurable operational defaults', () => {
     expect(DEFAULT_DESKTOP_SETTINGS.prompt.text.length).toBeGreaterThan(100);
+    expect(DEFAULT_DESKTOP_SETTINGS.cli.model).toBe(DEFAULT_CODEX_MODEL);
+    expect(resolveCodexModel('')).toBe(DEFAULT_CODEX_MODEL);
+    expect(resolveCodexModel('gpt-6-astra')).toBe(DEFAULT_CODEX_MODEL);
+    expect(resolveCodexModel('chosen-model')).toBe('chosen-model');
     const settings = desktopSettingsSchema.parse({ cli: { model: 'chosen-model' },
       prompt: { text: 'Phân tích theo bố cục khác' }, limits: { maxFiles: 3, pageSize: 2 } });
     expect(settings.cli.model).toBe('chosen-model');

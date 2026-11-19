@@ -1,6 +1,6 @@
 import { copyFile, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { POSTER_ANALYSIS_JSON_SCHEMA, posterAnalysisSchema, type DesktopSettings, type PosterAnalysis } from '@under30ss/shared';
+import { POSTER_ANALYSIS_JSON_SCHEMA, posterAnalysisSchema, resolveCodexModel, type DesktopSettings, type PosterAnalysis } from '@under30ss/shared';
 import { readBoundedText } from './atomic-json';
 import { runBoundedProcess } from './bounded-process';
 import { isolateCodex } from './codex-isolation';
@@ -28,7 +28,7 @@ export const analyzePoster = async (
     const isolated = await isolateCodex(settings, directory, signal);
     const args = [...isolated.args, 'exec', '--sandbox', 'read-only', '--skip-git-repo-check', '--ephemeral', '--ignore-rules',
       '--json', '--color', 'never', '--image', image, '--output-schema', schema, '--output-last-message', output];
-    if (settings.cli.model) args.push('--model', settings.cli.model);
+    args.push('--model', resolveCodexModel(settings.cli.model));
     args.push('-');
     let pending = '';
     let runtimeFailure: string | undefined;

@@ -11,7 +11,8 @@ const output = path.join(repo, 'plans/reports/desktop-ai-smoke');
 const temporary = await mkdtemp(path.join(tmpdir(), 'under30ss-desktop-smoke-'));
 const folder = path.join(temporary, 'posters');
 const data = path.join(temporary, 'data');
-await mkdir(folder); await mkdir(output, { recursive: true });
+await mkdir(folder); await mkdir(data); await mkdir(output, { recursive: true });
+await writeFile(path.join(data, 'settings.json'), JSON.stringify({ cli: { model: 'gpt-6-astra' } }));
 await copyFile(path.join(repo, 'assets-source/lookbook-samples/outfit-mesh-84-reference.png'), path.join(folder, 'poster.png'));
 const errors = [];
 const capture = async (application, name) => {
@@ -52,6 +53,8 @@ try {
   expect(await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().length)).toBe(1);
   const view = await page.evaluate(() => window.desktop.invoke('readSettings', {}));
   expect(view.credential.encryptionAvailable).toBe(true);
+  expect(view.settings.cli.model).toBe('gpt-6.1-sol');
+  expect(JSON.parse(await readFile(path.join(data, 'settings.json'), 'utf8')).cli.model).toBe('gpt-6.1-sol');
   const settings = { ...view.settings, siteUrl: 'http://127.0.0.1:44009', siteName: 'Kiểm thử local' };
   const secret = 'under30ss-desktop-smoke-token-not-for-production';
   const saved = await page.evaluate(({ settings, secret }) => window.desktop.invoke('saveSettings', { settings, token: secret }), { settings, secret });
@@ -117,6 +120,7 @@ try {
   expect(errors).toEqual([]);
   await writeFile(path.join(output, 'result.json'), JSON.stringify({ recordedAt: new Date().toISOString(), status: 'passed',
     electronVersion, security, checks: ['native preload IPC', 'OS token encryption',
+      'legacy model settings migrated to explicit GPT 6.1 Sol default',
       'native folder picker boundary (dialog stub)', 'real source normalization and crop asset protocol', 'approval invalidation',
       'restart checkpoint and settings', 'single instance lock', 'narrow viewport', 'unknown asset denied'],
     analysis: 'Uses previously recorded live Codex analysis; no website sync or new AI call in this smoke test', errors }, null, 2) + '\n');
