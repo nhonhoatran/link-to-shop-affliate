@@ -29,7 +29,7 @@ Nếu file credential bị hỏng, ứng dụng hiện cảnh báo và yêu cầ
 ## 2. Cấu hình Codex và chọn folder
 
 - **Đường dẫn Codex:** mặc định `codex`; nếu không tìm thấy, chọn đường dẫn đầy đủ tới native executable đã cài.
-- **Profile/Model:** để trống để dùng cấu hình CLI hiện có, hoặc nhập giá trị phù hợp với provider. Ứng dụng không sửa cấu hình global của Codex.
+- **Profile:** để trống để dùng profile hiện có. **Model:** mặc định `gpt-6.1-sol` và được truyền rõ cho Codex; có thể nhập model khác nếu provider đang dùng hỗ trợ. Cấu hình Codex cũ để trống hoặc dùng `gpt-6-astra` sẽ chuyển sang model mặc định mới; phiên cũ cũng dùng model mới khi phân tích lại. Ứng dụng không sửa cấu hình global của Codex.
 - **Prompt phân tích:** đã có prompt tiếng Việt trong phần mở rộng; có thể chỉnh và **Khôi phục prompt mặc định**. Phiên bản mặc định là `vi-poster.v1`; prompt tùy chỉnh được gắn thêm hash khi lưu. Phiên bản hiển thị chỉ đọc.
 - Prompt nhận diện người mẫu và các ô sản phẩm theo bố cục thực tế, không cố định số món; chữ không rõ, crop/anchor không chắc được giữ rỗng hoặc đánh dấu cần duyệt.
 
@@ -106,6 +106,7 @@ pnpm desktop:dev
 pnpm desktop:build
 pnpm --filter @under30ss/desktop smoke
 pnpm desktop:package
+pnpm --filter @under30ss/desktop exec node scripts/packaged-model-smoke.mjs
 pnpm --filter @under30ss/desktop check-package
 ```
 
@@ -119,6 +120,8 @@ Bằng chứng ngày 2026-11-18:
 | [Desktop main + UI](../plans/reports/261118-desktop-all-tests-final.json) | 93/93 trong 31 suite, không lỗi/bỏ qua |
 | [API](../plans/reports/tester-261118-desktop-import-api-disk-d-final.json) | 267/267 trong 102 suite, không lỗi/bỏ qua |
 | [Web](../plans/reports/tester-261118-desktop-import-web-final.json) | 754/754 trong 287 suite, không lỗi/bỏ qua |
+
+Sau cập nhật model trong cùng ngày, shared chạy lại `224/224`, desktop `97/97`; lint và typecheck toàn repo đạt. Smoke Electron khởi chạy app từ thư mục Windows đã unpack, xác nhận model mặc định cho profile mới và nâng settings cũ `gpt-6-astra`. Chi tiết ở [desktop test mới](../plans/reports/261118-desktop-model-update-tests.json), [smoke model trên app đóng gói](../plans/reports/desktop-ai-smoke/packaged-model.json) và [package evidence](../plans/reports/desktop-ai-smoke/package.json).
 
 Bài HTTP bên dưới chạy bổ sung, không nằm trong số 267 của lượt API toàn bộ. Lượt API cuối chạy một worker với scratch trên ổ D; lịch sử lỗi worker và thiếu dung lượng ở các lượt trước được ghi trong journal.
 

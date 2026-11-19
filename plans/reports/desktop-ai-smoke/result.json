@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-11-18T14:13:49.236Z",
+  "recordedAt": "2026-11-18T15:55:21.119Z",
   "status": "passed",
   "electronVersion": "45.3.4",
   "security": {
@@ -10,6 +10,7 @@
   "checks": [
     "native preload IPC",
     "OS token encryption",
+    "legacy model settings migrated to explicit GPT 6.1 Sol default",
     "native folder picker boundary (dialog stub)",
     "real source normalization and crop asset protocol",
     "approval invalidation",

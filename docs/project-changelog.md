@@ -18,6 +18,8 @@ Phạm vi: workspace `apps/desktop`, hợp đồng shared, importer API/token ad
 
 Kiểm chứng cuối: shared 224/224, desktop 93/93 (31 suite), API 267/267 (102 suite), web 754/754 (287 suite), không lỗi/bỏ qua. Hai lượt Codex thật có kết quả hợp schema với một timeout ban đầu rồi retry; smoke HTTP riêng đạt 1/1 trên hai ảnh (9/8 item), tạo draft và replay không trùng. Smoke Electron Windows và package được chạy lại lúc 14:13; image Docker API/web build đạt và không chứa Electron hoặc build-only env. Chi tiết ở [hướng dẫn desktop](./desktop-import-guide.md) và các report trong `plans/reports/`. Review độc lập `9.5/10`, các High/Medium đã xác minh được sửa. Không dùng UI test hoặc storage recorder để khẳng định đã nhập website production.
 
+Build bổ sung ngày 2026-11-18 đặt mặc định Codex là `gpt-6.1-sol`, tự nâng settings cũ và dùng model mới khi retry phiên có snapshot `gpt-6-astra`; lệnh phân tích luôn truyền model tường minh. Shared `224/224`, desktop `97/97`, lint/typecheck đạt; app trong thư mục Windows đã unpack khởi chạy thật và vượt package check. Hash portable và smoke được lưu trong [bằng chứng package](../plans/reports/desktop-ai-smoke/package.json) và [smoke model](../plans/reports/desktop-ai-smoke/packaged-model.json).
+
 Chưa có chức năng làm sạch ảnh bằng AI, transaction chung S3/MongoDB hoặc tự dọn receipt/ảnh upload dở. Chưa commit/push hoặc triển khai production trong công việc này.
 
 ## Tìm collection, thông tin liên hệ và tuỳ chọn outfit (2026-11-18)

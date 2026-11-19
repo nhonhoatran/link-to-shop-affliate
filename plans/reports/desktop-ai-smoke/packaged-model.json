@@ -1,0 +1,9 @@
+{
+  "recordedAt": "2026-11-18T16:04:33.663Z",
+  "status": "passed",
+  "artifact": "apps\\desktop\\dist\\package\\win-unpacked\\Under30ss Importer.exe",
+  "bytes": 249906688,
+  "sha256": "bdd8f3c39d54435592945c8a0a0a39cf9d23f77561a961935c1ca32286dce019",
+  "freshDefault": "gpt-6.1-sol",
+  "legacySettingsMigrated": "gpt-6.1-sol"
+}

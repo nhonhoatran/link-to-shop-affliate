@@ -28,6 +28,9 @@ Smoke Windows cần loại `ELECTRON_RUN_AS_NODE` khỏi môi trường launch; 
 ## Bằng chứng và giới hạn
 
 - Codex CLI `0.169.1`, model yêu cầu `gpt-6.1-sol`, provider theo cấu hình local: hai mẫu có lượt thành công đúng schema, lần lượt 9 và 8 món. Ảnh thứ hai timeout lần đầu rồi retry thành công; giữ nguyên lịch sử này trong [báo cáo live](../../plans/reports/261118-codex-desktop-live-probe.md).
+- Mặc định model của desktop đặt rõ `gpt-6.1-sol` và luôn truyền bằng `--model`; settings/session cũ để trống hoặc mang giá trị global cũ `gpt-6-astra` đều phân giải về model mới, tránh phụ thuộc model mặc định không tương thích của gateway.
+- Bản portable build lại lúc 15:55 UTC; package check đạt. Profile mới trả `gpt-6.1-sol`; profile test mang `gpt-6-astra` được nâng và lưu thành model mới. Artifact `under30ss-importer-0.1.0-x64.exe`, 117,780,612 byte, SHA-256 `c9469dfd7a006de7becf681effdab3f1e63abca45068c4f3506c0a9a91fa9df6`; xem [package evidence](../../plans/reports/desktop-ai-smoke/package.json).
+- Smoke Electron xác nhận migration trong app từ thư mục Windows đã unpack tại [report](../../plans/reports/desktop-ai-smoke/packaged-model.json). Sau cập nhật, shared `224/224`, desktop `97/97` ([JSON](../../plans/reports/261118-desktop-model-update-tests.json)), lint/typecheck toàn repo đạt; smoke giao diện không lỗi.
 - Review độc lập `9.5/10`, các High/Medium đã xác minh được sửa: [báo cáo](../../plans/reports/code-review-261118-desktop-ai-import.md).
 - [Smoke Electron thật](../../plans/reports/desktop-ai-smoke/result.json), ghi lúc 14:13, xác nhận Electron 45.3.4, DPAPI/IPC/crop/checkpoint/single-instance. Smoke dùng analysis đã ghi, không thay thế phép thử AI hoặc sync production.
 - [HTTP test](../../plans/reports/tester-261118-desktop-import-http.json) dùng server thật trong môi trường test cô lập; kiểm mất phản hồi, retry và phục hồi ID. Storage là recorder, không phải object storage production.
