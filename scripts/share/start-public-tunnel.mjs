@@ -23,6 +23,7 @@ const DEFAULT_ADMIN_EMAIL = 'admin@under30ss.local';
 const GENERATED_PASSWORD_BYTES = 15; // 20 base64url characters
 const TUNNEL_URL_PATTERN = /https:\/\/[a-z0-9-]+\.trycloudflare\.com/;
 const TUNNEL_URL_TIMEOUT_MS = 60_000;
+const TUNNEL_LOG_LIMIT = 4_096;
 const READY_TIMEOUT_MS = 120_000;
 const READY_POLL_MS = 2_000;
 
@@ -114,28 +115,50 @@ const ensureAdmin = () => {
 
 const startTunnel = (localUrl) =>
   new Promise((resolveUrl, rejectUrl) => {
-    const child = spawn('cloudflared', ['tunnel', '--no-autoupdate', '--url', localUrl], {
+    const child = spawn('cloudflared', ['tunnel', '--no-autoupdate', '--loglevel', 'info', '--url', localUrl], {
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     let found = false;
-    const timer = setTimeout(() => rejectUrl(new Error('Timed out waiting for the tunnel URL.')), TUNNEL_URL_TIMEOUT_MS);
-    const onData = (chunk) => {
-      const match = !found && chunk.toString().match(TUNNEL_URL_PATTERN);
+    const output = { stdout: '', stderr: '' };
+    const rejectedResponses = new Set();
+    const startupError = (message) => {
+      const details = Object.values(output).map((log) => log.trim()).filter(Boolean).join('\n');
+      return new Error([message, details].filter(Boolean).join('\n'));
+    };
+    const timer = setTimeout(() => {
+      child.kill();
+      rejectUrl(startupError('Timed out waiting for the tunnel URL.'));
+    }, TUNNEL_URL_TIMEOUT_MS);
+    const onData = (stream) => (chunk) => {
+      if (found || rejectedResponses.has(stream)) return;
+      const combined = output[stream] + chunk;
+      // cloudflared dumps the response body on JSON decode errors. It can contain tunnel credentials.
+      const parseError = combined.indexOf('Error unmarshaling QuickTunnel response');
+      if (parseError !== -1) {
+        const status = combined.slice(parseError).match(/\bstatus_code="?(\d{3})\b/);
+        const detail = status ? ' (HTTP ' + status[1] + ')' : '';
+        output[stream] = 'Cloudflare returned an invalid Quick Tunnel response' + detail + '.';
+        rejectedResponses.add(stream);
+        return;
+      }
+      output[stream] = combined.slice(-TUNNEL_LOG_LIMIT);
+      const match = combined.match(TUNNEL_URL_PATTERN);
       if (!match) return;
       found = true;
       clearTimeout(timer);
       resolveUrl({ child, url: match[0] });
     };
-    child.stdout.on('data', onData);
-    child.stderr.on('data', onData);
-    child.on('error', (error) => {
+    child.stdout.setEncoding('utf8').on('data', onData('stdout'));
+    child.stderr.setEncoding('utf8').on('data', onData('stderr'));
+    child.once('error', (error) => {
       clearTimeout(timer);
       rejectUrl(error.code === 'ENOENT' ? new Error('cloudflared not found on PATH.') : error);
     });
-    child.on('exit', (code) => {
+    child.once('close', (code, signal) => {
       if (!found) {
         clearTimeout(timer);
-        rejectUrl(new Error(`cloudflared exited early (code ${code}).`));
+        const reason = signal ? `signal ${signal}` : `code ${code}`;
+        rejectUrl(startupError(`cloudflared exited early (${reason}).`));
       }
     });
   });
