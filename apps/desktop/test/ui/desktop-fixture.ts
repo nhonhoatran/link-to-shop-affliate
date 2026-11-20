@@ -29,6 +29,10 @@ export const bridgeFixture = () => {
     switch (command) {
       case 'readSettings': return state.settings;
       case 'saveSettings': state.settings = { ...state.settings, settings: input.settings as DesktopSettingsView['settings'] }; return state.settings;
+      case 'chooseFolder': return { selectionId: 'folder-selection', folderLabel: 'poster-folder' };
+      case 'createSession':
+        state.session = { ...state.session, name: input.name as string, folderLabel: 'poster-folder' };
+        return state.session;
       case 'listSessions': return { items: [state.session], total: 1, page: 1, size: 20 };
       case 'getSession': return state.session;
       case 'listFiles': return { items: [state.file], total: 1, page: 1, size: 20 };

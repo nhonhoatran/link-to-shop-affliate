@@ -17,6 +17,33 @@ const openFile = async () => {
 };
 
 describe('desktop workflow through the IPC boundary', () => {
+  it('opens the selected folder and lets an untouched failed poster retry without a discard prompt', async () => {
+    const fixture = bridgeFixture();
+    fixture.state.file = { ...fixture.state.file, status: 'error', draft: null, revision: 0, error: 'Model không được provider hỗ trợ.' };
+    fixture.state.session = { ...fixture.state.session, counts: { total: 1, analyzed: 0, approved: 0, synced: 0, failed: 1 } };
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    render(<DesktopApp api={fixture.api} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Chọn folder ảnh' }));
+    expect(await screen.findByRole('textbox', { name: /Tên phiên nhập/ })).toHaveValue('poster-folder');
+    await userEvent.click(screen.getByRole('button', { name: 'Tạo phiên và đọc ảnh' }));
+    expect(fixture.invoke).toHaveBeenCalledWith('createSession', { selectionId: 'folder-selection', name: 'poster-folder' });
+    const poster = await screen.findByRole('button', { name: /look-a.png/ });
+    await userEvent.click(poster);
+    expect(await screen.findByRole('button', { name: 'Lưu bản nháp' })).toBeEnabled();
+    await userEvent.click(screen.getByRole('button', { name: 'Thử phân tích ảnh này' }));
+    expect(confirm).not.toHaveBeenCalled();
+    expect(fixture.invoke).toHaveBeenCalledWith('analyze', { sessionId: 'session-a', fileIds: ['file-a'] });
+
+    fireEvent.change(screen.getByLabelText('Tiêu đề outfit'), { target: { value: 'Bản nhập thủ công' } });
+    await userEvent.click(screen.getByRole('button', { name: /3.*Phân tích/ }));
+    expect(confirm).toHaveBeenCalledOnce();
+    expect(screen.getByLabelText('Tiêu đề outfit')).toHaveValue('Bản nhập thủ công');
+
+    confirm.mockReturnValue(true);
+    await userEvent.click(screen.getByRole('button', { name: /3.*Phân tích/ }));
+    expect(screen.getByText('Model không được provider hỗ trợ.')).toBeVisible();
+  });
+
   it('saves a new revision, approves that revision, then sends only the session identity', async () => {
     const fixture = bridgeFixture();
     render(<DesktopApp api={fixture.api} />);

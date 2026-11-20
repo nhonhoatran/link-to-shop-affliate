@@ -28,9 +28,9 @@ export function DesktopApp({ api }: { api: DesktopBridge }) {
     leave(() => { state.selectFile(id); setView('review'); });
   };
   const fileBrowser = state.session ? <FileBrowser api={api} session={state.session} files={state.files} fileId={state.fileId}
-    filter={state.filter} busy={!!state.busy} onPage={(page) => leave(() => state.setPage(page))}
+    filter={state.filter} busy={!!state.busy} showFileErrors={view === 'analysis'} onPage={(page) => leave(() => state.setPage(page))}
     onFilter={(filter) => leave(() => state.setFilter(filter))} onSelect={selectFile}
-    onAnalyze={() => leave(() => { void state.analyze(); })} onCancel={() => void state.cancel()} /> : null;
+    onAnalyze={() => leave(() => { void state.analyze(); })} onCancel={() => void state.cancel()} onChooseFolder={() => navigate('folder')} /> : null;
 
   return <div className="desktop-app"><a className="skip-link" href="#desktop-main">Đến nội dung chính</a>
     <header className="app-header"><div className="wordmark">Under30ss<span>Desktop</span></div><div><h1>Nhập bộ sưu tập bằng AI</h1>

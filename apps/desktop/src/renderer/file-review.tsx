@@ -15,13 +15,15 @@ interface FileReviewProps {
 
 export function FileReview(props: FileReviewProps) {
   const { api, sessionId, file, busy, onSave, onApprove, onAnalyze, onDirty, onOpenRemote } = props;
-  const [draft, setDraft] = useState<DesktopDraft>(file.draft ?? manualDraft(file));
+  const baseline = file.draft ?? manualDraft(file);
+  const [draft, setDraft] = useState<DesktopDraft>(baseline);
   const [selectedId, setSelectedId] = useState<string | null>(draft.items[0]?.id ?? null);
   const [errors, setErrors] = useState<string[]>([]);
-  const dirty = file.draft ? JSON.stringify(draft) !== JSON.stringify(file.draft) : true;
+  const dirty = JSON.stringify(draft) !== JSON.stringify(baseline);
+  const needsSave = dirty || !file.draft;
   const remoteLocked = remoteLocksFile(file);
   const locked = remoteLocked || file.status === 'synced' || file.status === 'syncing' || file.status === 'analyzing';
-  const approved = file.approvedRevision === file.revision && !dirty;
+  const approved = file.approvedRevision === file.revision && !needsSave;
   const blockers = useMemo(() => {
     const result = approvedDesktopDraftSchema.safeParse(draft);
     return result.success ? [] : result.error.issues.map((issue) => draftIssueLabel(issue.path, issue.message));
@@ -56,7 +58,7 @@ export function FileReview(props: FileReviewProps) {
   return <section className="file-review" aria-labelledby="review-heading">
     <header className="review-heading"><div><p className="eyebrow">Bước 4 · Duyệt trên máy</p><h2 id="review-heading">{file.name}</h2>
       <p className="hint">Phiên bản {file.revision} · {FILE_STATUS_LABELS[file.status]}</p></div>
-      <span className={`status-label ${approved ? 'is-approved' : ''}`}>{dirty ? 'Có thay đổi chưa lưu' : approved ? 'Đã duyệt phiên bản này' : 'Chưa duyệt'}</span></header>
+      <span className={`status-label ${approved ? 'is-approved' : ''}`}>{dirty ? 'Có thay đổi chưa lưu' : approved ? 'Đã duyệt phiên bản này' : file.draft ? 'Chưa duyệt' : 'Chưa có bản nháp'}</span></header>
     {file.error ? <p className="notice error" role="alert">{file.error}</p> : null}
     {remoteLocked && file.status !== 'synced' ? <p className="notice warning">Website có thể đã nhận phiên bản này. Chọn bước Đồng bộ để đối chiếu và tiếp tục bằng cùng mã tác vụ. Nội dung được khóa cho đến khi xác định kết quả; sau khi tạo nháp, tiếp tục chỉnh trên web.</p> : null}
     {file.status !== 'synced' && (file.remote?.outfitId || file.remote?.collectionId) ? <div className="notice"><p>Website đã xác nhận một phần kết quả. Có thể kiểm tra bản nháp đã tạo hoặc thử đồng bộ lại.</p>
@@ -91,10 +93,10 @@ export function FileReview(props: FileReviewProps) {
     {errors.length ? <div className="notice error" role="alert"><strong>Chưa lưu được bản nháp</strong><ul>{errors.map((error) => <li key={error}>{error}</li>)}</ul></div> : null}
     {blockers.length && !locked ? <details className="notice warning"><summary>Cần bổ sung trước khi duyệt ({blockers.length})</summary>
       <ul>{blockers.map((reason) => <li key={reason}>{reason}</li>)}</ul></details> : null}
-    <footer className="review-actions"><p className="hint">{dirty ? 'Lưu thay đổi rồi duyệt lại. Phiên bản chưa lưu sẽ không được gửi.' : 'Sửa bất kỳ nội dung nào sẽ cần lưu và duyệt lại trước khi gửi.'}</p>
+    <footer className="review-actions"><p className="hint">{needsSave ? 'Lưu bản nháp trước khi duyệt.' : 'Sửa bất kỳ nội dung nào sẽ cần lưu và duyệt lại trước khi gửi.'}</p>
       <div className="actions"><button type="button" onClick={onAnalyze} disabled={busy || locked}>Phân tích lại ảnh này</button>
-        <button type="button" onClick={() => void save()} disabled={busy || locked || !dirty}>Lưu bản nháp</button>
-        <button type="button" className="primary" disabled={busy || locked || dirty || approved || blockers.length > 0}
+        <button type="button" onClick={() => void save()} disabled={busy || locked || !needsSave}>Lưu bản nháp</button>
+        <button type="button" className="primary" disabled={busy || locked || needsSave || approved || blockers.length > 0}
           onClick={() => void onApprove()}>{approved ? 'Đã duyệt' : 'Duyệt phiên bản đã lưu'}</button></div></footer>
   </section>;
 }

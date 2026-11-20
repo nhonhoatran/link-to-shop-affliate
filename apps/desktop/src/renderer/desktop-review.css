@@ -13,6 +13,7 @@ progress { width: 100%; height: 5px; accent-color: var(--app-ink); }
 .status-text { font-size: 11px; color: var(--app-muted); }
 .status-approved, .status-synced { color: var(--app-success); }
 .status-error, .status-interrupted, .status-unsupported { color: var(--app-danger); }
+.file-error { overflow-wrap: anywhere; }
 .review-workspace { display: grid; grid-template-columns: minmax(190px, 240px) minmax(0, 1fr); gap: 22px; align-items: start; }
 .review-workspace .file-browser { padding: 16px; }
 .review-workspace .file-browser .actions { flex-direction: column; align-items: stretch; }

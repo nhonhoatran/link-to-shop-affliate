@@ -1,9 +1,9 @@
 {
-  "recordedAt": "2026-11-18T15:55:14.312Z",
+  "recordedAt": "2026-11-19T14:53:51.179Z",
   "status": "passed",
   "artifact": "apps\\desktop\\dist\\package\\under30ss-importer-0.1.0-x64.exe",
-  "bytes": 117780612,
-  "sha256": "c9469dfd7a006de7becf681effdab3f1e63abca45068c4f3506c0a9a91fa9df6",
+  "bytes": 117788014,
+  "sha256": "5c1e447ecfaef735c1688d457d7276e3b915f2644e8fbdb3c1589bac189ac7f8",
   "packagedNativeSharp": {
     "width": 2,
     "height": 3,

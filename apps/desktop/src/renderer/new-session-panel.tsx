@@ -23,7 +23,9 @@ export function NewSessionPanel({ api, busy, onRun, onCreate, onCreated }: {
       <p>Mỗi poster là một outfit và bộ sưu tập nháp. Có thể đóng ứng dụng rồi mở lại để tiếp tục phần đã lưu.</p></div>
     <form onSubmit={(event) => void submit(event)} className="new-session-form">
       <div className="folder-target"><span className="folder-mark" aria-hidden="true"><svg width="36" height="30" viewBox="0 0 36 30" fill="none"><path d="M2 7V3h12l4 4h16v20H2V7Z" stroke="currentColor" strokeWidth="1.5" /><path d="M2 10h32" stroke="currentColor" strokeWidth="1.5" /></svg></span>
-        <strong>{selection?.folderLabel ?? 'Chưa chọn folder ảnh'}</strong><p className="hint">Ứng dụng quét folder con trong giới hạn đã cấu hình, sao chép ảnh và xoay đúng chiều. Folder gốc được giữ nguyên.</p>
+        <strong>{selection?.folderLabel ?? 'Chưa chọn folder ảnh'}</strong>
+        <p className="hint">{selection ? 'Đã chọn folder. Bấm Tạo phiên và đọc ảnh để xem danh sách ảnh.' :
+          'Ứng dụng sẽ đọc cả folder con và tạo bản sao trên máy. Ảnh gốc được giữ nguyên.'}</p>
         <button type="button" onClick={() => void choose()} disabled={busy}>{selection ? 'Chọn folder khác' : 'Chọn folder ảnh'}</button>
       </div>
       <TextField label="Tên phiên nhập" value={name} onChange={setName} required maxLength={120} placeholder="Tên giúp nhận ra lần nhập này" />
