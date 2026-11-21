@@ -4,6 +4,17 @@ Ghi lại các thay đổi đáng kể theo phiên bản. Mỗi mục ghi ngày,
 
 Liên quan: [Roadmap](./development-roadmap.md) · [Kiến trúc](./system-architecture.md) · [Triển khai](./deployment-guide.md)
 
+## Triển khai VPS đầu tiên và sao lưu ra ngoài server (2026-11-22)
+
+Phạm vi: vận hành (server, `scripts/ops/`, `docs/`). Không đổi code ứng dụng.
+
+- Dựng stack prod trên VPS Ubuntu 18.04: Docker 24.0.2 cùng binary Compose v2.29.7/Buildx v0.17.1, 1Panel v2.5.1, `ufw`, fail2ban cho SSH, swap 4 GB. Site chạy HTTP bằng IP (chưa có domain) qua file override chỉ có trên server, đặt `SESSION_COOKIE_SECURE=false`.
+- Nạp dữ liệu demo (`seed-demo.js`, không `--reset`) và bật cron sao lưu 02:30 trên server.
+- Thêm `scripts/ops/pull-server-backup.ps1`: tải bản sao lưu mới nhất cùng `.env.prod` về máy Windows, kiểm tra nội dung file trước khi giữ, xoay vòng 30 bản. Chạy hằng ngày bằng Task Scheduler.
+- Thêm [hướng dẫn khôi phục](./server-recovery-guide.md): các cách vào server, xử lý khi bị khoá ngoài (fail2ban, `1pctl`, ufw, console nhà cung cấp), dựng lại server từ bản sao lưu.
+
+Kiểm chứng: `/` và `/admin/login` trả 200 từ ngoài, đăng nhập admin qua API đạt, ảnh `/media` trả `image/webp`; bản tải về đủ 77/77 ảnh, `gzip -t` của archive Mongo đạt. Chưa thử dựng lại server từ bản tải về.
+
 ## Desktop nhập bộ sưu tập bằng AI (2026-11-18)
 
 Phạm vi: workspace `apps/desktop`, hợp đồng shared, importer API/token admin, Caddy/compose và tài liệu. Kế hoạch: `plans/261118-desktop-ai-import/plan.md`. Hướng dẫn: [Desktop nhập nháp](./desktop-import-guide.md).

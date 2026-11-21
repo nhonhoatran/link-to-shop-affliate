@@ -2,7 +2,7 @@
 
 Tài liệu gồm: chạy local bằng Docker, desktop nhập nháp, triển khai production trên VPS, sao lưu và khôi phục, bảng biến môi trường, và xử lý sự cố.
 
-Liên quan: [Kiến trúc hệ thống](./system-architecture.md) · [Quy chuẩn code](./code-standards.md) · [Roadmap](./development-roadmap.md)
+Liên quan: [Kiến trúc hệ thống](./system-architecture.md) · [Quy chuẩn code](./code-standards.md) · [Roadmap](./development-roadmap.md) · [Khôi phục quyền truy cập và dựng lại server](./server-recovery-guide.md)
 
 ## Contents
 - [Yêu cầu](#yêu-cầu)
@@ -333,6 +333,8 @@ File có quyền thực thi trong git (mode `100755`), nhưng gọi qua `bash` v
 ```
 
 Ví dụ trên chạy lúc 02:30 hằng ngày. Đường dẫn `/opt/under30ss` là đường dẫn ví dụ.
+
+Bản sao lưu trên VPS mất theo VPS. Kéo bản sao ra máy khác hằng ngày bằng `scripts/ops/pull-server-backup.ps1`, xem [Sao lưu ra ngoài server](./server-recovery-guide.md#sao-lưu-ra-ngoài-server).
 
 Trạng thái kiểm chứng (2026-11-06): đã chạy thành công trên stack thử nghiệm, tạo `mongo.archive.gz` và `bucket/`, khôi phục Mongo (`--drop`) và đồng bộ bucket ngược lại. Chưa kiểm chứng cron thật trên VPS và việc xoá bản cũ thật.
 
